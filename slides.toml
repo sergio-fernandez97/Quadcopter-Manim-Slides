@@ -11,6 +11,7 @@ slides = [
     "slides.05_controllability.ControllabilitySlide",
     "slides.06_stabilization.StabilizationSlide",
     "slides.07_agent_environment.AgentEnvironmentSlide",
+    "slides.08_mdp.GraphWorldMDPSlide",
 ]
 
 [presentation]
