@@ -1,0 +1,25 @@
+# Manim Slides Configuration
+# This file defines the order and settings for your presentation slides
+
+[slides]
+# Define your slides in order
+slides = [
+    "slides.01_title.TitleSlide",
+    "slides.02_introduction.Introduction",
+    "slides.03_problem.ProblemStatement",
+    "slides.04_methodology.Methodology",
+    "slides.05_results.Results",
+    "slides.06_conclusion.Conclusion",
+]
+
+# Presentation settings
+[presentation]
+title = "Quadcopter Deep RL - Dissertation Presentation"
+theme = "default"
+
+# Manim settings
+[manim]
+resolution = "1080p60"
+background_color = "#000000"
+preview = true
+

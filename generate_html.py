@@ -1,0 +1,195 @@
+#!/usr/bin/env python3
+"""
+Script to generate slides.html from JSON slide files in slides/ directory.
+This script reads all JSON files and generates an HTML file with Reveal.js
+that uses videos from slides/files/ directory.
+"""
+
+import json
+import os
+from pathlib import Path
+from typing import List, Dict
+
+def get_slide_order() -> List[str]:
+    """Get the order of slides from slides.toml or default order."""
+    # Default order based on the files we've created
+    default_order = [
+        "InertialFrameSlide",
+        "NewtonEulerSlide", 
+        "InertialDynamicsSlide",
+        "QuadcopterMotionSlide",
+        "ControlSystemsSlide",
+        "ControllabilitySlide",
+        "StabilizationSlide"
+    ]
+    return default_order
+
+def load_slide_json(slide_name: str) -> Dict:
+    """Load JSON file for a slide."""
+    json_path = Path(f"slides/{slide_name}.json")
+    if json_path.exists():
+        with open(json_path, 'r') as f:
+            return json.load(f)
+    return None
+
+def generate_html_section(slide_data: Dict, slide_index: int) -> str:
+    """Generate HTML section for a slide."""
+    sections = []
+    
+    for slide in slide_data.get("slides", []):
+        video_file = slide.get("file", "")
+        # Use relative path from slides/files/
+        if video_file.startswith("slides/files/"):
+            video_path = video_file
+        else:
+            video_path = video_file
+        
+        section = f"""        <section
+          data-background-size='contain'
+          data-background-color="black"
+          data-background-video="{video_path}"
+          data-background-video-muted
+          >
+        </section>"""
+        sections.append(section)
+    
+    return "\n".join(sections)
+
+def generate_html():
+    """Generate the complete HTML file."""
+    slide_order = get_slide_order()
+    
+    sections_html = []
+    for slide_name in slide_order:
+        slide_data = load_slide_json(slide_name)
+        if slide_data:
+            sections_html.append(generate_html_section(slide_data, len(sections_html)))
+    
+    html_template = f"""<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>Manim Slides</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.2.0/reveal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.2.0/theme/black.min.css">
+
+    <!-- Theme used for syntax highlighting of code -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/zenburn.min.css">
+  </head>
+
+  <body>
+    <div class="reveal">
+      <div class="slides">
+{chr(10).join(sections_html)}
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.2.0/reveal.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.2.0/plugin/notes/notes.min.js"></script>
+
+    <script>
+      Reveal.initialize({{
+        width: '100%',
+        height: '100%',
+        margin: 0.04,
+        minScale: 0.2,
+        maxScale: 2.0,
+        controls: false,
+        controlsTutorial: true,
+        controlsLayout: 'bottom-right',
+        controlsBackArrows: 'faded',
+        progress: false,
+        slideNumber: false,
+        showSlideNumber: 'all',
+        hashOneBasedIndex: false,
+        hash: false,
+        respondToHashChanges: false,
+        jumpToSlide: true,
+        history: false,
+        keyboard: true,
+        keyboardCondition: null,
+        disableLayout: false,
+        overview: true,
+        center: true,
+        touch: true,
+        loop: false,
+        rtl: false,
+        navigationMode: 'default',
+        shuffle: false,
+        fragments: true,
+        fragmentInURL: true,
+        embedded: false,
+        help: true,
+        pause: true,
+        showNotes: false,
+        autoPlayMedia: null,
+        preloadIframes: null,
+        autoAnimate: true,
+        autoAnimateMatcher: null,
+        autoAnimateEasing: 'ease',
+        autoAnimateDuration: 1.0,
+        autoAnimateUnmatched: true,
+        autoAnimateStyles: ['opacity', 'color', 'background-color', 'padding', 'font-size', 'line-height', 'letter-spacing', 'border-width', 'border-color', 'border-radius', 'outline', 'outline-offset'],
+        autoSlide: 0,
+        autoSlideStoppable: true,
+        autoSlideMethod: null,
+        defaultTiming: null,
+        mouseWheel: false,
+        previewLinks: false,
+        postMessage: true,
+        postMessageEvents: false,
+        focusBodyOnPageVisibilityChange: true,
+        transition: 'none',
+        transitionSpeed: 'default',
+        backgroundTransition: 'none',
+        pdfMaxPagesPerSlide: Number.POSITIVE_INFINITY,
+        pdfSeparateFragments: true,
+        pdfPageHeightOffset: -1,
+        viewDistance: 3,
+        mobileViewDistance: 2,
+        display: 'block',
+        hideInactiveCursor: true,
+        hideCursorTime: 5000
+      }});
+      // Override SPACE to play / pause the video
+      Reveal.addKeyBinding(
+        {{
+          keyCode: 32,
+          key: 'SPACE',
+          description: 'Play / pause video'
+        }},
+        () => {{
+          var currentVideos = Reveal.getCurrentSlide().slideBackgroundContentElement.getElementsByTagName("video");
+          if (currentVideos.length > 0) {{
+            if (currentVideos[0].paused == true) currentVideos[0].play();
+            else currentVideos[0].pause();
+          }} else {{
+            Reveal.next();
+          }}
+        }}
+      );
+    </script>
+  </body>
+</html>"""
+    
+    return html_template
+
+def main():
+    """Main function to generate HTML."""
+    output_file = Path("slides.html")
+    
+    print("Generating slides.html from JSON files...")
+    html_content = generate_html()
+    
+    with open(output_file, 'w', encoding='utf-8') as f:
+        f.write(html_content)
+    
+    print(f"✓ Generated {output_file}")
+    print(f"  Using videos from slides/files/ directory")
+
+if __name__ == "__main__":
+    main()
+

@@ -1,0 +1,8 @@
+
+- Agent-enviroment.
+- MDP.
+- Episode and returns.
+- Policy and value functions V and Q (mainly Q). 
+- Bellman Equation, optimal Policy and value functions (focused on its resolution, particularly with Q-learning)
+- RL in control systems, multi-dimensional state and actions (continued spaces).
+- Model-free RL (value-based and policy-based methods) vs. model-based RL (focused on Guided Policy Search). 
