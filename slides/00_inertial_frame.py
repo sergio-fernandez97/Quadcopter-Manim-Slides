@@ -1,3 +1,16 @@
+"""
+Inertial frame visualization for the quadcopter model.
+
+Animates the vehicle geometry, rotor forces, and roll rotation in a 3D Manim
+slide to introduce the inertial reference frame.
+
+Example:
+    manim -pql slides/00_inertial_frame.py InertialFrameSlide
+
+Author: Sergio Fernández
+Date: 2025-01-30
+"""
+
 from manim import *
 from manim_slides import ThreeDSlide
 

@@ -1,25 +1,23 @@
-# Manim Slides Configuration
-# This file defines the order and settings for your presentation slides
+# Manim Slides configuration for the quadcopter deck
 
 [slides]
-# Define your slides in order
+# Define slides in presentation order
 slides = [
-    "slides.01_title.TitleSlide",
-    "slides.02_introduction.Introduction",
-    "slides.03_problem.ProblemStatement",
-    "slides.04_methodology.Methodology",
-    "slides.05_results.Results",
-    "slides.06_conclusion.Conclusion",
+    "slides.00_inertial_frame.InertialFrameSlide",
+    "slides.01_newton_euler.NewtonEulerSlide",
+    "slides.02_inertial_dynamics.InertialDynamicsSlide",
+    "slides.03_quadcopter_motion.QuadcopterMotionSlide",
+    "slides.04_control_systems.ControlSystemsSlide",
+    "slides.05_controllability.ControllabilitySlide",
+    "slides.06_stabilization.StabilizationSlide",
+    "slides.07_agent_environment.AgentEnvironmentSlide",
 ]
 
-# Presentation settings
 [presentation]
 title = "Quadcopter Deep RL - Dissertation Presentation"
 theme = "default"
 
-# Manim settings
 [manim]
 resolution = "1080p60"
 background_color = "#000000"
 preview = true
-

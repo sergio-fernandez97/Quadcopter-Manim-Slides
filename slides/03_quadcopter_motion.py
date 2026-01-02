@@ -1,3 +1,16 @@
+"""
+Combined equations of motion for the quadcopter.
+
+Contrasts local and inertial system equations, then reframes them into a
+state-space representation for control analysis.
+
+Example:
+    manim -pql slides/03_quadcopter_motion.py QuadcopterMotionSlide
+
+Author: Sergio Fernández
+Date: 2025-01-30
+"""
+
 from manim import *
 from manim_slides import Slide
 

@@ -1,3 +1,16 @@
+"""
+Stabilization strategies for linear control systems.
+
+Explores feedback design for asymptotic stability, presenting the stabilization
+problem setup and key conditions for the quadcopter model.
+
+Example:
+    manim -pql slides/06_stabilization.py StabilizationSlide
+
+Author: Sergio Fernández
+Date: 2025-01-30
+"""
+
 from manim import *
 from manim_slides import Slide
 

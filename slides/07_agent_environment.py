@@ -1,3 +1,16 @@
+"""
+Agent–environment interaction in reinforcement learning.
+
+Illustrates the RL loop with agent, environment, actions, observations, and
+rewards, highlighting the data flow for the quadcopter training setup.
+
+Example:
+    manim -pql slides/07_agent_environment.py AgentEnvironmentSlide
+
+Author: Sergio Fernández
+Date: 2025-01-30
+"""
+
 from manim import *
 from manim_slides import Slide
 

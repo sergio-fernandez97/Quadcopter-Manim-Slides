@@ -1,3 +1,16 @@
+"""
+Control system formulation for the quadcopter model.
+
+Transitions from continuous-time dynamics to a discrete-time representation,
+introducing the control vector and state updates used in later slides.
+
+Example:
+    manim -pql slides/04_control_systems.py ControlSystemsSlide
+
+Author: Sergio Fernández
+Date: 2025-01-30
+"""
+
 from manim import *
 from manim_slides import Slide
 

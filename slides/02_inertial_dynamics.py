@@ -1,3 +1,16 @@
+"""
+Inertial coordinate dynamics and their relation to local velocities.
+
+Shows how inertial translation and rotation equations connect to local motion,
+setting up the bridge between coordinate systems for the quadcopter model.
+
+Example:
+    manim -pql slides/02_inertial_dynamics.py InertialDynamicsSlide
+
+Author: Sergio Fernández
+Date: 2025-01-30
+"""
+
 from manim import *
 from manim_slides import Slide
 
