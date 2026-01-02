@@ -1,3 +1,16 @@
+"""
+Newton–Euler equations for quadcopter dynamics.
+
+Introduces the local equations of motion, highlighting Newton's second law and
+their role in deriving translational and rotational dynamics for the vehicle.
+
+Example:
+    manim -pql slides/01_newton_euler.py NewtonEulerSlide
+
+Author: Sergio Fernández
+Date: 2025-01-30
+"""
+
 from manim import *
 from manim_slides import Slide
 
