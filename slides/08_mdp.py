@@ -43,7 +43,7 @@ class GraphWorldMDPSlide(Slide):
         def create_state(name, color=BLUE_C):
             circle = Circle(radius=0.4, color=color, stroke_width=3, fill_opacity=0.15)
             label = Text(name, font_size=28, color=color, weight=BOLD)
-            return VGroup(circle, label).arrange(CENTER, buff=0).move_to(positions[name])
+            return VGroup(circle, label).arrange(ORIGIN, buff=0).move_to(positions[name])
 
         states = {name: create_state(name) for name in positions}
 
