@@ -8,6 +8,8 @@ Example:
     manim -pql slides/08_mdp.py GraphWorldMDPSlide
 """
 
+import numpy as np
+
 from manim import *
 from manim_slides import Slide
 
@@ -30,14 +32,14 @@ class GraphWorldMDPSlide(Slide):
         self.play(FadeIn(title, shift=DOWN), FadeIn(subtitle, shift=DOWN), run_time=1.5)
         self.wait(0.5)
 
-        # Positions for 6 states
+        # Positions for 6 states (kept visually centered and lowered to avoid title overlap)
         positions = {
-            "S0": LEFT * 3 + UP * 1.2,
-            "S1": LEFT * 1 + UP * 2.5,
-            "S2": RIGHT * 2 + UP * 1.8,
-            "S3": LEFT * 2 + DOWN * 1.2,
-            "S4": RIGHT * 0.5 + DOWN * 1.8,
-            "S5": RIGHT * 3 + UP * 0.2,
+            "S0": LEFT * 3 + UP * 0.5,
+            "S1": LEFT * 1 + UP * 1.8,
+            "S2": RIGHT * 2 + UP * 1.1,
+            "S3": LEFT * 2 + DOWN * 2,
+            "S4": RIGHT * 0.5 + DOWN * 2.6,
+            "S5": RIGHT * 3 + DOWN * 0.6,
         }
 
         def create_state(name, color=BLUE_C):
@@ -47,6 +49,9 @@ class GraphWorldMDPSlide(Slide):
 
         states = {name: create_state(name) for name in positions}
 
+        graph_group = VGroup(*states.values())
+        graph_group.shift(DOWN * 0.2)
+
         self.play(LaggedStart(*[FadeIn(s) for s in states.values()], lag_ratio=0.1), run_time=1.5)
         self.wait(0.5)
 
@@ -54,12 +59,23 @@ class GraphWorldMDPSlide(Slide):
         edges = []
 
         def add_edge(source, target, prob=1.0, action_label=None, color=GRAY_B, angle=None, stroke=3):
-            start = states[source][0].get_center()
-            end = states[target][0].get_center()
+            start_center = states[source][0].get_center()
+            end_center = states[target][0].get_center()
+            direction = end_center - start_center
+            if np.linalg.norm(direction) != 0:
+                direction = direction / np.linalg.norm(direction)
+            start = start_center + direction * 0.42
+            end = end_center - direction * 0.42
             arrow = CurvedArrow(start, end, angle=angle or 0, color=color, stroke_width=stroke)
-            prob_tex = MathTex(f"{prob:.1f}", font_size=28, color=color).move_to(arrow.point_from_proportion(0.5) + UP * 0.2)
+            prob_tex = MathTex(
+                rf"P={prob:.1f}",
+                font_size=28,
+                color=color,
+            ).move_to(arrow.point_from_proportion(0.5) + UP * 0.25)
             if action_label:
-                action_tex = Text(action_label, font_size=26, color=ORANGE).next_to(arrow.point_from_proportion(0.2), LEFT, buff=0.15)
+                action_tex = Text(action_label, font_size=26, color=ORANGE).next_to(
+                    arrow.point_from_proportion(0.2), LEFT, buff=0.12
+                )
             else:
                 action_tex = None
             edges.append((arrow, prob_tex, action_tex))
@@ -88,7 +104,12 @@ class GraphWorldMDPSlide(Slide):
         self.wait(0.3)
 
         def reward_flash(target_mobj, value, color=GOLD):
-            reward_label = Text(f"+{value}", font_size=24, color=color, weight=BOLD)
+            reward_label = Text(
+                f"r_t={value:+}",
+                font_size=24,
+                color=color,
+                weight=BOLD,
+            )
             reward_label.next_to(target_mobj, UP, buff=0.1)
             self.play(FadeIn(reward_label, scale=1.1), Flash(target_mobj, color=color, flash_radius=0.5), run_time=1)
             return reward_label
@@ -114,4 +135,11 @@ class GraphWorldMDPSlide(Slide):
 
         # Keep rewards on screen for context
         self.add(reward_a, reward_b, reward_c, reward_d)
+        summary = Text(
+            "Probabilidades de transición P(s_{t+1}|s_t,a_t) y recompensas r_t mostradas en cada paso.",
+            font_size=26,
+            color=LIGHT_GRAY,
+        ).to_edge(DOWN, buff=0.3)
+
+        self.play(FadeIn(summary, shift=UP * 0.2))
         self.wait(1.5)
