@@ -5,7 +5,7 @@ Defines controllability for linear systems, presents the algebraic criteria,
 and illustrates state reachability within the slide sequence.
 
 Example:
-    manim -pql slides/05_controllability.py ControllabilitySlide
+    manim -pql slides/04_controllability.py ControllabilitySlide
 
 Author: Sergio Fernández
 Date: 2025-01-30
@@ -249,4 +249,3 @@ class ControllabilitySlide(Slide):
         
         self.play(Write(theorem_part2), run_time=2)
         self.wait(3)
-
