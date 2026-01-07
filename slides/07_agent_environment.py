@@ -220,4 +220,3 @@ class AgentEnvironmentSlide(Slide):
         loop_label = Text("El ciclo continúa...", font_size=28, color=YELLOW).to_edge(DOWN, buff=0.5)
         self.play(FadeIn(loop_label), run_time=1)
         self.wait(2)
-
