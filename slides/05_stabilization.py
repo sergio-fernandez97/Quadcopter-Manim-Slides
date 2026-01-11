@@ -5,7 +5,7 @@ Explores feedback design for asymptotic stability, presenting the stabilization
 problem setup and key conditions for the quadcopter model.
 
 Example:
-    manim -pql slides/06_stabilization.py StabilizationSlide
+    manim -pql slides/05_stabilization.py StabilizationSlide
 
 Author: Sergio Fernández
 Date: 2025-01-30
@@ -183,4 +183,3 @@ class StabilizationSlide(Slide):
         self.wait(3)
         
         self.wait(3)
-
