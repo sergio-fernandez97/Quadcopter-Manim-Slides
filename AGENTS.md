@@ -18,6 +18,7 @@
 - Indentation: 4 spaces.
 - Naming: slide files use `NN_topic.py` with a two-digit prefix; scene classes use `CamelCase` and end with `Slide` (e.g., `QLearningSlide`).
 - Keep animations readable: group related mobjects into `VGroup`s and use short comments only for non-obvious blocks.
+- Aim for scene composition and flow that resemble a Beamer slide as closely as possible.
 
 ## Testing Guidelines
 - No formal test suite is configured yet; `tests/hello.py` is a placeholder.
