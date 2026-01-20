@@ -174,6 +174,7 @@ class QuadcopterLinearizationSlide(Slide):
             tex_template=tex_template
         )
         jacobian_eval.move_to(jacobian_general.get_center())
+        jacobian_eval.shift(UP * 0.4)
 
         self.play(Transform(jacobian_general, jacobian_eval), run_time=1.5)
         self.play(FadeOut(eval_note), run_time=0.6)
@@ -228,4 +229,191 @@ class QuadcopterLinearizationSlide(Slide):
             tex_template=tex_template
         )
         jacobian_u_eval.move_to(jacobian_u.get_center())
-        self.play(Transform(jacobian_u, jacobian_u_eval), run_time=1.3)
+        jacobian_u_eval.shift(UP * 0.4)
+        self.play(
+            FadeOut(jacobians_text),
+            Transform(jacobian_u, jacobian_u_eval),
+            run_time=1.3
+        )
+
+        controllability_legend = Tex(
+            r"Se puede demostrar que el cuadricoptero no es controlable en el sentido de Kalman,",
+            font_size=20,
+            tex_template=tex_template
+        )
+        controllability_eq = MathTex(
+            r"\mathrm{rango}(R(A, B)) < 12",
+            font_size=26,
+            tex_template=tex_template
+        )
+        controllability_group = VGroup(controllability_legend, controllability_eq).arrange(
+            DOWN,
+            buff=0.2
+        )
+        controllability_group.next_to(jacobian_u, DOWN, buff=0.5)
+        self.play(FadeIn(controllability_legend), run_time=0.8)
+        self.play(FadeIn(controllability_eq), run_time=0.8)
+
+        subsystem_legend = Tex(
+            r"Sin embargo, si se considera el subsistema asociado a $\mathbf{y}$,",
+            font_size=20,
+            tex_template=tex_template
+        )
+        subsystem_eq = MathTex(
+            r"\mathbf{y}= (\varphi, \theta, \psi, z, p,q, r, w)^{\top}",
+            font_size=24,
+            tex_template=tex_template
+        )
+        subsystem_group = VGroup(subsystem_legend, subsystem_eq).arrange(DOWN, buff=0.15)
+        subsystem_group.to_edge(UP).shift(DOWN * 0.2)
+        self.play(FadeIn(subsystem_legend), run_time=0.7)
+        self.play(FadeIn(subsystem_eq), run_time=0.7)
+
+        extract_legend = Tex(
+            r"extraemos las submatrices asociadas a $\mathbf{y}$",
+            font_size=20,
+            tex_template=tex_template
+        )
+        extract_legend.next_to(subsystem_group, DOWN, buff=0.2)
+        self.play(FadeIn(extract_legend), run_time=0.7)
+
+        a_tilde = MathTex(
+            r"\mathbf{\tilde{A}} =",
+            r"\begin{bmatrix}"
+            r"\bigzero & \rvline & \mathbf{I}_{4} \\"
+            r"\hline"
+            r"\bigzero & \rvline & \bigzero"
+            r"\end{bmatrix}",
+            font_size=18,
+            tex_template=tex_template
+        )
+        a_tilde.move_to(jacobian_x.get_center())
+
+        b_tilde = MathTex(
+            r"\mathbf{\tilde{B}} =",
+            r"\begin{bmatrix}"
+            r"\bigzero_{4\times4} \\"
+            r"\hline"
+            r"\\[-2ex]"
+            r"\begin{matrix}"
+            r"-km^{-1}\omega_0 & -km^{-1}\omega_0 & -km^{-1}\omega_0 & -km^{-1}\omega_0 \\"
+            r"0 & -\ell bI_{xx}^{-1}\omega_0 & 0 & -\ell bI_{xx}^{-1}\omega_0 \\"
+            r"-\ell bI_{yy}^{-1}\omega_0 & 0 & -\ell bI_{yy}^{-1}\omega_0 & 0 \\"
+            r"-\ell bI_{zz}^{-1}\omega_0 &"
+            r"\ell bI_{zz}^{-1}\omega_0 &"
+            r"-\ell bI_{zz}^{-1}\omega_0 &"
+            r"\ell bI_{zz}^{-1}\omega_0"
+            r"\end{matrix}"
+            r"\end{bmatrix}",
+            font_size=18,
+            tex_template=tex_template
+        )
+        b_tilde.move_to(jacobian_u.get_center())
+
+        self.play(
+            Transform(jacobian_x, a_tilde),
+            Transform(jacobian_u, b_tilde),
+            run_time=1.3
+        )
+        self.play(1.0)
+        
+        fade_targets = VGroup(
+            jacobian_x,
+            jacobian_u,
+            controllability_group,
+            subsystem_group,
+            extract_legend
+        )
+        self.play(FadeOut(fade_targets), run_time=0.8)
+        self.wait(1.0)
+
+        controllability_matrix = MathTex(
+            r"R\left(\mathbf{\tilde{B}}, \mathbf{\tilde{A}}\right) =",
+            r"\left[\mathbf{\tilde{B}}, \mathbf{\tilde{A}}\mathbf{\tilde{B}}\right]",
+            font_size=24,
+            tex_template=tex_template
+        )
+        controllability_matrix.move_to(ORIGIN)
+        self.play(FadeIn(controllability_matrix), run_time=0.9)
+        self.wait(1.0)
+
+        controllability_matrix_expanded = MathTex(
+            r"R\left(\mathbf{\tilde{B}}, \mathbf{\tilde{A}}\right) =",
+            r"\begin{bmatrix}"
+            r"\mathbf{0} & \mathbf{B}_{3:6} \\"
+            r"\mathbf{B}_{3:6} & \mathbf{0}"
+            r"\end{bmatrix}",
+            font_size=24,
+            tex_template=tex_template
+        )
+        controllability_matrix_expanded.move_to(controllability_matrix.get_center())
+        self.play(Transform(controllability_matrix, controllability_matrix_expanded), run_time=1.0)
+        kalman_legend = Tex(
+            r"Aplicamos el criterio de Kalman,",
+            font_size=20,
+            tex_template=tex_template
+        )
+        kalman_eq = MathTex(
+            r"\mathrm{rango}\left(R\left(\mathbf{\tilde{A}}, \mathbf{\tilde{B}}\right)\right)= 8",
+            font_size=26,
+            tex_template=tex_template
+        )
+        kalman_group = VGroup(kalman_legend, kalman_eq).arrange(DOWN, buff=0.2)
+        kalman_group.move_to(ORIGIN)
+        self.play(FadeOut(controllability_matrix), run_time=0.6)
+        self.play(FadeIn(kalman_group), run_time=0.9)
+        self.wait(1.0)
+
+        self.play(FadeOut(kalman_group), run_time=0.6)
+        system_legend = Tex(
+            r"Consideramos el sistema:",
+            font_size=20,
+            tex_template=tex_template
+        )
+        system_eq = MathTex(
+            r"\dot{\mathbf{y}} = \mathbf{\tilde{A}}\mathbf{y} + \mathbf{\tilde{B}}\mathbf{u}",
+            font_size=26,
+            tex_template=tex_template
+        )
+        system_group = VGroup(system_legend, system_eq).arrange(DOWN, buff=0.2)
+        system_group.move_to(ORIGIN)
+        self.play(FadeIn(system_group), run_time=0.9)
+        self.wait(1.0)
+
+        decoupled_legend = Tex(
+            r"Al desacoplar las matrices,",
+            font_size=20,
+            tex_template=tex_template
+        )
+        decoupled_eq = MathTex(
+            r"\begin{aligned}"
+            r"\mathbf{A}^{(z)}+\mathbf{B}^{(z)}\mathbf{K}^{(z)}="
+            r"\begin{bmatrix}0&1\\0&0\end{bmatrix}"
+            r"-\frac{2k}{m}\omega_0"
+            r"\begin{bmatrix}0&0\\ g_{z1}&g_{z2}\end{bmatrix},"
+            r"\\ \\"
+            r"\mathbf{A}^{(\psi)}+\mathbf{B}^{(\psi)}\mathbf{K}^{(\psi)}="
+            r"\begin{bmatrix}0&1\\0&0\end{bmatrix}"
+            r"+\frac{2\ell b}{I_{zz}}\omega_0"
+            r"\begin{bmatrix}0&0\\ -g_{\psi1}+g_{\psi2}&-g_{\psi3}+g_{\psi4}\end{bmatrix},"
+            r"\\ \\"
+            r"\mathbf{A}^{(\theta)}+\mathbf{B}^{(\theta)}\mathbf{K}^{(\theta)}="
+            r"\begin{bmatrix}0&1\\0&0\end{bmatrix}"
+            r"+\frac{2\ell b}{I_{yy}}\omega_0"
+            r"\begin{bmatrix}0&0\\ g_{\theta1}&g_{\theta2}\end{bmatrix},"
+            r"\\ \\"
+            r"\mathbf{A}^{(\varphi)}+\mathbf{B}^{(\varphi)}\mathbf{K}^{(\varphi)}="
+            r"\begin{bmatrix}0&1\\0&0\end{bmatrix}"
+            r"+\frac{2\ell b}{I_{xx}}\omega_0"
+            r"\begin{bmatrix}0&0\\ g_{\varphi1}&g_{\varphi2}\end{bmatrix}"
+            r"\end{aligned}",
+            font_size=20,
+            tex_template=tex_template
+        )
+        decoupled_legend.move_to(system_legend.get_center())
+        system_legend.move_to(UP)
+        self.play(
+            Transform(system_legend, decoupled_legend),
+            Transform(system_eq, decoupled_eq),
+            run_time=1.1
+        )
