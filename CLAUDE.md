@@ -59,6 +59,7 @@ class TopicSlide(Slide):
 - **Class naming**: `CamelCaseSlide` (must end with "Slide")
 - **Indentation**: 4 spaces
 - **Composition**: Use `VGroup` for related mobjects
+- **Key concepts**: Use `BulletedList` from Manim to present key concepts or bullet points on slides
 - **Slide style**: Aim for slides that resemble Beamer presentations—more static, with animations used sparingly for emphasis rather than constant motion. Prioritize clarity and readability over complex animations.
 - When adding slides: create file in `slides/`, add scene path to `slides.toml`
 - Keep generated media (`media/`) out of commits; only commit source files under `slides/`

@@ -6,23 +6,59 @@ that uses videos from slides/files/ directory.
 """
 
 import json
-import os
+import re
 from pathlib import Path
-from typing import List, Dict
+from typing import List, Dict, Optional
+
+try:
+    import tomllib
+except ImportError:  # pragma: no cover - fallback for Python < 3.11
+    tomllib = None
 
 def get_slide_order() -> List[str]:
     """Get the order of slides from slides.toml or default order."""
-    # Default order based on the files we've created
-    default_order = [
-        "InertialFrameSlide",
-        "NewtonEulerSlide", 
-        "InertialDynamicsSlide",
-        "QuadcopterMotionSlide",
-        "ControlSystemsSlide",
-        "ControllabilitySlide",
-        "StabilizationSlide"
-    ]
-    return default_order
+    slide_names = load_slide_order_from_toml(Path("slides.toml"))
+    json_files = sorted(Path("slides").glob("*.json"))
+    json_names = [json_path.stem for json_path in json_files]
+
+    if slide_names:
+        ordered = []
+        seen = set()
+        for name in slide_names + json_names:
+            if name in seen:
+                continue
+            ordered.append(name)
+            seen.add(name)
+        return ordered
+
+    return json_names
+
+def load_slide_order_from_toml(toml_path: Path) -> Optional[List[str]]:
+    """Parse slides.toml for ordered slide class names."""
+    if not toml_path.exists():
+        return None
+
+    if tomllib is not None:
+        with open(toml_path, "rb") as f:
+            data = tomllib.load(f)
+
+        slides = data.get("slides", {}).get("slides", [])
+        if slides:
+            slide_names = [
+                slide_entry.split(".")[-1]
+                for slide_entry in slides
+                if isinstance(slide_entry, str)
+            ]
+            return slide_names or None
+
+    text = toml_path.read_text(encoding="utf-8")
+    match = re.search(r"(?s)\[slides\].*?slides\s*=\s*\[(.*?)\]", text)
+    if not match:
+        return None
+
+    entries = re.findall(r"\"([^\"]+)\"", match.group(1))
+    slide_names = [entry.split(".")[-1] for entry in entries]
+    return slide_names or None
 
 def load_slide_json(slide_name: str) -> Dict:
     """Load JSON file for a slide."""
@@ -35,7 +71,8 @@ def load_slide_json(slide_name: str) -> Dict:
 def generate_html_section(slide_data: Dict, slide_index: int) -> str:
     """Generate HTML section for a slide."""
     sections = []
-    
+    background_color = slide_data.get("background_color", "black")
+
     for slide in slide_data.get("slides", []):
         video_file = slide.get("file", "")
         # Use relative path from slides/files/
@@ -43,12 +80,14 @@ def generate_html_section(slide_data: Dict, slide_index: int) -> str:
             video_path = video_file
         else:
             video_path = video_file
-        
+
+        loop_attr = "data-background-video-loop" if slide.get("loop", False) else ""
         section = f"""        <section
           data-background-size='contain'
-          data-background-color="black"
+          data-background-color="{background_color}"
           data-background-video="{video_path}"
           data-background-video-muted
+          {loop_attr}
           >
         </section>"""
         sections.append(section)
@@ -192,4 +231,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

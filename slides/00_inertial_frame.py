@@ -100,10 +100,13 @@ class InertialFrameSlide(ThreeDSlide):
         
         # Create omega labels near each propeller (fixed in frame, not rotated)
         # Position them in screen coordinates to appear near the propellers
-        omega1_label = MathTex(r"\omega_1", font_size=24, color=WHITE).move_to(np.array([2.5, 1.5, 0]))
-        omega2_label = MathTex(r"\omega_2", font_size=24, color=WHITE).move_to(np.array([-2.5, -1.5, 0]))
-        omega3_label = MathTex(r"\omega_3", font_size=24, color=WHITE).move_to(np.array([-1.5, 2.5, 0]))
-        omega4_label = MathTex(r"\omega_4", font_size=24, color=WHITE).move_to(np.array([1.5, -2.5, 0]))
+        # After 45° rotation and camera at phi=60°, theta=45°:
+        # prop1 (was +X) -> front-right diagonal, prop2 (was -X) -> back-left diagonal
+        # prop3 (was +Y) -> front-left diagonal, prop4 (was -Y) -> back-right diagonal
+        omega1_label = MathTex(r"\omega_1", font_size=28, color=WHITE).move_to(np.array([1.8, 0.8, 0]))
+        omega2_label = MathTex(r"\omega_2", font_size=28, color=WHITE).move_to(np.array([-1.8, -0.8, 0]))
+        omega3_label = MathTex(r"\omega_3", font_size=28, color=WHITE).move_to(np.array([-0.8, 1.8, 0]))
+        omega4_label = MathTex(r"\omega_4", font_size=28, color=WHITE).move_to(np.array([0.8, -1.8, 0]))
         
         rotor_vel_title = Text("velocidades angulares de rotores", font_size=28, color=YELLOW).to_edge(UP, buff=0.5)
         self.add_fixed_in_frame_mobjects(rotor_vel_title, omega1_label, omega2_label, omega3_label, omega4_label)
@@ -130,10 +133,10 @@ class InertialFrameSlide(ThreeDSlide):
         self.wait(1)
         
         # Transform omega_i to k*omega_i^2 (use same positions as omega labels)
-        omega1_force = MathTex(r"k\omega_1^2", font_size=24, color=WHITE).move_to(np.array([2.5, 1.5, 0]))
-        omega2_force = MathTex(r"k\omega_2^2", font_size=24, color=WHITE).move_to(np.array([-2.5, -1.5, 0]))
-        omega3_force = MathTex(r"k\omega_3^2", font_size=24, color=WHITE).move_to(np.array([-1.5, 2.5, 0]))
-        omega4_force = MathTex(r"k\omega_4^2", font_size=24, color=WHITE).move_to(np.array([1.5, -2.5, 0]))
+        omega1_force = MathTex(r"k\omega_1^2", font_size=28, color=WHITE).move_to(np.array([1.8, 0.8, 0]))
+        omega2_force = MathTex(r"k\omega_2^2", font_size=28, color=WHITE).move_to(np.array([-1.8, -0.8, 0]))
+        omega3_force = MathTex(r"k\omega_3^2", font_size=28, color=WHITE).move_to(np.array([-0.8, 1.8, 0]))
+        omega4_force = MathTex(r"k\omega_4^2", font_size=28, color=WHITE).move_to(np.array([0.8, -1.8, 0]))
         
         self.play(
             Transform(omega1_label, omega1_force),
