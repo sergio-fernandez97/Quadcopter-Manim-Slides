@@ -6,7 +6,7 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "manim>=0.18.0",
-    "manim-slides>=5.0.0",
+    "manim-slides>=5.5.3",
 ]
 
 [dependency-groups]

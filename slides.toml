@@ -7,11 +7,13 @@ slides = [
     "slides.01_newton_euler.NewtonEulerSlide",
     "slides.02_inertial_dynamics.InertialDynamicsSlide",
     "slides.03_quadcopter_motion.QuadcopterMotionSlide",
-    "slides.04_control_systems.ControlSystemsSlide",
-    "slides.05_controllability.ControllabilitySlide",
-    "slides.06_stabilization.StabilizationSlide",
+    "slides.04_controllability.ControllabilitySlide",
+    "slides.05_stabilization.StabilizationSlide",
+    "slides.06_quadcopter_linearization.QuadcopterLinearizationSlide",
     "slides.07_agent_environment.AgentEnvironmentSlide",
-    "slides.08_mdp.GraphWorldMDPSlide",
+    "slides.08_mdp.StateDiagramAnimation",
+    "slides.09_q_learning.QLearningSlide",
+    "slides.10_model_free_vs_based.ModelFreeVsModelBasedSlide",
 ]
 
 [presentation]
