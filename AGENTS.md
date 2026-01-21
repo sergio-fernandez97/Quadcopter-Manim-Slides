@@ -8,10 +8,11 @@
 - Top-level docs: `README.md`, `INSTALL.md`, `SETUP_GIT.md`.
 
 ## Build, Test, and Development Commands
-- `manim-slides render slides.toml`: Render the full slide deck.
-- `manim-slides present slides.toml`: Run the interactive presentation.
-- `manim-slides preview slides/09_q_learning.py QLearningSlide`: Render/preview a single scene (replace file/class as needed).
-- `manim-slides --version`: Verify installation.
+- `uv sync`: Install dependencies.
+- `uv run manim-slides render slides.toml`: Render the full slide deck.
+- `uv run manim-slides present slides.toml`: Run the interactive presentation.
+- `uv run manim-slides preview slides/09_q_learning.py QLearningSlide`: Render/preview a single scene (replace file/class as needed).
+- `uv run manim-slides --version`: Verify installation.
 
 ## Coding Style & Naming Conventions
 - Language: Python (Manim + manim-slides).

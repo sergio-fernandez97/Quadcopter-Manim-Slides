@@ -64,20 +64,20 @@ Each slide script includes the author, the Manim scene class it defines, and a s
    brew install ffmpeg
    ```
 
-3. Then install Python dependencies:
+3. Install uv (if not installed):
    ```bash
-   pip install -r requirements.txt
+   curl -LsSf https://astral.sh/uv/install.sh | sh
    ```
 
-   Or using pipx:
+4. Install Python dependencies:
    ```bash
-   pipx install "manim-slides[manim]"
+   uv sync
    ```
 
 ### Verify Installation
 
 ```bash
-manim-slides --version
+uv run manim-slides --version
 ```
 
 ## Usage
@@ -86,35 +86,35 @@ manim-slides --version
 
 - **Render a specific scene**
   ```bash
-  manim-slides render slides/00_inertial_frame.py InertialFrameSlide
+  uv run manim-slides render slides/00_inertial_frame.py InertialFrameSlide
   ```
 - **Preview a specific scene**
   ```bash
-  manim-slides preview slides/00_inertial_frame.py InertialFrameSlide
+  uv run manim-slides preview slides/00_inertial_frame.py InertialFrameSlide
   ```
 - **Render the whole presentation**
   ```bash
-  manim-slides render slides.toml
+  uv run manim-slides render slides.toml
   ```
 
 ### Render all slides
 ```bash
-manim-slides render slides.toml
+uv run manim-slides render slides.toml
 ```
 
 ### Present the slides
 ```bash
-manim-slides present slides.toml
+uv run manim-slides present slides.toml
 ```
 
 ### Render a specific slide
 ```bash
-manim-slides render slides/00_inertial_frame.py InertialFrameSlide
+uv run manim-slides render slides/00_inertial_frame.py InertialFrameSlide
 ```
 
 ### Preview a slide
 ```bash
-manim-slides preview slides/00_inertial_frame.py InertialFrameSlide
+uv run manim-slides preview slides/00_inertial_frame.py InertialFrameSlide
 ```
 
 ## Slide Organization

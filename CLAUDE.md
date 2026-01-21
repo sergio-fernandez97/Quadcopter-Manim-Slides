@@ -10,20 +10,20 @@ Animated presentation for a dissertation on Quadcopter Control using Deep Reinfo
 
 ```bash
 # Install dependencies (requires FFmpeg: brew install ffmpeg)
-pip install -r requirements.txt
+uv sync
 
 # Render all slides
-python main.py render
+uv run python main.py render
 
 # Launch interactive presentation
-python main.py present
+uv run python main.py present
 
 # Generate HTML output (Reveal.js)
-python main.py html
+uv run python main.py html
 
 # Render/preview a single slide
-manim-slides render slides/00_inertial_frame.py InertialFrameSlide
-manim-slides preview slides/00_inertial_frame.py InertialFrameSlide
+uv run manim-slides render slides/00_inertial_frame.py InertialFrameSlide
+uv run manim-slides preview slides/00_inertial_frame.py InertialFrameSlide
 ```
 
 ## Architecture
