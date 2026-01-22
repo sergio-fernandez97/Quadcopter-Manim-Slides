@@ -84,10 +84,23 @@ class AgentEnvironmentSlide(Slide):
         )
         actuator_icon.next_to(a_t_label, RIGHT, buff=0.1)
         
+        # Legend with definitions
+        legend_agent = VGroup(
+            Rectangle(width=0.4, height=0.3, color=BLUE, fill_opacity=0.2, stroke_width=2),
+            Text("Agente: toma decisiones y aprende", font_size=16, color=BLUE)
+        ).arrange(RIGHT, buff=0.15)
+        legend_env = VGroup(
+            Rectangle(width=0.4, height=0.3, color=GREEN, fill_opacity=0.2, stroke_width=2),
+            Text("Entorno: responde a las acciones", font_size=16, color=GREEN)
+        ).arrange(RIGHT, buff=0.15)
+        legend = VGroup(legend_agent, legend_env).arrange(DOWN, buff=0.2, aligned_edge=LEFT)
+        legend.to_corner(DL, buff=0.5)
+
         # Draw the loop in Sutton style
         self.play(
             FadeIn(agent_box), FadeIn(agent_label),
             FadeIn(env_box), FadeIn(env_label),
+            FadeIn(legend),
             run_time=1.5
         )
         self.wait(0.5)
