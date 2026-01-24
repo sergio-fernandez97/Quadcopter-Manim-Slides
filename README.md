@@ -117,6 +117,11 @@ uv run manim-slides render slides/00_inertial_frame.py InertialFrameSlide
 uv run manim-slides preview slides/00_inertial_frame.py InertialFrameSlide
 ```
 
+### Convert to HTML
+```bash
+manim-slides convert SCENE scene.html -ccontrols=true
+```
+
 ## Slide Organization
 
 The slides are organized in a logical flow:

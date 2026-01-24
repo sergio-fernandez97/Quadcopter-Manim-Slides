@@ -61,5 +61,13 @@ class TopicSlide(Slide):
 - **Composition**: Use `VGroup` for related mobjects
 - **Key concepts**: Use `BulletedList` from Manim to present key concepts or bullet points on slides
 - **Slide style**: Aim for slides that resemble Beamer presentations—more static, with animations used sparingly for emphasis rather than constant motion. Prioritize clarity and readability over complex animations.
+- **Transitions**: Every scene must use `self.next_slide()` to create transition points between logical sections. These pauses allow the speaker to explain each element before proceeding. Place `next_slide()` after revealing new content (equations, diagrams, bullet points) that requires explanation.
+- **Boxed content**: Wrap definitions, theorems, and bulleted lists (not simple labels) inside a rounded gray rectangle with high transparency. Example:
+  ```python
+  box = RoundedRectangle(corner_radius=0.2, width=10, height=2, color=GRAY, fill_opacity=0.15, stroke_width=1)
+  content = BulletedList("Item 1", "Item 2", font_size=24)
+  VGroup(box, content).arrange(ORIGIN)
+  ```
+- **Concise text**: Minimize words in theorems and definitions. You may rephrase user-provided content for brevity while preserving meaning.
 - When adding slides: create file in `slides/`, add scene path to `slides.toml`
 - Keep generated media (`media/`) out of commits; only commit source files under `slides/`
