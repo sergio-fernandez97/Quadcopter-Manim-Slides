@@ -20,7 +20,8 @@ class QuadcopterMotionSlide(Slide):
         title = Text("Ecuaciones de movimiento de un cuadricoptero", font_size=48, color=WHITE)
         title.to_edge(UP)
         self.add(title)
-        
+        self.next_slide()
+
         # Color definitions
         linear_velocity_color = YELLOW
         angular_velocity_color = BLUE
@@ -94,7 +95,8 @@ class QuadcopterMotionSlide(Slide):
             run_time=3
         )
         self.wait(2)
-        
+        self.next_slide()
+
         # Fade out the titles
         self.play(
             FadeOut(local_title),
@@ -170,7 +172,7 @@ class QuadcopterMotionSlide(Slide):
             font_size=32
         )
         merged_lhs_vector.move_to(ORIGIN)
-        
+
         # Transform all LHS into the merged vector
         self.play(
             Transform(local_linear, merged_lhs_vector),
@@ -180,6 +182,7 @@ class QuadcopterMotionSlide(Slide):
             run_time=2
         )
         self.wait(1)
+        self.next_slide()
 
         # Keep a single merged vector on screen to avoid duplicates.
         self.remove(local_angular, inertial_linear, inertial_angular)
@@ -244,7 +247,8 @@ class QuadcopterMotionSlide(Slide):
             run_time=1.5
         )
         self.wait(1)
-        
+        self.next_slide()
+
         # Transform state_vector into \boldsymbol{x}
         bold_x = MathTex(
             r"\boldsymbol{x}",
@@ -286,7 +290,8 @@ class QuadcopterMotionSlide(Slide):
             run_time=1.5
         )
         self.wait(1)
-        
+        self.next_slide()
+
         # Transform control_vector into \boldsymbol{u}
         bold_u = MathTex(
             r"\boldsymbol{u}",
@@ -347,7 +352,8 @@ class QuadcopterMotionSlide(Slide):
         
         self.play(FadeIn(control_definition), run_time=1)
         self.wait(0.5)
-        
+        self.next_slide()
+
         # Merge into final equation - transform the dot_x into the full equation
         # and fade out the state and control vectors
         self.play(
@@ -369,9 +375,10 @@ class QuadcopterMotionSlide(Slide):
         
         self.play(Write(description))
         self.wait(2)
+        self.next_slide()
         self.play(FadeOut(description))
         self.wait(0.5)
-        
+
         # Expand as linear system
         linear_eq = MathTex(
             r"\dot{\boldsymbol{x}} = \mathbf{A}\boldsymbol{x} + \mathbf{B}\boldsymbol{u}",
@@ -395,28 +402,43 @@ class QuadcopterMotionSlide(Slide):
             run_time=1.5
         )
         self.wait(1)
+        self.next_slide()
         self.play(FadeOut(linear_label_group))
         self.wait(0.5)
-        
-        # Mention advantages
+
+        # Mention advantages with BulletedList and boxed content
         advantages_title = Text("Ventajas de estudiar sistemas lineales:", font_size=24, color=WHITE)
-        advantages_title.shift(DOWN * 1.5)
-        
-        advantages = VGroup(
-            Text("• Linealidad", font_size=20, color=WHITE),
-            Text("• Estabilidad", font_size=20, color=WHITE),
-            Text("• Controlabilidad", font_size=20, color=WHITE)
+        advantages_title.shift(DOWN * 1.2)
+
+        advantages = BulletedList(
+            "Linealidad",
+            "Estabilidad",
+            "Controlabilidad",
+            font_size=22
         )
-        advantages.arrange(DOWN, aligned_edge=LEFT, buff=0.3)
         advantages.next_to(advantages_title, DOWN, buff=0.3)
-        
-        self.play(Write(advantages_title))
+
+        # Create box for the content
+        advantages_content = VGroup(advantages_title, advantages)
+        box = RoundedRectangle(
+            corner_radius=0.2,
+            width=advantages_content.width + 0.8,
+            height=advantages_content.height + 0.6,
+            color=GRAY,
+            fill_opacity=0.15,
+            stroke_width=1
+        )
+        box.move_to(advantages_content.get_center())
+
+        self.play(FadeIn(box), Write(advantages_title))
         self.wait(0.5)
         self.play(Write(advantages), run_time=1.5)
         self.wait(2)
-        
+        self.next_slide()
+
         # Fade out advantages
         self.play(
+            FadeOut(box),
             FadeOut(advantages_title),
             FadeOut(advantages)
         )
@@ -434,7 +456,8 @@ class QuadcopterMotionSlide(Slide):
             run_time=1.5
         )
         self.wait(1)
-        
+        self.next_slide()
+
         # Extract right-hand side
         rhs_extracted = MathTex(
             r"\mathbf{f}(\boldsymbol{x}(t), \boldsymbol{u}(t))",
@@ -475,6 +498,7 @@ class QuadcopterMotionSlide(Slide):
             run_time=1.5
         )
         self.wait(1)
+        self.next_slide()
         self.play(FadeOut(linearization_text))
         self.wait(1.0)
         
@@ -516,7 +540,8 @@ class QuadcopterMotionSlide(Slide):
         
         self.play(Write(definitions), run_time=1.5)
         self.wait(1.5)
-        
+        self.next_slide()
+
         # Replace f(x*, u*) with 0
         linearization_eq_step2 = MathTex(
             r"\mathbf{f}(\mathbf{x}^{*} + \overline{\mathbf{x}}, \mathbf{u}^{*} + \overline{\mathbf{u}}) \approx ",
@@ -553,7 +578,8 @@ class QuadcopterMotionSlide(Slide):
         
         self.play(Transform(state_space_eq, linearization_with_dot), run_time=1.5)
         self.wait(1.5)
-        
+        self.next_slide()
+
         # Transform gradients to A and B
         linearization_ab = MathTex(
             r"\dot{\mathbf{x}} \approx ",
@@ -589,3 +615,4 @@ class QuadcopterMotionSlide(Slide):
             run_time=1.5
         )
         self.wait(3)
+        self.next_slide()

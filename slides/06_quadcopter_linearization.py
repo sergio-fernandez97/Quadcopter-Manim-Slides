@@ -28,7 +28,8 @@ class QuadcopterLinearizationSlide(Slide):
         )
         title.to_edge(UP)
         self.add(title)
-        
+        self.next_slide()
+
         fixed_point_state = MathTex(
             r"\mathbf{x}^{*} = \mathbf{0}",
             font_size=32
@@ -45,7 +46,8 @@ class QuadcopterLinearizationSlide(Slide):
         
         self.play(Write(fixed_point_state), Write(fixed_point_text), run_time=1.5)
         self.wait(1.5)
-        
+        self.next_slide()
+
         fixed_point_f = MathTex(
             r"\mathbf{f}(\mathbf{x}^{*}, \mathbf{u}^{*})",
             font_size=32
@@ -66,6 +68,7 @@ class QuadcopterLinearizationSlide(Slide):
         self.play(Transform(fixed_point_f, u_star_eq_target), run_time=1.5)
         u_star_eq = fixed_point_f
         self.wait(3)
+        self.next_slide()
 
         self.play(
             FadeOut(u_star_eq_target),
@@ -136,6 +139,7 @@ class QuadcopterLinearizationSlide(Slide):
         jacobian_general.next_to(jacobians_text, DOWN, buff=0.5)
         jacobian_general.shift(matrix_offset)
         self.play(Write(jacobian_general), run_time=1)
+        self.next_slide()
 
         eval_note = Tex(
             r"Evaluando en el punto fijo",
@@ -178,6 +182,7 @@ class QuadcopterLinearizationSlide(Slide):
 
         self.play(Transform(jacobian_general, jacobian_eval), run_time=1.5)
         self.play(FadeOut(eval_note), run_time=0.6)
+        self.next_slide()
 
         jacobian_x = jacobian_general
         a_symbol = MathTex(r"\mathbf{A}=", font_size=28)
@@ -207,6 +212,7 @@ class QuadcopterLinearizationSlide(Slide):
         )
         jacobian_u.next_to(jacobian_x, RIGHT, buff=0.8)
         self.play(FadeIn(jacobian_u), run_time=1)
+        self.next_slide()
 
         jacobian_u_eval = MathTex(
             r"\mathbf{B} =",
@@ -253,6 +259,7 @@ class QuadcopterLinearizationSlide(Slide):
         controllability_group.next_to(jacobian_u, DOWN, buff=0.5)
         self.play(FadeIn(controllability_legend), run_time=0.8)
         self.play(FadeIn(controllability_eq), run_time=0.8)
+        self.next_slide()
 
         subsystem_legend = Tex(
             r"Sin embargo, si se considera el subsistema asociado a $\mathbf{y}$,",
@@ -315,8 +322,9 @@ class QuadcopterLinearizationSlide(Slide):
             Transform(jacobian_u, b_tilde),
             run_time=1.3
         )
-        self.play(1.0)
-        
+        self.wait(1.0)
+        self.next_slide()
+
         fade_targets = VGroup(
             jacobian_x,
             jacobian_u,
@@ -336,6 +344,7 @@ class QuadcopterLinearizationSlide(Slide):
         controllability_matrix.move_to(ORIGIN)
         self.play(FadeIn(controllability_matrix), run_time=0.9)
         self.wait(1.0)
+        self.next_slide()
 
         controllability_matrix_expanded = MathTex(
             r"R\left(\mathbf{\tilde{B}}, \mathbf{\tilde{A}}\right) =",
@@ -363,6 +372,7 @@ class QuadcopterLinearizationSlide(Slide):
         self.play(FadeOut(controllability_matrix), run_time=0.6)
         self.play(FadeIn(kalman_group), run_time=0.9)
         self.wait(1.0)
+        self.next_slide()
 
         self.play(FadeOut(kalman_group), run_time=0.6)
         system_legend = Tex(
@@ -379,6 +389,7 @@ class QuadcopterLinearizationSlide(Slide):
         system_group.move_to(ORIGIN)
         self.play(FadeIn(system_group), run_time=0.9)
         self.wait(1.0)
+        self.next_slide()
 
         decoupled_legend = Tex(
             r"Al desacoplar las matrices,",
@@ -417,3 +428,4 @@ class QuadcopterLinearizationSlide(Slide):
             Transform(system_eq, decoupled_eq),
             run_time=1.1
         )
+        self.next_slide()

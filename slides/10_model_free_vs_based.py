@@ -23,19 +23,20 @@ class ModelFreeVsModelBasedSlide(Slide):
         title.to_edge(UP, buff=0.5)
         self.play(FadeIn(title))
         self.wait(0.5)
+        self.next_slide()
 
         # === DIAGRAM BOXES (LEFT SIDE) ===
         # Experiencia (top)
         exp_box = Rectangle(width=2.8, height=1.0, color=SHARED, stroke_width=2)
         exp_label = Text("Experiencia", font_size=22, color=WHITE)
         exp_label.move_to(exp_box)
-        experiencia = VGroup(exp_box, exp_label).move_to(LEFT * 3.5 + UP * 1.2)
+        experiencia = VGroup(exp_box, exp_label).move_to(LEFT * 2.5 + UP * 1.2)
 
         # Valor/Política (bottom)
         valor_box = Rectangle(width=2.8, height=1.0, color=SHARED, stroke_width=2)
         valor_label = Text("Valor/Política", font_size=22, color=WHITE)
         valor_label.move_to(valor_box)
-        valor_politica = VGroup(valor_box, valor_label).move_to(LEFT * 3.5 + DOWN * 1.5)
+        valor_politica = VGroup(valor_box, valor_label).move_to(LEFT * 2.5 + DOWN * 1.5)
 
         # Modelo (left, shown later)
         modelo_box = Rectangle(
@@ -43,11 +44,12 @@ class ModelFreeVsModelBasedSlide(Slide):
         )
         modelo_label = Text("Modelo", font_size=22, color=MODEL_BASED, weight=BOLD)
         modelo_label.move_to(modelo_box)
-        modelo = VGroup(modelo_box, modelo_label).move_to(LEFT * 6 + DOWN * 0.2)
+        modelo = VGroup(modelo_box, modelo_label).move_to(LEFT * 5 + DOWN * 0.2)
 
         # Show shared boxes
         self.play(FadeIn(experiencia), FadeIn(valor_politica))
         self.wait(0.5)
+        self.next_slide()
 
         # === MODEL-FREE PATH (GREEN) ===
         # Arrow: Experiencia → Valor/Política
@@ -63,15 +65,15 @@ class ModelFreeVsModelBasedSlide(Slide):
         )
         label_sin_modelos.next_to(arrow_exp_valor, RIGHT, buff=0.15)
 
-        # Curved arrow: Valor/Política → Experiencia (Actuación)
+        # Curved arrow: Valor/Política → Experiencia (Actuación) - on the RIGHT side
         arrow_actuacion = CurvedArrow(
             valor_politica.get_right() + UP * 0.2,
             experiencia.get_right() + DOWN * 0.2,
-            color=MODEL_FREE,
-            angle=-TAU / 4,
+            color=SHARED,
+            angle=TAU / 4,
             stroke_width=3,
         )
-        label_actuacion = Text("Actuación", font_size=16, color=MODEL_FREE)
+        label_actuacion = Text("Actuación", font_size=16, color=WHITE)
         label_actuacion.next_to(arrow_actuacion, RIGHT, buff=0.1)
 
         self.play(
@@ -81,14 +83,18 @@ class ModelFreeVsModelBasedSlide(Slide):
             FadeIn(label_actuacion),
         )
         self.wait(0.5)
+        self.next_slide()
 
         # Model-free text (RIGHT SIDE)
         mf_heading = Text("Model-free RL", font_size=28, color=MODEL_FREE, weight=BOLD)
-        mf_points = VGroup(
-            Text("• Optimiza políticas por experiencia", font_size=18, color=MODEL_FREE),
-            Text("• Estrategia de prueba y error", font_size=18, color=MODEL_FREE),
-            Text("• No usa modelo de la dinámica", font_size=18, color=MODEL_FREE),
-        ).arrange(DOWN, aligned_edge=LEFT, buff=0.12)
+        mf_points = BulletedList(
+            "Optimiza políticas por experiencia",
+            "Estrategia de prueba y error",
+            "No usa modelo de la dinámica",
+            font_size=18,
+            color=MODEL_FREE,
+            buff=0.2,
+        )
 
         mf_group = VGroup(mf_heading, mf_points).arrange(DOWN, aligned_edge=LEFT, buff=0.2)
         mf_group.move_to(RIGHT * 3.5 + UP * 1.5)
@@ -102,31 +108,29 @@ class ModelFreeVsModelBasedSlide(Slide):
         self.play(FadeIn(modelo))
         self.wait(0.3)
 
-        # Dashed curved arrow: Modelo ↔ Experiencia
+        # Curved arrow: Experiencia → Modelo (Aprendizaje basado en modelos)
         arrow_modelo_exp = CurvedArrow(
-            modelo.get_top() + RIGHT * 0.3,
             experiencia.get_left() + DOWN * 0.2,
+            modelo.get_top() + RIGHT * 0.3,
             color=MODEL_BASED,
             angle=TAU / 6,
             stroke_width=2,
         )
-        # Make it dashed
-        arrow_modelo_exp.set_stroke(width=2)
         label_basado = Text(
             "Aprendizaje\nbasado en modelos", font_size=14, color=MODEL_BASED
         )
         label_basado.next_to(arrow_modelo_exp, UP, buff=0.05)
 
-        # Dashed arrow: Modelo → Valor/Política (Planeación)
+        # Arrow: Modelo → Valor/Política (Planeación) - on the right side of Modelo
         arrow_planeacion = CurvedArrow(
             modelo.get_bottom() + RIGHT * 0.3,
             valor_politica.get_left() + UP * 0.2,
             color=MODEL_BASED,
-            angle=-TAU / 6,
+            angle=TAU / 6,
             stroke_width=2,
         )
         label_planeacion = Text("Planeación", font_size=14, color=MODEL_BASED)
-        label_planeacion.next_to(arrow_planeacion, DOWN, buff=0.05)
+        label_planeacion.next_to(arrow_planeacion, LEFT, buff=0.05)
 
         self.play(
             Create(arrow_modelo_exp),
@@ -135,20 +139,20 @@ class ModelFreeVsModelBasedSlide(Slide):
             FadeIn(label_planeacion),
         )
         self.wait(0.5)
+        self.next_slide()
 
         # Model-based text (RIGHT SIDE, below model-free)
         mb_heading = Text(
             "Model-based RL", font_size=28, color=MODEL_BASED, weight=BOLD
         )
-        mb_points = VGroup(
-            Text(
-                "• Usa modelo aprendido o conocido", font_size=18, color=MODEL_BASED
-            ),
-            Text("• Aproxima valor/política global", font_size=18, color=MODEL_BASED),
-            Text(
-                "• Combina planificación y aprendizaje", font_size=18, color=MODEL_BASED
-            ),
-        ).arrange(DOWN, aligned_edge=LEFT, buff=0.12)
+        mb_points = BulletedList(
+            "Usa modelo aprendido o conocido",
+            "Aproxima valor/política global",
+            "Combina planificación y aprendizaje",
+            font_size=18,
+            color=MODEL_BASED,
+            buff=0.2,
+        )
 
         mb_group = VGroup(mb_heading, mb_points).arrange(DOWN, aligned_edge=LEFT, buff=0.2)
         mb_group.move_to(RIGHT * 3.5 + DOWN * 1.2)

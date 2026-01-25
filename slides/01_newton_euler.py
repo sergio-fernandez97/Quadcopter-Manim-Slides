@@ -20,7 +20,8 @@ class NewtonEulerSlide(Slide):
         title = Text("Dinámica de traslación y rotación local", font_size=48, color=WHITE)
         title.to_edge(UP)
         self.add(title)
-        
+        self.next_slide()
+
         # Opening statement about Euler equations of motion
         opening_statement = Text(
             "Las ecuaciones de movimiento del sistema local derivan de las ecuaciones de Newton-Euler.",
@@ -30,9 +31,10 @@ class NewtonEulerSlide(Slide):
         opening_statement.shift(UP * 2)
         self.play(Write(opening_statement))
         self.wait(2)
+        self.next_slide()
         self.play(FadeOut(opening_statement))
         self.wait(0.5)
-        
+
         # Newton's second law statement and initial equation (upper part)
         newton_statement = Text(
             "Segunda ley de Newton: La fuerza neta es igual a la masa por la aceleración",
@@ -51,7 +53,8 @@ class NewtonEulerSlide(Slide):
         self.wait(1)
         self.play(Write(newton_eq_initial))
         self.wait(1)
-        
+        self.next_slide()
+
         # Euler's equation statement and initial equation (lower part)
         euler_statement = Text(
             "Ecuación de Euler: El torque es igual al momento de inercia por la aceleración angular",
@@ -70,7 +73,8 @@ class NewtonEulerSlide(Slide):
         self.wait(1)
         self.play(Write(euler_eq_initial))
         self.wait(2)
-        
+        self.next_slide()
+
         # Fade out statements
         self.play(
             FadeOut(newton_statement),
@@ -98,7 +102,8 @@ class NewtonEulerSlide(Slide):
             run_time=2
         )
         self.wait(1)
-        
+        self.next_slide()
+
         # Update references
         newton_eq = newton_eq_initial
         euler_eq = euler_eq_initial
@@ -123,6 +128,7 @@ class NewtonEulerSlide(Slide):
         
         self.play(Transform(newton_eq, translation_expanded), run_time=1.5)
         self.wait(2)
+        self.next_slide()
 
         upsilon_eq = MathTex(
             r"\dot{\boldsymbol{\upsilon}}"
@@ -167,6 +173,7 @@ class NewtonEulerSlide(Slide):
             run_time=2
         )
         self.wait(1)
+        self.next_slide()
 
         linear_velocities_expanded = MathTex(
             r"\dot u &= rv - qw - g \sin\theta \\",
@@ -180,13 +187,14 @@ class NewtonEulerSlide(Slide):
         linear_velocities_expanded.set_color_by_tex(r"\dot w", linear_velocity_color)
 
         self.play(Transform(
-            newton_eq, 
+            newton_eq,
             linear_velocities_expanded
-            ), 
+            ),
             run_time=1.5)
 
         self.wait(2)
-        
+        self.next_slide()
+
         # THEN: Transform Euler's equation to angular velocities
         explanation_angular = Text(
             "Despejando la aceleración angular de la ecuación de Euler",
@@ -218,7 +226,8 @@ class NewtonEulerSlide(Slide):
         
         self.play(Transform(euler_eq, rotation_expanded), run_time=1.5)
         self.wait(1)
-        
+        self.next_slide()
+
         # Transform to angular velocities
         angular_velocities = MathTex(
             r"\dot p &= \frac{1}{I_{xx}}\tau_{\varphi} - qr \left(\frac{I_{zz} - I_{yy}}{I_{xx}}\right) \\",
@@ -242,6 +251,7 @@ class NewtonEulerSlide(Slide):
             run_time=2
         )
         self.wait(1)
+        self.next_slide()
 
         angular_velocities_expanded = MathTex(
             r"\dot p &= \frac{\ell k}{I_{xx}}\left(\omega_4^2 - \omega_2^2\right) - qr \left(\frac{I_{zz} - I_{yy}}{I_{xx}}\right) \\",
@@ -255,10 +265,11 @@ class NewtonEulerSlide(Slide):
         angular_velocities_expanded.set_color_by_tex(r"\dot r", angular_velocity_color)
 
         self.play(Transform(
-            euler_eq, 
+            euler_eq,
             angular_velocities_expanded
-            ), 
+            ),
             run_time=1.5)
 
         self.wait(3)
+        self.next_slide()
 

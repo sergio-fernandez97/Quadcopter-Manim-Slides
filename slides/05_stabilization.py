@@ -20,7 +20,8 @@ class StabilizationSlide(Slide):
         title = Text("Estabilización de sistemas lineales de control", font_size=40, color=WHITE)
         title.to_edge(UP)
         self.add(title)
-        
+        self.next_slide()
+
         # Opening statement - simplified
         opening_text = Text(
             "Estrategias de control para sistemas lineales",
@@ -31,16 +32,30 @@ class StabilizationSlide(Slide):
         
         self.play(Write(opening_text))
         self.wait(1.5)
+        self.next_slide()
         self.play(FadeOut(opening_text))
         self.wait(0.5)
-        
+
         # Definition label
         definition_label = Text("Definición:", font_size=32, color=YELLOW)
         definition_label.shift(UP * 2.5)
         
         self.play(Write(definition_label))
         self.wait(0.5)
-        
+
+        # Create box for definition
+        definition_box = RoundedRectangle(
+            corner_radius=0.2,
+            width=12,
+            height=4.5,
+            color=GRAY,
+            fill_opacity=0.15,
+            stroke_width=1
+        )
+        definition_box.shift(DOWN * 0.2)
+
+        self.play(FadeIn(definition_box))
+
         # Definition text - Problem of stabilization - simplified
         def_part1 = MathTex(
             r"\textbf{Problema de estabilización:}",
@@ -53,30 +68,33 @@ class StabilizationSlide(Slide):
         )
         def_part1.shift(UP * 1.8)
         def_part1[0].set_color(YELLOW)
-        
+
         self.play(Write(def_part1), run_time=2.5)
         self.wait(1.5)
-        
+        self.next_slide()
+
         # Closed-loop equation
         closed_loop_eq = MathTex(
             r"\dot{\mathbf{x}} = (\mathbf{A} + \mathbf{BK})\mathbf{x}(t),",
             font_size=32
         )
         closed_loop_eq.shift(DOWN * 0.2)
-        
+
         self.play(Write(closed_loop_eq), run_time=1.5)
         self.wait(1)
-        
+        self.next_slide()
+
         # State feedback equation
         state_feedback_eq = MathTex(
             r"\mu(\mathbf{x}) = \mathbf{K}\mathbf{x}.",
             font_size=32
         )
         state_feedback_eq.shift(DOWN * 0.9)
-        
+
         self.play(Write(state_feedback_eq), run_time=1.5)
         self.wait(1)
-        
+        self.next_slide()
+
         def_part4 = MathTex(
             r"\mu(\mathbf{x}) = \mathbf{K}\mathbf{x}",
             r"\text{ es la }",
@@ -85,16 +103,16 @@ class StabilizationSlide(Slide):
         )
         def_part4.shift(DOWN * 1.7)
         def_part4[2].set_color(YELLOW)
-        
+
         self.play(Write(def_part4), run_time=2)
         self.wait(1.5)
-        
+        self.next_slide()
+
         # Fade out definition
         self.play(
             FadeOut(definition_label),
+            FadeOut(definition_box),
             FadeOut(def_part1),
-            FadeOut(def_part2),
-            FadeOut(def_part3),
             FadeOut(def_part4),
             run_time=1
         )
@@ -139,7 +157,8 @@ class StabilizationSlide(Slide):
         
         self.play(Write(stability_condition), run_time=2)
         self.wait(1.5)
-        
+        self.next_slide()
+
         # Fade out and show theorem
         self.play(
             FadeOut(matrix_abk),
@@ -156,10 +175,21 @@ class StabilizationSlide(Slide):
         # Pole assignment theorem - simplified
         theorem_label = Text("Teorema de asignación de polos:", font_size=32, color=YELLOW)
         theorem_label.shift(UP * 2.5)
-        
-        self.play(Write(theorem_label))
+
+        # Create box for theorem
+        theorem_box = RoundedRectangle(
+            corner_radius=0.2,
+            width=11,
+            height=3,
+            color=GRAY,
+            fill_opacity=0.15,
+            stroke_width=1
+        )
+        theorem_box.shift(UP * 0.8)
+
+        self.play(Write(theorem_label), FadeIn(theorem_box))
         self.wait(0.5)
-        
+
         theorem_text = MathTex(
             r"\text{Los polos pueden asignarse arbitrariamente }",
             r"\Leftrightarrow",
@@ -167,10 +197,11 @@ class StabilizationSlide(Slide):
             font_size=28
         )
         theorem_text.shift(UP * 1.5)
-        
+
         self.play(Write(theorem_text), run_time=2.5)
         self.wait(1.5)
-        
+        self.next_slide()
+
         # Implications - simplified
         implications_text = Text(
             "Relaciona controlabilidad y estabilidad",
@@ -178,8 +209,9 @@ class StabilizationSlide(Slide):
             color=WHITE
         )
         implications_text.shift(DOWN * 0.5)
-        
+
         self.play(Write(implications_text), run_time=1.5)
         self.wait(3)
-        
+        self.next_slide()
+
         self.wait(3)

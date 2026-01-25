@@ -20,7 +20,8 @@ class InertialDynamicsSlide(Slide):
         title = Text("Dinámica de traslación y rotación inercial", font_size=48, color=WHITE)
         title.to_edge(UP)
         self.add(title)
-        
+        self.next_slide()
+
         # Opening statement
         opening_statement = Text(
             "Las ecuaciones de movimiento del sistema inerciales\nrelacionan velocidades locales con coordenadas inerciales.",
@@ -30,9 +31,10 @@ class InertialDynamicsSlide(Slide):
         opening_statement.shift(UP * 2)
         self.play(Write(opening_statement))
         self.wait(2)
+        self.next_slide()
         self.play(FadeOut(opening_statement))
         self.wait(0.5)
-        
+
         # Translation dynamics statement and initial equation (upper part)
         translation_statement = Text(
             "Dinámica de traslación: Relación entre coordenadas inerciales y velocidades locales",
@@ -51,7 +53,8 @@ class InertialDynamicsSlide(Slide):
         self.wait(1)
         self.play(Write(translation_eq_initial))
         self.wait(1)
-        
+        self.next_slide()
+
         # Rotation dynamics statement and initial equation (lower part)
         rotation_statement = Text(
             "Dinámica de rotación: La velocidad angular inercial se relaciona con la angular local\n mediante una transformación.",
@@ -70,7 +73,8 @@ class InertialDynamicsSlide(Slide):
         self.wait(1)
         self.play(Write(rotation_eq_initial))
         self.wait(2)
-        
+        self.next_slide()
+
         # Fade out statements
         self.play(
             FadeOut(translation_statement),
@@ -115,7 +119,8 @@ class InertialDynamicsSlide(Slide):
             run_time=1
         )
         self.wait(2.0)
-        
+        self.next_slide()
+
         # Expand the rotation equation to show the full form with matrix
         rotation_expanded = MathTex(
             r"\begin{bmatrix} \dot{\varphi} \\ \dot{\theta} \\ \dot{\psi} \end{bmatrix} = "
@@ -151,13 +156,14 @@ class InertialDynamicsSlide(Slide):
             run_time=1.5
         )
         self.wait(1.5)
+        self.next_slide()
         self.play(
             FadeOut(matrix_brace),
             FadeOut(matrix_label_expanded),
             run_time=1
         )
         self.wait(0.5)
-        
+
         # Expand rotation equation to show explicit Euler angle rates
         rotation_final = MathTex(
             r"\dot{\varphi} &= p + (q \sin\varphi + r \cos\varphi) \tan\theta \\",
@@ -173,7 +179,8 @@ class InertialDynamicsSlide(Slide):
         
         self.play(Transform(rotation_eq, rotation_final), run_time=2)
         self.wait(2)
-        
+        self.next_slide()
+
         # Expand translation equation
         translation_expanded = MathTex(
             r"\begin{bmatrix} \dot{x} \\ \dot{y} \\ \dot{z} \end{bmatrix} = "
@@ -201,6 +208,7 @@ class InertialDynamicsSlide(Slide):
         
         self.play(Transform(translation_eq, translation_equations), run_time=1.5)
         self.wait(2)
-        
+        self.next_slide()
+
         self.wait(3)
 
