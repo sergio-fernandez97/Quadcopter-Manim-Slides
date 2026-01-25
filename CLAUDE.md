@@ -23,8 +23,18 @@ uv run python main.py html
 
 # Render/preview a single slide
 uv run manim-slides render slides/00_inertial_frame.py InertialFrameSlide
-uv run manim-slides preview slides/00_inertial_frame.py InertialFrameSlide
+uv run manim-slides present InertialFrameSlide
+
+# Convert a scene to HTML
+uv run manim-slides convert SCENE scene.html -ccontrols=true
 ```
+
+## Presentation Controls
+
+- **Space/Right Arrow**: Next slide
+- **Left Arrow**: Previous slide
+- **Q**: Quit presentation
+- **R**: Restart presentation
 
 ## Architecture
 
