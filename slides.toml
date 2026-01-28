@@ -14,6 +14,10 @@ slides = [
     "slides.08_mdp.StateDiagramAnimation",
     "slides.09_q_learning.QLearningSlide",
     "slides.10_model_free_vs_based.ModelFreeVsModelBasedSlide",
+    "slides.11_policy_value.EpisodeReturnSlide",
+    "slides.11_policy_value.PolicyValueSlide",
+    "slides.12_continuous_policy.ContinuousPolicySlide",
+    "slides.13_ilqr.ILQRSlide",
 ]
 
 [presentation]

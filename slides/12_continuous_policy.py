@@ -89,8 +89,8 @@ class ContinuousPolicySlide(Slide):
         self.next_slide()
 
         # === QUADCOPTER CONTEXT ===
-        quad_note = Text(
-            "Para el cuadricóptero: n = 12 (estado), m = 4 (rotores)",
+        quad_note = MathTex(
+            "\text{Para el cuadricóptero: }n = 12\text{ (estado), }m = 4\text{ (rotores)}",
             font_size=22,
             color=YELLOW,
         )
@@ -171,7 +171,11 @@ class ContinuousPolicySlide(Slide):
         )
         mu_eq.next_to(nn_label, DOWN, buff=0.3)
 
-        self.play(FadeIn(nn_label), FadeIn(mu_eq))
+        self.play(
+            FadeOut(title),
+            FadeIn(nn_label), 
+            FadeIn(mu_eq)
+            )
         self.wait(0.5)
         self.next_slide()
 
