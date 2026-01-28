@@ -119,7 +119,7 @@ uv run manim-slides preview slides/00_inertial_frame.py InertialFrameSlide
 
 ### Convert to HTML
 ```bash
-manim-slides convert SCENE scene.html -ccontrols=true
+uv run manim-slides convert SCENE scene.html -ccontrols=true
 ```
 
 ## Slide Organization
