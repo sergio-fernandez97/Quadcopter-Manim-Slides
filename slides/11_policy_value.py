@@ -488,6 +488,29 @@ class PolicyValueSlide(Slide):
         self.wait(0.5)
         self.next_slide()
 
+        # Descriptive label for value functions
+        value_desc = Text(
+            "La función de valor mide qué tan bueno es un estado o una acción\n en términos de recompensa futura esperada.",
+            font_size=24,
+            color=GRAY_B,
+            line_spacing=1.2,
+        )
+        value_desc.move_to(DOWN * 0.3)
+
+        value_desc_box = RoundedRectangle(
+            corner_radius=0.2,
+            width=value_desc.width + 0.8,
+            height=value_desc.height + 0.5,
+            color=GRAY,
+            fill_opacity=0.15,
+            stroke_width=1,
+        )
+        value_desc_box.move_to(value_desc)
+
+        self.play(FadeIn(value_desc_box), FadeIn(value_desc))
+        self.wait(0.5)
+        self.next_slide()
+
         # Relationship equation with underbraces
         relation_eq = MathTex(
             r"\underbrace{\mathbb{E}_{\pi}[G_t|X_t=x]}_{V_{\pi}(x)}",
@@ -496,7 +519,7 @@ class PolicyValueSlide(Slide):
             r"\underbrace{\mathbb{E}_{\pi}[G_t|X_t=x, U_t=u]}_{Q_{\pi}(x,u)}",
             font_size=28,
         )
-        relation_eq.move_to(DOWN * 1.2)
+        relation_eq.move_to(DOWN * 2.0)
 
         self.play(FadeIn(relation_eq))
         self.wait(0.5)
@@ -526,13 +549,135 @@ class PolicyValueSlide(Slide):
         self.wait(0.5)
         self.next_slide()
 
-        # Clear value functions section
+        # Clear description and relation, keep v_complete and q_complete
         self.play(
-            FadeOut(v_complete),
-            FadeOut(q_complete),
+            FadeOut(value_desc_box),
+            FadeOut(value_desc),
             FadeOut(relation_eq),
             FadeOut(simple_box),
         )
+        self.wait(0.3)
+
+        # === BELLMAN EQUATION DERIVATION ===
+        # Change title to "Ecuación de Bellman"
+        bellman_title = Text("Ecuación de Bellman", font_size=42, color=YELLOW)
+        bellman_title.to_edge(UP, buff=0.5)
+
+        self.play(Transform(title, bellman_title))
+        self.wait(0.3)
+        self.next_slide()
+
+        # Move v_complete to center-left and make room for derivation
+        v_new_pos = LEFT * 3.5 + UP * 2.2
+        q_new_pos = RIGHT * 3.5 + UP * 2.2
+
+        self.play(
+            v_complete.animate.move_to(v_new_pos).scale(0.85),
+            q_complete.animate.move_to(q_new_pos).scale(0.85),
+        )
+        self.wait(0.3)
+
+        # === V_π BELLMAN DERIVATION ===
+        # Step 1: V_π(x) = E_π[R_{t+1}|X_t=x] + γE_π[G_{t+1}|X_t=x]
+        v_step1 = MathTex(
+            r"V_{\pi}(x) = \mathbb{E}_{\pi}[R_{t+1}|X_t=x] + \gamma\mathbb{E}_{\pi}[G_{t+1}|X_t=x]",
+            font_size=26,
+        )
+        v_step1.move_to(UP * 0.5)
+
+        self.play(TransformMatchingShapes(v_eq.copy(), v_step1))
+        self.wait(0.5)
+        self.next_slide()
+
+        # Step 2: Expand with policy and transition
+        v_step2 = MathTex(
+            r"= \sum_{u}\pi(u|x) \mathbb{E}_{\pi}[R_{t+1}|X_t=x, U_t=u] + \gamma \sum_{u}\pi(u|x)\sum_{x'}p(x'|x, u)",
+            r"V_{\pi}(x')",
+            font_size=24,
+        )
+        v_step2[1].set_color(YELLOW)
+        v_step2.move_to(UP * 0.5)
+
+        self.play(Transform(v_step1, v_step2))
+        self.wait(0.5)
+        self.next_slide()
+
+        # Step 3: Final Bellman equation for V
+        v_bellman = MathTex(
+            r"V_{\pi}(x) = \sum_{u}\pi(u|x)\left[r(x,u) + \gamma \sum_{x'}p(x'|x,u)",
+            r"V_{\pi}(x')",
+            r"\right]",
+            font_size=28,
+        )
+        v_bellman[1].set_color(YELLOW)
+        v_bellman.move_to(UP * 0.5)
+
+        v_bellman_box = RoundedRectangle(
+            corner_radius=0.2,
+            width=v_bellman.width + 0.6,
+            height=v_bellman.height + 0.4,
+            color=GREEN,
+            fill_opacity=0.1,
+            stroke_width=2,
+        )
+        v_bellman_box.move_to(v_bellman)
+
+        self.play(Transform(v_step1, v_bellman), FadeIn(v_bellman_box))
+        self.wait(0.5)
+        self.next_slide()
+
+        # === Q_π BELLMAN DERIVATION ===
+        # Step 1: Q_π(x,u) = r(x,u) + γ Σ_{x'} p(x'|x,u) V_π(x')
+        q_step1 = MathTex(
+            r"Q_{\pi}(x, u) = r(x,u) + \gamma \sum_{x'}p(x'|x,u)",
+            r"V_{\pi}(x')",
+            font_size=28,
+        )
+        q_step1[1].set_color(YELLOW)
+        q_step1.move_to(DOWN * 1.0)
+
+        self.play(TransformMatchingShapes(q_eq.copy(), q_step1))
+        self.wait(0.5)
+        self.next_slide()
+
+        # Step 2: Final Bellman equation for Q
+        q_bellman = MathTex(
+            r"Q_{\pi}(x, u) = r(x,u) + \gamma \sum_{x'}p(x'|x,u)\sum_{u'}\pi(u'|x')",
+            r"Q_{\pi}(x', u')",
+            font_size=26,
+        )
+        q_bellman[1].set_color(YELLOW)
+        q_bellman.move_to(DOWN * 1.0)
+
+        q_bellman_box = RoundedRectangle(
+            corner_radius=0.2,
+            width=q_bellman.width + 0.6,
+            height=q_bellman.height + 0.4,
+            color=ORANGE,
+            fill_opacity=0.1,
+            stroke_width=2,
+        )
+        q_bellman_box.move_to(q_bellman)
+
+        self.play(Transform(q_step1, q_bellman), FadeIn(q_bellman_box))
+        self.wait(0.5)
+        self.next_slide()
+
+        # Clear Bellman section
+        self.play(
+            FadeOut(v_complete),
+            FadeOut(q_complete),
+            FadeOut(v_step1),
+            FadeOut(v_bellman_box),
+            FadeOut(q_step1),
+            FadeOut(q_bellman_box),
+        )
+        self.wait(0.3)
+
+        # Restore title for next section
+        original_title = Text("Política y funciones de valor", font_size=42, color=YELLOW)
+        original_title.to_edge(UP, buff=0.5)
+        self.play(Transform(title, original_title))
         self.wait(0.3)
 
         # === PARTIAL ORDERING PRINCIPLE ===

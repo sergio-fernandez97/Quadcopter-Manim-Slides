@@ -1,11 +1,12 @@
 from manim import *
+from manim_slides import Slide
 
-class StateDiagramAnimation(Scene):
+class MdpSlide(Slide):
     def construct(self):
         title = Text("Proceso de Decisión de Markov (MDP)", font_size=44)
         title.to_edge(UP, buff=0.5)
         self.play(FadeIn(title))
-        self.wait(1.0)
+        self.next_slide()
 
         intro_equation = MathTex(
             r"x_0 \in \mathcal{X}, \quad u_0 \in \mathcal{U}(x_0)",
@@ -34,14 +35,14 @@ class StateDiagramAnimation(Scene):
             buff=0.05,
         )
         self.play(GrowArrow(u_arrow), FadeIn(u_label))
+        self.next_slide()
         self.play(FadeOut(x_label), FadeOut(x_arrow), FadeOut(u_label), FadeOut(u_arrow))
-        self.wait(0.4)
 
         transition_eq = MathTex(r"p(x_1 \mid u_0, x_0)", font_size=36)
         transition_label = Text("probabilidad de transición a x_1", font_size=24)
         transition_group = VGroup(transition_eq, transition_label).arrange(DOWN, buff=0.2).move_to(ORIGIN)
         self.play(Transform(intro_group, transition_group))
-        self.wait(0.5)
+        self.next_slide()
 
         sequence_eq = MathTex(
             r"x_1, u_1 \rightarrow p(x_2 \mid u_1, x_1) \rightarrow x_2",
@@ -50,7 +51,7 @@ class StateDiagramAnimation(Scene):
         sequence_label = Text("y así sucesivamente...", font_size=24)
         sequence_group = VGroup(sequence_eq, sequence_label).arrange(DOWN, buff=0.2).move_to(ORIGIN)
         self.play(Transform(intro_group, sequence_group))
-        self.wait(0.6)
+        self.next_slide()
 
         trajectory_eq = MathTex(
             r"x_0 \xrightarrow{u_0} x_1 \xrightarrow{u_1} x_2 \xrightarrow{u_2} \cdots "
@@ -60,7 +61,7 @@ class StateDiagramAnimation(Scene):
         trajectory_label = Text("sucesión de estados y acciones", font_size=24)
         trajectory_group = VGroup(trajectory_eq, transition_label).arrange(DOWN, buff=0.2).move_to(ORIGIN)
         self.play(Transform(intro_group, trajectory_group))
-        self.wait(0.6)
+        self.next_slide()
 
         history_eq = MathTex(
             r"p(x_{t+1} \mid (x_0, u_0), (x_1, u_1), \cdots, (x_{t-1}, u_{t-1}), (x_t, u_t))",
@@ -69,13 +70,13 @@ class StateDiagramAnimation(Scene):
         history_label = Text("dinámica con historia completa", font_size=24)
         history_group = VGroup(history_eq, history_label).arrange(DOWN, buff=0.2).move_to(ORIGIN)
         self.play(Transform(intro_group, history_group))
-        self.wait(0.6)
+        self.next_slide()
 
         markov_eq = MathTex(r"p(x_{t+1} \mid u_t, x_t)", font_size=36)
         markov_label = Text("propiedad de markov", font_size=24)
         markov_group = VGroup(markov_eq, markov_label).arrange(DOWN, buff=0.2).move_to(ORIGIN)
         self.play(Transform(intro_group, markov_group))
-        self.wait(0.6)
+        self.next_slide()
 
         self.play(FadeOut(intro_group))
 
@@ -85,17 +86,22 @@ class StateDiagramAnimation(Scene):
 
         problem_heading = Text("Planteamiento de problema", font_size=32)
         problem_points = BulletedList(
-            "En cada paso de tiempo el robot tiene que decidir sobre lo siguiente:\n- Buscar latas activamente.\n- Esperar a que alguien traiga una lata.\n- Regresar a la base y recargar.",
-            "Las decisiones se toman a partir del estado de la batería: high, low.",
-            "La recompensa esta en función del número de latas recolectads.",
+            "El robot decide en cada paso: buscar latas, esperar, o recargar.",
+            "Estado de la batería: high o low.",
+            "Recompensa proporcional al número de latas recolectadas.",
             font_size=26,
             buff=0.2,
         )
-        problem_group = VGroup(problem_heading, problem_points).arrange(
+        problem_box = RoundedRectangle(
+            corner_radius=0.2, width=10, height=2.5,
+            color=GRAY, fill_opacity=0.15, stroke_width=1,
+        )
+        problem_boxed = VGroup(problem_box, problem_points).arrange(ORIGIN)
+        problem_group = VGroup(problem_heading, problem_boxed).arrange(
             DOWN, aligned_edge=LEFT, buff=0.3
         ).next_to(title_group, DOWN, buff=0.5)
         self.play(FadeIn(problem_group))
-        self.wait(1.0)
+        self.next_slide()
 
         elements_bullet = MathTex(
             r"\begin{aligned}"
@@ -109,7 +115,7 @@ class StateDiagramAnimation(Scene):
             font_size=28,
         ).move_to(problem_group)
         self.play(Transform(problem_group, elements_bullet))
-        self.wait(1.0)
+        self.next_slide()
         self.play(FadeOut(problem_group), FadeOut(title_group))
 
         # Create states
@@ -270,8 +276,7 @@ class StateDiagramAnimation(Scene):
         self.play(Create(low_wait_bottom))
         self.play(Write(wait_bottom_label))
         self.play(Create(wait_bottom_low))
-        
-        self.wait(2)
+        self.next_slide()
         
         # Optional: Animate a path through the states
         dot = Dot(color=RED, radius=0.15).move_to(high)
@@ -281,7 +286,8 @@ class StateDiagramAnimation(Scene):
         self.play(MoveAlongPath(dot, high_search_bottom.copy()), run_time=0.8)
         self.wait(0.3)
         self.play(MoveAlongPath(dot, search_bottom_high.copy()), run_time=0.8)
-        
+        self.next_slide()
+
         x_label = MathTex("x", font_size=26, color=YELLOW).move_to(estados_label)
         u_label = MathTex("u", font_size=24, color=BLUE).move_to(acciones_label)
         prob_label = MathTex(
@@ -297,4 +303,4 @@ class StateDiagramAnimation(Scene):
             Transform(prob_legend, prob_label),
             Transform(rewards_legend, rewards_label),
         )
-        self.wait(2)
+        self.next_slide()
