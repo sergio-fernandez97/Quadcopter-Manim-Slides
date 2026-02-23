@@ -1,0 +1,280 @@
+\chapter{Introducción}
+
+
+\section{Objetivo de este trabajo} 
+
+El objetivo de este trabajo es mostrar y evaluar la aplicación de métodos de aprendizaje por refuerzo con redes neuronales en espacios continuos para la optimización de control del sistema dinámico de vuelo de un cuadricóptero.
+
+En lo que resta de este capítulo se presentará el modelo matemático para el vuelo de un cuadricóptero y los trabajos relacionados a este tema en la literatura.
+
+\section{Modelo matemático de un cuadricóptero}
+\label{sec:quads_model}
+La descripción del modelo matemático de un cuadricóptero se basa en lo presentado en \cite{luukkonen_2011} y \cite{capella2020clase}.
+
+Para describir las ecuaciones de movimiento que rigen el comportamiento de un cuadricóptero, es necesario introducir los sistemas de referencia bajo los que operan comúnmente los vehículos aéreos, denominados inercial y local \cite{capella2020clase}. 
+
+\subsection{Sistemas de referencia}
+El \textbf{sistema inercial} define la posición absoluta con respecto al suelo y la orientación del vehículo. La posición absoluta del vehículo se establece en el marco
+de las coordenadas $(x, y, z)$. Por otra parte, la orientación del vehículo esta compuesta por los tres ángulos de Euler: \textit{roll, pitch} y \textit{yaw}, representados por $\varphi$, $\theta$ y $\psi$, respectivamente. Los ángulos $\varphi$ , $\theta$ y $\psi$ determinan la rotación del vehículo alrededor de los ejes $x$, $y$ y $z$ de forma correspondiente. El vector $\mathbf{q} \in \mathbb{R}^{6}$ representa la posición en el sistema inercial y esta compuesta por la posición lineal y angular. \cite{capella2020clase}
+\begin{align}
+\bm{\xi} = 
+\begin{bmatrix}
+x \\
+y\\
+z
+\end{bmatrix}, 
+\quad 
+\bm{\eta} = 
+\begin{bmatrix}
+\varphi \\
+\theta \\
+\psi 
+\end{bmatrix}, 
+\quad 
+\mathbf{q} = 
+\begin{bmatrix}
+\bm{\xi}\\
+\bm{\eta}
+\end{bmatrix}.
+\label{eq:position_intertial_system}
+\end{align}
+
+El \textbf{sistema de referencia local} tiene como origen el centro de masa del cuadricóptero. Este sistema se compone de las velocidades lineales $\bm{\upsilon}$ y las velocidades angulares $\bm{\omega}$. Estas velocidades componen al vector $\mathbf{v}\in \mathbb{R}^{6}$. \cite{capella2020clase}
+\begin{align}
+\bm{\upsilon} = 
+\begin{bmatrix}
+    u \\
+    v \\
+    w
+\end{bmatrix},
+\quad 
+\bm{\omega} = 
+\begin{bmatrix}
+    p \\
+    q\\
+    r 
+\end{bmatrix},
+\quad 
+\mathbf{v} = 
+\begin{bmatrix}
+    \bm{\upsilon} \\
+    \bm{\omega}
+\end{bmatrix}.
+\label{eq:position_local_system}
+\end{align}
+
+
+Es necesario relacionar los sistemas inercial y local de tal forma que permitan describir la orientación del objeto y transformar los vectores de un sistema de coordenadas en otro. Esta relación esta dada por la matriz de rotación, que transforma el sistema local en el sistema inercial. La matriz de rotación se construye a partir de las rotaciones sobre los ejes de giro de los ángulos $\varphi$, $\theta$ y $\psi$ dadas por las matrices,
+
+\begin{align*}
+    \mathbf{R}(\psi) 
+    =
+    \begin{bmatrix}
+        C_{\psi} & S_{\psi} & 0 \\
+        -S_{\psi} & C_{\psi} & 0 \\
+        0 & 0 & 1 
+    \end{bmatrix}, \quad
+    \mathbf{R}(\theta) 
+    = 
+    \begin{bmatrix}
+        C_{\theta} & 0 & -S_{\theta} \\
+        0 & 1 & 0 \\
+        S_{\theta} & 0 & C_{\theta}
+    \end{bmatrix}, \quad 
+    \mathbf{R}(\varphi) 
+    = 
+    \begin{bmatrix}
+        1 & 0 & 0 \\
+        0 & C_{\varphi} & S_{\varphi} \\
+        0 & -S_{\varphi} & C_{\varphi}
+    \end{bmatrix}.
+\end{align*}
+Entonces la matriz de rotación será,
+\begin{align}
+    \mathbf{R}(\bm{\eta}) = \mathbf{R}(\psi)\mathbf{R}(\theta)\mathbf{R}(\varphi) = 
+    \begin{bmatrix}
+        C_{\psi}C_{\theta} & C_{\psi}S_{\theta}S_{\varphi} - S_{\psi}C_{\varphi}& C_{\psi}S_{\theta}C_{\varphi} + S_{\psi}S_{\varphi} \\
+        S_{\psi}C_{\theta} & S_{\psi}S_{\theta}S_{\varphi}+C_{\psi}C_{\varphi} & S_{\psi}S_{\theta}C_{\varphi}-C_{\psi}S_{\varphi} \\
+        -S_{\theta} & C_{\theta}S_{\varphi}& C_{\theta}C_{\varphi}
+        \label{eq:rotation_matrix}
+    \end{bmatrix}.p
+\end{align}
+Las expresiones $C_{\theta}$ y  $S_{\theta}$  en la ecuación \ref{eq:rotation_matrix} representan las funciones $\cos\theta$ y $\sin\theta$ en el orden dado. Análogamente, las funciones ($C_{\varphi}$,$ S_{\varphi}$) y ($C_{\psi}$,$ S_{\psi}$) representan las correspondientes funciones para los ángulos $\phi$ y $\psi$. \cite{capella2020clase}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=11cm]{01_introduccion/reference_system.png}
+\caption{Sistema de referencia inercial y local de un cuadricóptero, recuperado de \cite{luukkonen_2011}.}
+\label{fig:interaccion_RL}
+\end{figure}
+
+También es necesario considerar la transformación de las velocidades angulares en el sistema de referencia local al inercial que esta dada por la matriz $\mathbf{W}_{\bm{\eta}}$ \cite{capella2020clase}. 
+\begin{align}
+\begin{bmatrix}
+    \dot{\varphi} \\
+    \dot{\theta}\\
+    \dot{\psi} 
+\end{bmatrix}
+=
+\underbrace{\begin{bmatrix}
+    1 & S_{\varphi}T_{\theta} & C_{\varphi}T_{\theta} \\
+    0 & C_{\varphi} & -S_{\varphi} \\
+    0 & S_{\varphi}/C_{\theta}& C_{\varphi}/C_{\theta}
+\end{bmatrix}}_{\mathbf{W}_{\bm{\eta}}}
+\begin{bmatrix}
+    p \\
+    q\\
+    r 
+\end{bmatrix}.
+\label{eq:W_eta}
+\end{align}
+La expresión $T_{\theta}$ en \ref{eq:W_eta} representa la función $\tan \theta$.
+
+\subsection{Momentos, fuerzas y torques}
+Se asumen que el cuadricóptero tiene una estructura simétrica con respecto a los planos $xz$ y $yz$. Por lo que la matriz de momentos de inercia $\mathbf{I}$ es diagonal e $I_{xx} = I_{yy}$. \cite{capella2020clase}
+\begin{align}
+\mathbf{I} = 
+\begin{bmatrix}
+    I_{xx} & 0 & 0 \\
+    0 & I_{yy} & 0 \\ 
+    0 & 0 & I_{zz}
+\end{bmatrix}.
+\end{align}
+
+Por otro lado la velocidad angular de cada rotor $i$ se denota como $\omega_i$. Cada $\omega_i$ genera una respectiva fuerza $f_i$ en la dirección del eje del rotor, que esta dada por,
+$$f_i = k\omega_{i}^2 \quad \forall i \in \{1, 2, 3, 4\}.$$
+Dónde $k$ representa el coeficiente de elevación. La acumulación de estas fuerzas genera un empuje $T_{z}$ en la dirección del eje $z$,
+$$T_z = \sum_{i=1}^{4}f_i, \quad \mathbf{T}_{B} = 
+\begin{bmatrix}
+0 \\
+0 \\
+T_z
+\end{bmatrix}.$$
+
+En la dirección de los ángulos en el sistema de referencia local se considera el torque total $\bm{\tau}_{B}$. En particular, este torque total se efectúa sobre los ángulos \textit{roll, pitch} y \textit{yaw}, cuyos componentes estan dados por: $\tau_{\varphi}$, $\tau_{\theta}$ y $\tau_{\psi}$, en el orden correspondiente de los ángulos. \cite{luukkonen_2011}
+\begin{align}
+    \bm{\tau}_{B} = 
+    \begin{bmatrix}
+        \tau_{\varphi} \\
+        \tau_{\theta} \\
+        \tau_{\psi}
+    \end{bmatrix}
+    = 
+    \begin{bmatrix}
+        \ell k (\omega_{4}^2 - \omega_2^{2}) \\
+        \ell k (\omega_{3}^2 - \omega_1^{2}) \\
+        b \sum_{i=1}^{4} (-1)^{i+1} \omega_{i}^2
+    \end{bmatrix} 
+    \label{eq:torque}
+\end{align}
+
+Como se expone en \cite{luukkonen_2011} el movimiento \textit{roll} se obtiene al disminuir la velocidad del segundo rotor e incrementar la del cuarto rotor. Similarmente, el movimiento \textit{pitch} se obtiene al disminuir la velocidad del primer rotor e incrementar la del tercero. El movimiento \textit{yaw} se obtiene al incrementar la velocidad dos rotores opuestos y disminuir la velocidad de los otros dos.
+\subsection{Ecuaciones de movimiento}
+
+Bajo esta formulación se considera al cuadricóptero como un sólido rígido \cite{luukkonen_2011}. En este caso se usará las ecuaciones de Newton-Euler para describir la dinámica de traslación y rotación.
+
+En el sistema de referencia local, la fuerza requerida por la aceleración de masa $m\dot{\bm{\upsilon}}$ y la fuerza centrifugal $\bm{\omega} \times(m \bm{\upsilon})$ son iguales a la gravedad $\mathbf{R}^{\top}\mathbf{G}$ y el empuje de los rotores $\mathbf{T}_{B}$ \cite{luukkonen_2011}.
+\begin{align}
+    m\dot{\bm{\upsilon}} + \bm{\omega} \times (m \bm{\upsilon}) = \mathbf{R}^{\top}\mathbf{G} + \mathbf{T}_{B}, \quad \mathbf{G}
+    =
+    \begin{bmatrix}
+        0 \\
+        0 \\
+        -g
+    \end{bmatrix}.
+    \label{eq:u_dynamics}
+\end{align}
+Al despejar el vector $\dot{\bm{\upsilon}}$ de la expresión \ref{eq:u_dynamics} se obtienen las ecuaciones,
+\begin{align}
+    \dot u &= rv -qw - g \sin\theta \label{eq:u} \\
+    \dot v &= pw -ru -g\cos\theta \cdot \sin\phi \label{eq:v}\\
+    \dot w &= qu -pv +g\cos\varphi \cdot \cos\theta-\frac{k}{m} \sum_{i=1}^{4}\omega_i^2 \label{eq:w}.
+\end{align}
+Las \crefrange{eq:u}{eq:w} representan la dinámica de traslación en el sistema de referencia local.
+
+En el sistema de referencia local, la aceleración angular de los momentos de inercia $\mathbf{I}\dot{\bm{\omega}}$, las fuerzas centrípetas $\bm{\omega} \times (\mathbf{I}\mathbf{\omega})$ es igual al torque total externo $\bm{\tau}_{B}$ \cite{luukkonen_2011}.
+\begin{align*}
+    \mathbf{I}\dot{\bm{\omega}} + \bm{\omega} \times (\mathbf{I}\bm{\omega}) = \bm{\tau}, 
+\end{align*}
+si y sólo si,
+\begin{align*}
+    \dot{\bm{\omega}} = 
+    \mathbf{I}^{-1} \left(
+        - \begin{bmatrix}
+            p \\
+            q \\
+            r 
+        \end{bmatrix}
+        \times
+        \begin{bmatrix}
+            I_{xx} \cdot p \\
+            I_{yy} \cdot q \\
+            I_{zz} \cdot r
+        \end{bmatrix}
+        + 
+        \begin{bmatrix}
+            \tau_{\varphi} \\
+            \tau_{\theta} \\
+            \tau_{\psi}
+        \end{bmatrix}
+    \right).
+\end{align*}
+Realizando las operaciones pertinentes en la expresión $\dot{\bm{\omega}}$ y sustituyendo los términos de torque de \ref{eq:torque} se obtienen lo siguiente,
+\begin{align}
+\dot p &= \frac{\ell k}{I_{xx}}\left(\omega_4^2 - \omega_2^2\right)-qr \left(\frac{I_{zz} -I_{yy}}{I_{xx}}\right) \label{eq:p}\\
+    \dot q &=  \frac{\ell k}{I_{xx}}\left(\omega_3^2 - \omega_1^2\right) - pr \left(\frac{I_{xx} -I_{zz}}{I_{yy}}\right) \label{eq:q}\\
+    \dot r &= \frac{b}{I_{zz}}\left(\omega_2^2 + \omega_4^2 - \omega_1^2 - \omega_3^2\right) \label{eq:r}.
+\end{align}
+Las ecuaciones \crefrange{eq:p}{eq:r} corresponden a la dinámica de rotación en el sistema de referencia local.
+
+Por otra parte la expresión \ref{eq:W_eta}
+representa la dinámica de rotación en el sistema de referencia inercial se puede expresar de la siguiente manera,
+\begin{align}
+    \dot \varphi &= p + (q \sin\varphi + r \cos\varphi) \tan\theta \label{eq:phi}\\
+    \dot \theta &= q \cos\varphi - r \sin\varphi \label{eq:theta} \\ 
+    \dot \psi &= \left(q \sin\varphi + r \cos\varphi\right) \sec\theta \label{eq:psi}.
+\end{align}
+
+Finalmente, la dinámica de traslación en el sistema de referencial inercial se compone por las siguientes expresiones,
+\begin{align}
+    \dot x &= u \label{eq:x}\\
+    \dot y &= v \label{eq:y}\\
+    \dot z &= w \label{eq:z}.
+\end{align}
+
+En la siguiente tabla se pueden observar los valores constantes de las \crefrange{eq:u}{eq:z}, que fueron recuperados de \cite{fossen_2013}.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+ \textbf{símbolo}& \textbf{valor} & \textbf{unidad} & \textbf{significado} \\ \hline
+ $g$& $9.81$ & $m \cdot s^{-2}$ & constante de gravitación \\ 
+ $m$ & $0.468$ & $kg$ & masa del cuadricóptero \\ 
+ $\ell$ & $0.225$ & $m$ & distancia entre rotor y centro de masa \\ 
+ $b$ & $2.980 \cdot 10^{-6}$ & $-$ & coeficiente de arrastre  \\ 
+ $k$& $1.140 \cdot 10^{-7}$ & $-$  & coeficiente de elevación \\ 
+ $I_{xx}$& $4.856 \cdot 10^{-3}$ & $kg \cdot m^2$& momento de inercia eje-$x$ \\ 
+ $I_{yy}$& $4.856 \cdot 10^{-3}$ & $kg \cdot m^2$& momento de inercia eje-$y$\\ 
+ $I_{zz}$& $8.801 \cdot 10^{-3}$ & $kg \cdot m^2$& momento de inercia eje-$z$\\ 
+ \hline
+\end{tabular}
+\label{tab:quadcopter_cons}
+\end{table}
+
+
+
+\section{Trabajo relacionado}
+
+Para llevar acabo la tarea de controlar un cuadricóptero, durante mucho tiempo han sido ampliamente utilizados métodos convencionales control como \acrfull{pid}, técnicas de control óptimo como \acrfull{ilqr} o estrategias más sofisticadas como \acrfull{mpc}. Sin embargo, estos métodos han mostrado sus limitaciones, por ejemplos los controladores \acrshort{pid} no son autoadaptativos \cite{pang2021}. Los controladores \acrshort{ilqr} y \acrshort{pid} no tienen buen desempeño en sistemas dinámicos no lineales y frecuentemente requieren del conocimiento de un modelo preciso, que puede ser desconocido \cite{pang2021}. La aplicación de \acrshort{mpc} ha demostrado ser computacionalmente costosa \cite{zhang2016}.
+
+Recientemente se ha propuesto utilizar métodos de aprendizaje por refuerzo mediante el entrenamiento de redes neuronales artificiales para resolver este problema de control, debido a que el aprendizaje por refuerzo no requiere de un modelo preciso y puede adaptarse al cambio de condiciones de un entorno. Además, es un método computacionalmente más eficiente que otros algoritmos de control convencionales, como el \acrshort{mpc}, que requieren la predicción de trayectorias del sistema durante su ejecución.  
+
+En el caso de métodos de control del cuadricóptero basados en redes neuronales profundas,  una red neuronal actúa como la política que mapea los estados del cuadricóptero al empuje de cada rotor \cite{hwangbo2017control}. Sin embargo, la aplicación de estos métodos para resolver esta tarea presenta muchos problemas, como son oscilaciones e inestabilidad del cuadricóptero \cite{liu2022robust} o problemas de convergencia del algoritmo de entrenamiento. Debido a esto, se han presentado distintas propuestas que toman en cuenta las características del modelo del cuadricóptero. Existen distintos de métodos basados en \textit{model free} \acrshort{rl}: \cite{liu2022robust}, \cite{Rub2020DeepRL}, \cite{fang-i2019}, \cite{lopes2018intelligent}.
+
+Hwangbo et al. \cite{hwangbo2017control} propusieron un algoritmo que se distingue por su enfoque conservador, pero estable en la regulación del vuelo de un cuadricóptero mediante una red neuronal. Este estudio incorpora un controlador \acrfull{pd} para dirigir el proceso de entrenamiento en sus etapas iniciales. A pesar de que el entrenamiento no contempla la inclusión de un modelo, se destaca la pertinencia de emplear uno para la validación. El controlador resultante demuestra su capacidad para llevar al cuadricóptero desde un estado inicial aleatorio hasta uno deseado.
+
+Anlin et al. \cite{liu2022robust} desarrollaron una estrategia de control robusta para un cuadricóptero un algoritmo de referencia basado en \acrshort{ddpg}.  El método está diseñado para seguir los estados de un modelo de referencia, basado en un modelo de sistema real, y utiliza un sistema de cálculo de recompensas para entrenar al agente de aprendizaje por refuerzo. Este algoritmo mostró mejoras en el rendimiento de vuelo, eliminando errores en estado estacionario, reduciendo la saturación del controlador y garantizando robustez \cite{liu2022robust}.
+
+El potencial del aprendizaje por refuerzo proviene de su habilidad de aprender directamente de un sistema del mundo real \cite{zhang2016}. Sin embargo, este potencial es a su vez una debilidad cuando se aplica sistemas inestables y frágiles \cite{zhang2016}. Un enfoque similar al usado en este trabajo es propuesto en \cite{zhang2016}. Para controlar vehículos aéreos autónomos Zhang et al. \cite{zhang2016} proponen un método que combina un esquema de control óptimo con una  búsqueda guiada de política, mejor conocido por su nombre en inglés \acrfull{gps}. En este método, el \acrshort{gps} es un método transforma un problema de aprendizaje por refuerzo en uno de aprendizaje supervisado, donde un algoritmo de control óptimo provee supervisión para el entrenamiento de una red neuronal artificial, en tanto que, el algoritmo de control óptimo esta orientado a la optimización de trayectorias un algoritmo tipo \acrshort{mpc}. La contribución principal de este enfoque es ofrecer un modelo que imita las capacidades del \acrshort{mpc} a un costo computacional mucho menor, con lo que hace factible su aplicación en situaciones reales \cite{zhang2016}.
+

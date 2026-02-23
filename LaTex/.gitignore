@@ -1,0 +1,25 @@
+# Build artifacts
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.glo
+*.ist
+*.lof
+*.lot
+*.out
+*.toc
+*.acn
+*.synctex.gz
+
+# Compiled PDFs
+*.pdf
+
+# Backup files
+*.bak
+*.swp
+*~
+
+# Build directories
+_build/

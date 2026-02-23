@@ -1,0 +1,280 @@
+\documentclass[letterpaper, 12pt, oneside]{book}
+\usepackage[top=1in, left=0.9in, right=1.25in, bottom=1in]{geometry}
+\usepackage{bachelorstitlepageUNAM}
+\usepackage{titlesec} % Quita palabra «Capítulo» de \chapter
+\titleformat{\chapter} % Config titlesec
+	{\Large\bfseries}	%
+	{\huge \thechapter}	%
+	{20pt}				%
+	{\huge}				%
+\usepackage[utf8x]{inputenc}
+\author{Sergio Miguel Fernández Martínez}
+\title{
+Métodos de aprendizaje por refuerzo profundo para el control del sistema dinámico de vuelo de un cuadricóptero}
+\faculty{Facultad de Ciencias}
+\degree{Licenciado en Matemáticas Aplicadas}
+\supervisor{Dr. Antonio Capella Kort}
+\cityandyear{Ciudad Universitaria, Ciudad de México, 2025}
+\logouni{Escudo-UNAM}
+\logofac{Escudo-FCIENCIAS}
+
+
+\usepackage[english, spanish, es-nodecimaldot]{babel}
+\AtBeginDocument{\shorthandoff{>}}
+\usepackage{pdfpages} % <-- for the front paige
+\usepackage{listings}
+\usepackage{newtxtt}
+\usepackage{multicol}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{hyperref}
+\usepackage[spanish]{cleveref}
+\usepackage{dsfont}
+\usepackage{tocloft}
+\usepackage{subcaption}
+\usepackage{multicol}
+\usepackage{multirow}
+\usepackage{aurical}
+\usepackage{setspace}
+
+\usepackage[acronym]{glossaries}
+
+\crefrangeformat{equation}{ecuaciones #3(#1)#4 a #5(#2)#6}
+
+
+\usepackage[fixlanguage]{babelbib}
+\selectbiblanguage{spanish}
+% Map capitalized "English" to babel's lowercase "english" for babelbib
+\makeatletter
+\newcommand\bibsEnglish{\bibsenglish}
+\newcommand\dateEnglish{\dateenglish}
+\newcommand\extrasEnglish{\extrasenglish}
+\makeatother
+\graphicspath{ {figures/} }
+\usepackage{array}
+
+\setlength{\parskip}{1em}
+
+\usepackage{xcolor}
+\definecolor{light-gray}{gray}{0.95}
+\newcommand{\code}[1]{\colorbox{light-gray}{\texttt{#1}}}
+
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.4,0.4,0.4}
+\definecolor{backcolour}{rgb}{0.98,0.98,0.98}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegray},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\fontsize{9}{11}\selectfont,
+    keywordstyle=\bfseries,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+\usepackage{bm}
+\newcommand\tab[1][1cm]{\hspace*{#1}}
+\usepackage{float, graphicx, multicol}
+\usepackage{amsthm,enumerate}
+
+
+\usepackage[spanish,onelanguage, linesnumbered,ruled,vlined]{algorithm2e}
+\newcommand\mycommfont[1]{\footnotesize\ttfamily\textcolor{gray}{#1}}
+\SetCommentSty{mycommfont}
+
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+\usepackage{cite}
+
+\setlength{\columnsep}{30pt}
+
+%% Multi layer perceptron
+\usepackage{latexsym}
+
+\usepackage{tikz}
+\usetikzlibrary{decorations.pathreplacing}
+\usetikzlibrary{fadings}
+%%
+
+\newcommand*{\horzbar}{\rule[.5ex]{2.5ex}{0.5pt}}
+
+
+
+%\title{Aproximación de políticas para sistemas de control con aprendizaje por refuerzo *}
+%\author{Sergio Miguel Fernández Martínez \\ Amilkar Gazque }
+%\date{Febrero 2021}
+
+
+\usepackage[nottoc]{tocbibind}
+
+%\geometry{
+% letterpaper,
+% left=25mm,
+% right=25mm,
+% top=25mm,
+% }
+
+\renewcommand\qedsymbol{$\blacksquare$}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Teorema}[section]
+\newtheorem{prop}{Proposición}[section]
+\newtheorem{definition}{Definición}[section]
+\newtheorem{remark}{Observación}[section]
+\newtheorem{corollary}{Corolario}[section]
+\newtheorem{example}{Ejemplo}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\renewcommand\qedsymbol{$\blacksquare$}
+
+
+\def\upint{\mathchoice%
+    {\mkern13mu\overline{\vphantom{\intop}\mkern7mu}\mkern-20mu}%
+    {\mkern7mu\overline{\vphantom{\intop}\mkern7mu}\mkern-14mu}%
+    {\mkern7mu\overline{\vphantom{\intop}\mkern7mu}\mkern-14mu}%
+    {\mkern7mu\overline{\vphantom{\intop}\mkern7mu}\mkern-14mu}%
+  \int}
+\def\lowint{\mkern3mu\underline{\vphantom{\intop}\mkern7mu}\mkern-10mu\int}
+
+\newcommand{\bigzero}{\mbox{\normalfont\Large\bfseries 0}}
+\newcommand{\rvline}{\hspace*{-\arraycolsep}\vline\hspace*{-\arraycolsep}}
+
+
+
+\makeglossaries
+\newacronym{adam}{ADAM}{\textit{Adaptive Moment Estimation}}
+\newacronym{admm}{ADMM}{\textit{Alternating Directions Method of Multipliers}}
+\newacronym{ann}{ANN}{\textit{Artificial Neural Network}}
+\newacronym{badmm}{BADMM}{\textit{Bregman Alternating Directions Method of Multipliers}}
+\newacronym{dl}{DL}{\textit{Deep Learning}}
+\newacronym{ddpg}{DDPG}{\textit{Deep Deterministic Policy Gradient}}
+\newacronym{dqn}{DQN}{\textit{Deep Q-Networks}}
+\newacronym{dpg}{DPG}{\textit{Deterministic Policy Gradient}}
+\newacronym{ilqr}{iLQR}{\textit{Iterative Linear Quadratic Regulator}}
+\newacronym{gps}{GPS}{\textit{Guided Policy Search}}
+\newacronym{kl}{KL}{\textit{Kullback Leibler}}
+\newacronym{lqr}{LQR}{\textit{Linear Quadratic Regulator}}
+\newacronym{mdp}{MDP}{\textit{Markov Decision Process}}
+\newacronym{mlp}{MLP}{\textit{Multi-layer perceptron}}
+\newacronym{mpc}{MPC}{\textit{Model Predictive Control}}
+\newacronym{ou}{OU}{Ornstein-Uhlenbeck}
+\newacronym{pd}{PD}{\textit{Proportional-Derivate}}
+\newacronym{pid}{PID}{\textit{Proportional-Integrative-Derivate}}
+\newacronym{relu}{ReLu}{\textit{Rectified Linear unit}}
+\newacronym{rl}{RL}{\textit{Reinforcement Learning}}
+\newacronym{rm}{RM}{\textit{Robbins-Monro}}
+\newacronym{td}{TD}{\textit{Temporal Difference}}
+\newacronym{sac}{SAC}{\textit{Soft Actor-Critic}}
+\newacronym{td3}{TD3}{\textit{Twin Delayed Deep Deterministic Policy Gradient}}
+
+
+\begin{document}
+\frontmatter
+\maketitle
+
+\pagenumbering{Roman}
+\chapter*{}
+\begin{flushright}%
+  \emph{A mis padres José y Gabriela}
+  \thispagestyle{empty}
+\end{flushright}
+
+\chapter*{Agradecimientos}
+\begin{onehalfspace}
+Quisiera expresar mi más profundo agradecimiento a los profesores de la Facultad de Ciencias que me inspiraron e impulsaron académicamente. En particular, al Dr. Antonio Capella Kort, quién tuvo la paciencia y dedicación de orientarme en la elaboración de este trabajo, y de quien he aprendido enormemente tanto en lo académico como en lo personal. Asimismo, quiero agradecer a Amilkar Gazque con quien compartí clases e intereses —como el estudio del aprendizaje por refuerzo— y cuyo apoyo fue fundamental para la culminación de este proyecto.
+
+Agradezco al CIMAT y al Dr. Andrés Christen, quienes me permitieron hacer uso de los servidores de la institución, recurso que fue crucial para realizar las simulaciones y experimentos presentados en este trabajo.
+
+Finalmente, expreso mi gratitud a mis padres, José y Gabriela, quienes me apoyaron y acompañaron a lo largo de toda mi formación académica, motivándome siempre a concluir este esfuerzo. A mis hermanos, Ismael y Regina, por su apoyo incondicional; y en especial a Ismael, quien me inspiró y animó a perseguir una carrera en Matemáticas Aplicadas.
+\end{onehalfspace}
+
+
+
+\chapter*{Resumen}
+\textbf{Objetivo:} Evaluar la aplicación de métodos de aprendizaje por refuerzo con redes neuronales en espacios continuos para la optimización del control de un sistema dinámico de vuelo de un cuadricoptero.
+
+Un cuadricóptero es un vehículo aéreo  que se eleva a través  del empuje de cuatro motores, cuyos torques causan rotaciones que permiten controlar su orientación y desplazamiento. A diferencia de lo que ocurre en un avión, el control tiene que actuar rápido, pues intrínsecamente es un sistema inestable. Esto supone un reto al desarrollar estrategias autónomas que garanticen un control efectivo y estable.\cite{fang-i2019}
+
+El aprendizaje por refuerzo es una rama del aprendizaje automático inspirada en las teorías psicológicas del refuerzo y en el aprendizaje animal por prueba y error \cite{Sutton2000}. En este enfoque, un agente interactúa con un ambiente que le otorga recompensas según sus acciones, guiando así su comportamiento hacia una estrategia óptima que maximice las recompensas acumuladas. En la última década, este paradigma, impulsado por las redes neuronales, se ha aplicado con gran éxito en juegos de tablero, videojuegos, robótica, procesamiento de lenguaje natural, etc \cite{lapan2018deep}.
+
+Una red neuronal artificial es un modelo paramétrico organizado en capas, que transforma la información de entrada mediante operaciones algébricas y funciones no lineales. Su entrenamiento consiste en ajustar los parámetros para reducir el error entre la salida obtenida y la deseada, permitiendo aproximar funciones complejas y aprender representaciones útiles para la toma de decisiones. \cite{Bishop2006, Goodfellow-et-al-2016}
+
+En este trabajo se contrastan dos enfoques de aprendizaje por refuerzo con redes neuronales: \textit{model-based} y \textit{model-free}. En particular, se estudian y aplican los métodos \acrfull{gps} y \acrfull{ddpg}, respectivamente.
+
+Se presenta el modelo matemático de un cuadricóptero, considerado como un sistema dinámico con parámetros de control, el cual se utiliza para generar simulaciones de vuelo. Posteriormente, se introducen estrategias provenientes de la teoría de control, como el control por retroalimentación y el método \acrfull{ilqr}.
+
+A continuación se desarrolla el marco teórico del aprendizaje por refuerzo en conjuntos finitos, lo cual da pie al estudio del aprendizaje por refuerzo profundo, donde el control se representa mediante una red neuronal artificial. Se detalla la construcción del método \acrshort{gps}, incluyendo la explicación del algoritmo de optimización \acrfull{badmm} y la incorporación del \acrshort{ilqr} en el proceso de entrenamiento. Asimismo, a partir del algoritmo \textit{Q-learning}, se deriva y explica el método \acrshort{ddpg}.
+
+Finalmente, se describe la configuración del entorno y el proceso de entrenamiento para ambos métodos. Se presentan los resultados obtenidos y se comparan las estrategias de aprendizaje por refuerzo con métodos clásicos de control, analizando el desempeño y la estabilidad de cada enfoque.
+\newpage
+
+
+
+\tableofcontents{}
+
+\thispagestyle{empty}
+\listoffigures
+\listoftables
+
+\cleardoublepage
+\pagenumbering{arabic}
+
+% \printglossary[type=\acronymtype,title=Glosario de acrónimos]
+
+\mainmatter % This resets page numbering and should help with chapter numbering
+\setcounter{chapter}{0} % Ensure we start from 1
+
+% -----------------------------------------------------------------------
+% Main chapters
+% -----------------------------------------------------------------------
+\input{chapters/01_introduccion}
+
+\input{chapters/02_teoria_de_control}
+
+\input{chapters/03_aprendizaje_por_refuerzo}
+
+\input{chapters/04_busqueda_guiada_de_politicas_gps}
+
+\input{chapters/05_aprendizaje_por_diferencias_temporales}
+
+\input{chapters/06_aplicacion_y_evaluacion_de_metodos_rl}
+
+\input{chapters/07_conclusion}
+
+% -----------------------------------------------------------------------
+% Appendices
+% -----------------------------------------------------------------------
+\appendix
+
+\input{chapters/08_hiperparametros}
+
+\input{chapters/09_redes_neuronales_artificiales}
+
+\input{chapters/10_metodos_analiticos_y_numericos}
+
+% -----------------------------------------------------------------------
+% Back matter
+% -----------------------------------------------------------------------
+\bibliographystyle{babplain}
+\bibliography{references.bib}
+
+%\printbibliography
+\clearpage
+\printglossary[type=\acronymtype]
+
+\end{document}

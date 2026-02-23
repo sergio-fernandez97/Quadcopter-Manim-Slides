@@ -1,0 +1,248 @@
+\chapter{Aprendizaje por refuerzo}
+
+El aprendizaje por refuerzo o por su nombre en inglés \acrfull{rl}, es un paradigma particular del aprendizaje automático. El aprendizaje por refuerzo aborda el problema de tomar decisiones óptimas a lo largo del tiempo de manera autónoma \cite{lapan2018deep}. En este problema se quiere aprender a controlar un sistema tal que maximice algún valor numérico, que representa una abstracción de un objetivo a largo plazo \cite{Szepesvari2010}.
+
+El propósito de este capítulo es explicar los principales conceptos teóricos que rigen al aprendizaje por refuerzo, así como la intuición acerca de los componentes más importantes de un problema en este paradigma. En particular, se introduce los procesos de decisión de Markov finitos los cuales son una forma idealizada del problema de aprendizaje. También se presentan elementos claves como las funciones de valor y la ecuación de Bellman, que serán expresiones fundamentales para los algoritmos de aprendizaje. Posteriormente se discuten los enfoques de aprendizaje basado en modelos y sin modelos para resolver el problema de \acrshort{rl}. Será fundamental entender esta dicotomía, puesto que es una parte fundamental de este trabajo.
+
+\section{Marco teórico} 
+\label{sec:marco_teorico}
+Dentro del paradigma de aprendizaje por refuerzo existen dos elementos principales. El primero es el \textbf{agente} que es el que tiene el objetivo de aprender una tarea. En segundo lugar esta el \textbf{entorno} que es el espacio en el que vive el agente. El entorno representa la dinámica de todo lo que el agente no puede controlar. El agente debe actuar y mandar señales al entorno. En consecuencia, el entorno responde enviando señales al agente. Estas señales contienen información, que el agente utilizará para mejorar su comportamiento. En esta sección se definirá formalmente esta interacción. 
+
+\subsection{Interfaz agente-entorno}
+En general, el agente y el entorno interactúan a lo largo de una secuencia de pasos de tiempo discreto $t \in \mathbb{Z}^{+}$. En cada paso de tiempo $t$ el agente recibe una información de la configuración del entorno $X_t \in \mathcal{X}$, que recibe el nombre de \textbf{estado} y $\mathcal{X}$ representa el espacio de estados. En principio este espacio es finito, pero también puede ser continuo. 
+
+Con base en la información $X_t$ el agente decide seleccionar una \textbf{acción} $U_t \in \mathcal{U}(x)$, donde $\mathcal{U}(x)$ representa el espacio de acciones disponibles dado que el agente conoce que $X_t=x$. En el paso de tiempo siguiente $t+1$ y en función de la acción $U_t$ el entorno envía la \textbf{recompensa} $R_{t+1}\in \mathcal{R}(x, u)$. En este caso $\mathcal{R}$ representa el espacio de recompensas y es una función del estado anterior $x$ y la acción seleccionada $u$. Cuando son conocidos los valores del estado, acción y recompensa se les expresa con las letras minúsculas: $x, u$ y $r$, respectivamente. En cambio, se escriben en mayúsculas cuando son valores desconocidos y es necesario referirse a ellos como variables aleatorias. \cite{Sutton2018}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=9cm]{03_aprendizaje_por_refuerzo/framework-RL.jpeg}
+\caption{Diagrama de interacción agente-entorno retomado de \cite{Sutton2018}}
+\label{fig:interaccion_RL}
+\end{figure}
+
+En este paradigma de aprendizaje el objetivo del agente esta expresado formalmente en términos de la recompensa. No obstante, el objetivo del agente no es aprender a obtener la máxima recompensa en cada paso de tiempo, sino que debe encontrar la estrategia a lo largo del tiempo que permita obtener la mayor cantidad acumulada de recompensas. La idea anterior se pude expresar de la siguiente manera: la recompensa debe ser una forma de comunicar al agente el objetivo global, que es lo que se quiere conseguir y no como cumplir este objetivo diciendo que tareas secundarias deben realizarse. \cite{Sutton2018}
+
+
+\subsection{Proceso de decisión de Markov}\label{MPD}
+Un proceso de decisión de Markov o por su nombre en inglés \acrfull{mdp} es un modelo matemático que representa la toma de secuencial de decisiones por parte de un agente. En este modelo, se considera que un estado futuro  $x_{t+1} \in \mathcal{X}$ depende de forma probabilista de la información anterior, matemáticamente esto se expresa como,
+$$x_{t+1} \sim \mathbb{P}[x_{t+1} |u_t].$$
+En otras palabras, la probabilidad de obtener precisamente $x_{t+1}$ esta condicionada a la historia del agente, es decir, donde estuvo y que decisiones tomó. Sin embargo, modelar que los estados futuros $x_{t+1}$ dependan de todos los estados y acciones anteriores resulta una tarea bastante compleja y poco práctica. Una simplificación de este planteamiento consiste en establecer que los estados $x_{t+1}$ sólo dependen de la información del paso anterior: $x_t$ y $u_t$. Bajo este supuesto, las probabilidades de transición tienen la propiedad de Markov, lo que transforma a dicha probabilidad en la siguiente expresión \cite{Sutton2018}, 
+$$x_{t+1} \sim \mathbb{P}[x_{s+1} |x_t, u_t].$$
+
+Esta simplicidad de plantear a los problemas de aprendizaje, no reduce la utilidad de esta formulación, pues muchos problemas pueden ser planteados como este tipo de procesos, por ejemplo: juegos, sistemas control robótico, estrategias de planeación, entre otros \cite{laura2020}.
+
+A continuación se presenta una descripción formal 
+
+\begin{definition}\label{def:MDP} Sea $\mathcal{M} =\{\mathcal{X}, \mathcal{U}, \mathcal{P}, \gamma, \mathcal{R}\}$  un \textbf{proceso de decisión de Markov} finito, donde,
+\begin{itemize}
+    \item $\mathcal{X}$ representa un conjunto finito de estados.
+    \item $\mathcal{U}$ representa un conjunto finito de acciones.
+    \item $\mathcal{P}$ representa el conjunto de probabilidades de transición de estado. Para $u \in \mathcal{U}$ , $x$ y $x' \in \mathcal{X}$ existe 
+    $p(x'|x, u) \in \mathcal{P}$ tal que,
+    $$p(x'|x,u) = \mathbb{P}\left[X_{t+1}=x'|X_t=x, U_t =u\right].$$
+    \item $\gamma \in [0,1]$ representa el factor de descuento.
+    \item $\mathcal{R}$ representa el conjunto de recompensas que están en función de los elementos de los espacios de estados y acciones. Es decir, para $x \in \mathcal{X}$ y $u\in \mathcal{U}$ la recompensa $r(x, u) \in \mathcal{R}$ esta dada por la siguiente expresión,
+    $$r(x, u)= \mathbb{E}[R_{t+1}|X_t=x, U_t=u].$$
+\end{itemize}
+\end{definition}
+El modelo planteado por la definición \ref{def:MDP}  guarda una estrecha relación con la teoría de control óptimo. Un problema de control óptimo con un espacio discreto de estados y acciones y transiciones de estados probabilistas es un proceso de decisión de Markov \cite{Todorov2006}.
+
+La dinámica de un \acrshort{mdp} se desarrolla de la siguiente forma: se empieza en un estado inicial $x_0 \in \mathcal{X}$ y de acuerdo a este estado se elije $u_0 \in \mathcal{U}(x_0)$, de forma estocástica esta decisión termina en un estado $x_1 \in \mathcal{X}$, este evento lo caracteriza $p(x_1|x_0, u_0)$. Estando en $x_1$, se toma $u_1$ y con la probabilidad $p(x_2|x_1, u_1)$ se llega al estado $x_2$ \cite{Han2018AMI}. Este sucesión de estados y acciones continua iterativamente y se representa de la siguiente forma, 
+$$x_0 \xrightarrow{u_0} x_1 \xrightarrow{u_1} x_2 \xrightarrow{u_2} \cdots x_{t-1} \xrightarrow{u_{t-1}} x_{t} \xrightarrow{u_t} \cdots.$$
+
+En el aprendizaje por refuerzo, el agente no necesariamente tiene conocimiento las probabilidades de transición. Basta con que tenga una noción de dichas transiciones por medio de los estados, acciones y recompensas, que obtiene de la interacción con el agente. 
+
+\subsection{Episodios y retornos} 
+
+Hasta ahora no se ha definido una estructura temporal sobre la interacción entre el agente y el entorno. Para ello es necesario entender que la transición de un estado a otro ocurre en paso de tiempo discreto. Es decir, cuando el agente esta en un estado $x$ al tiempo $t$, elije una acción $u'$ , eso lo lleva a estar $x'$ y recibir una recompensa $r$ en el paso de tiempo $t +1$. Esta sucesión de transiciones definirá la evolución de la historia que el agente ha recorrido. Formalmente esta sucesión de transiciones se define como trayectoria y episodio en el caso que exista un estado terminal. 
+
+\begin{definition} Para un índice de tiempo arbitrario $t >0$, sea $\tau$ una sucesión de eventos en términos de los estados, acciones y recompensas. Esta sucesión se define como, 
+$$\bm\tau = \{x_0, u_0, r_1, x_1, u_1, \cdots, x_{t-1}, u_{t-1}, r_{t-1}, x_t\}.$$
+A esta expresión se le conoce como \textbf{trayectoria} y representa la información pasada a la que el agente ya tuvo acceso previamente.
+
+Sea $T >0$. Una trayectoria $\mathbf{E}$, cuyo último estado es terminal, es decir, un estado para el cuál ya se logro el objetivo de realizar la tarea o se acabo el tiempo, se le conoce como \textbf{episodio},
+$$\mathbf{E} = \{x_0, u_0, r_1, x_1, u_1, \cdots, x_{T-1}, u_{T-1}, r_{T}, x_{T}\}.$$
+Un episodio es un caso particular de las trayectorias pues representa el historial de eventos que recorre un agente de principio a fin. 
+\end{definition}
+
+Ahora que se tiene una definición de episodio, resulta de gran interés definir el objetivo global del agente en términos de la evolución del sistema. Para ello se introduce el concepto de retorno.
+
+\begin{definition}
+ Sea $t>0$ el paso de tiempo actual y sea $T>0$ el paso de tiempo final. Se define a $G_t$ como el \textbf{retorno} al paso de tiempo $t$ y esta dada por la siguiente expresión, 
+ $$G_t = R_{t+1} + R_{t+2} + \cdots + R_{T}.$$
+ \end{definition}
+ 
+ En la definición anterior se observa que el retorno esta dado por la suma acumulada de recompensas de los tiempos futuros. A pesar de que la expresión $G_t$ ayuda a definir el objetivo del agente, resulta una definición incompleta. Ya que para el caso de tareas continuas $(T\rightarrow\infty)$ no es posible trabajar numéricamente con sumas infinitas. Para ello es necesario ampliar la definición para obtener con retornos finitos.
+
+\begin{definition}
+ Sea $\gamma$ la \textbf{tasa de descuento} aplicado al retorno. El retorno $G_t$ con descuento esta definido por la siguiente expresión, 
+ $$ G_{t} = R_{t+1} + \gamma R_{t+2} + \gamma^2 R_{t+3} + \cdots = \sum_{k=0}^{\infty} \gamma^{k} R_{t+k+1}.$$
+\end{definition}
+
+\begin{remark}\label{obs:return}
+    Las observaciones de pasos sucesivos están relacionados entre si. 
+    \begin{align*}
+        G_t &= R_{t+1} + \gamma R_{t+1} + \gamma^2 R_{t+2} + \gamma^3 R_{t+3} + \cdots \\
+        &= R_{t+1} + \gamma G_{t+1}
+    \end{align*}
+\end{remark}
+Esta nueva definición del retorno no sólo es numéricamente estable, si no que también tiene una propiedad adicional bastante intuitiva. Si el valor de $\gamma$ se aproxima a $0$, tendrán poco peso las recompensas adelante del tiempo $t$. Por el contrario si el valor de $\gamma$ es cercano a $1$, las recompensas a lo largo del tiempo 
+aportaran un valor significativo. Esta propiedad permite hacer un balance entre la importancia que le dará el agente entre optimizar futuras recompensas o priorizar la obtención de recompensas inmediatas. Debido a las propiedades que ofrece usar la tasa de descuento $\gamma$, esta será utilizada incluso en problemas episódicos. \cite{Sutton2018}
+
+\subsection{Política y funciones de valor}
+Los conceptos de procesos de Markov y retornos esperados sientan las bases para definir el criterio de selección de acciones, llamado política. Así como 
+la evaluación de dicho criterio por medio de las denominadas funciones de valor. 
+
+La política se puede entender como la estrategia de actuación que sigue un agente dado que se encuentra en estado. La política determina por completo el comportamiento de un agente \cite{silver2015}. Formalmente,
+la política se define como el mapeo de estados a probabilidades de seleccionar cada una de las diferente acciones disponibles \cite{Sutton2018}. 
+\begin{definition}
+    Sea $\pi: \mathcal{S} \rightarrow \mathcal{P}(\mathcal{A})$ la función de densidad de una distribución de las acciones dado el estado. 
+    $$\pi(u|x) = \mathbb{P}\left[U_t=u|X_t=x\right].$$
+    Esta distribución de probabilidad lleva el nombre de \textbf{política}.
+\end{definition}
+
+Los métodos de aprendizaje por refuerzo tienen como objetivo encontrar la mejor" política disponible para el agente. Esta política deberá ser la mejor estrategia para optimizar la cantidad de recompensas. En muchos casos el diseño de políticas involucra la estimación de que tan bien se esta desempeñando el agente, es decir, que tan bien funciona la política del agente para cumplir su objetivo. Esta noción de buen desempeño se define en términos de los futuros recompensas o de acuerdo a la acumulación esperada de las recompensas según la política utilizada en cierto estado  \cite{Sutton2018}. Un buen comportamiento no sólo es medido en función del estado, si no que también lo puede estar en términos de la acción elegida. Este desempeño se define a partir de las funciones de valor. 
+
+\begin{definition}
+    Sea $V_{\pi}: \mathcal{X} \rightarrow \mathbb{R}$ la \textbf{función valor de estado} (state-value function) de un proceso de decisión de Markov. Esta función se define como el retorno esperado de empezar en $x \in \mathcal{X}$ siguiendo la política $\pi$.
+    $$V_{\pi}(x)= \mathbb{E}_{\pi}\left[G_t | X_t=x\right]$$. 
+
+    Sea $Q_{\pi}: \mathcal{X}\times\mathcal{U}\rightarrow \mathbb{R}$ la \textbf{función valor de acción} (action-value function).
+    Esta función se define como el valor esperado del retorno empezando por $x\in \mathcal{X}$ , eligiendo $u \in \mathcal{U}(x)$ y las próximas acciones de acuerdo a la política $\pi$. 
+    $$Q_{\pi}(x, u)= \mathbb{E}_{\pi}\left[G_t | X_t=x, U_t=u\right].$$
+\end{definition}
+
+A partir de estas funciones, los algoritmos de aprendizaje por refuerzo conectan futuras recompensas con acciones actuales \cite{prince2023understanding}. En las siguientes secciones se verá que esta relación es fundamental para poder entrenar agentes capaces de resolver tareas complejas a lo largo del tiempo. 
+
+\begin{remark}
+    El valor de acción esta estrechamente relacionado con el valor de estado, como se exhibe en la siguiente expresión,
+    \begin{align*}
+        \underbrace{\mathbb{E}_{\pi}[G_t|X_t=x]}_{V_{\pi}(x)} &= \sum_{u\in\mathcal{U}(x)}\pi(u|x)\underbrace{\mathbb{E}_{\pi}[G_t|X_t=x, U_t=u]}_{Q_{\pi}(x,u)},
+    \end{align*}
+    en consecuencia, 
+    $$V_{\pi}(x) = \sum_{u\in \mathcal{U}(x)}\pi(u|x)Q_{\pi}(x, u).$$
+\end{remark}
+
+\section{Principio de Optimalidad}
+
+Ahora se mencionaran los criterios que pueden resolver el problema de aprendizaje. Resolver este problema implica encontrar una política que consiga acumular la mayor cantidad de recompensas a lo largo del tiempo \cite{Sutton2018}. Con las hipótesis establecidas hasta ahora, es posible encontrar una política que consiga dicho objetivo. La política que mejor cumpla este objetivo, será definida como política óptima.
+
+\subsection{Ecuación de Bellman}
+Ahora se presentan las ecuaciones de Bellman. Estas ecuaciones permitirán estudiar condiciones de optimalidad para las funciones de valor y políticas. En consecuencia, esto permitirá desarrollar un métodos capaces de resolver el problema de aprendizaje.
+
+ Las funciones de valor tienen una propiedad fundamental que es ampliamente usada dentro del aprendizaje por refuerzo \cite{Sutton2018}. Esta propiedad consiste en que las funciones de valor satisfacen una relación recursiva, como se muestra a continuación, 
+\begin{align}
+    V_{\pi}(x) &= \mathbb{E}_{\pi}[R_{t+1}|X_t=x] + \gamma\mathbb{E}_{\pi}[G_{t+1}|X_t=x] \\
+    &= \sum_{u}\pi(u|x) \mathbb{E}_{\pi}[R_{t+1}|X_t=x, U_t=u] + \gamma \sum_{u}\pi(u|x)\sum_{x'}p(x'|x, u)V_{\pi}(x') \\
+    &= \sum_{u}\pi(u|x)\left[r(x,u) + \gamma \sum_{x'}p(x'|x,u)V_{\pi}(x')\right].
+    \label{eq:Bellman_V}
+\end{align}
+
+La expresión \ref{eq:Bellman_V} lleva por nombre \textbf{ecuación de Bellman} para $V_{\pi}$. Esta ecuación expresa la relación que hay entre el valor de un estado y los valores de los estados subsecuentes. Adicionalmente, esta ecuación es un mapeo de contracción y por lo tanto tiene solución única. Esto será relevante para generar algoritmos computacionales de aprendizaje \cite{Shiyu2022}.
+
+También es posible escribir la ecuación de Bellman en términos del valor acción, como se muestra debajo,
+\begin{align*}
+    Q_{\pi}(x, u) &= r(x,u) + \gamma \sum_{x'}p(x'|x,u)V_{\pi}(x') \\
+    &= r(x,u) + \gamma \sum_{x'}p(x'|x,u)\sum_{u'}\pi(u'|x')Q_{\pi}(x', u').
+\end{align*}
+La segunda igualdad es resultado de la observación \ref{obs:return}.
+
+Estas ecuaciones no sólo permite expresar al cálculo de funciones de valor como un problema de punto fijo, también permiten encontrar mejores políticas para resolver el problema de aprendizaje como se estudiará más adelante.
+
+\subsection{Política óptima y funciones óptimas de valor}
+
+Para definir una política óptima es necesario establecer un orden parcial sobre las políticas. Una política $\pi_1$ se dice que es mejor que o igual que otra política $\pi_2$, si su retorno esperado es mayor o igual al de $\pi_2$ para todos los estados. Matemáticamente, esto se puede expresar de la siguiente manera,
+$$ \pi_1 \geq \pi_2 \quad \iff \quad V_{\pi_1}(x) \geq V_{\pi_2}(x) \quad \forall x \in \mathcal{X}.$$
+Bajo este principio, al menos se tiene acceso a una política que es mejor o igual que otras políticas. Dicha política se le denomina \textbf{política óptima} y se le denota por $\pi_{*}$. \cite{Sutton2018}
+
+En general no hay garantía de que la política $\pi_{*}$ sea única. No obstante, por el principio de orden parcial sobre las políticas, se puede afirmar que las políticas óptimas comparten las mismas funciones de valor. En concreto la \textbf{función óptima valor estado} esta dada por la siguiente expresión,
+$$V_{*}(x) = \max_{\pi}V_{\pi}(x) \quad \forall x \in \mathcal{X}.$$
+Por otro lado, la \textbf{función óptima de valor acción} esta definida de la siguiente forma \cite{Sutton2018},
+\begin{align}
+Q_{*}(x, u) = \max_{\pi}Q_{\pi}(x,u) \quad \forall x \in \mathcal{X}, \quad \forall u \in \mathcal{U}.
+\label{eq:optimal_Q}
+\end{align}
+
+Hasta ahora no se ha caracterizado a la política óptima. Como se mencionó anteriormente, no existe una única política óptima. Sin embargo, siempre se puede diseñar una política óptima en términos de la expresión \ref{eq:optimal_Q}, como se muestra a continuación \cite{Sutton2018}, 
+\begin{align}
+    \pi_{*}(u|s) = 
+    \begin{cases}
+    1 & \text{Si } u= \argmax_{u} Q_{*}(x, u) \\
+    0 & \text{e.o.c}
+    \end{cases}.
+\label{eq:greedy_policy}
+\end{align}
+
+A la política óptima dada por la expresión \ref{eq:greedy_policy} se le llama \textbf{política voraz} o \textit{\textbf{greedy policy}}. Esta política se puede escribir como una densidad de probabilidad o como la ley de control,
+\begin{align*}
+    \mu_{*}(x) = \argmax_{u}Q_{*}(x, u) \quad \forall x \in \mathcal{X}.
+\end{align*}
+
+Merece especial atención que se puede expresar a la función $V_{*}$ sin hacer referencia explicita a alguna política óptima. Basta con observar la relación que guarda las función óptima de $V$ debe ser igual la función $Q$ de la política óptima, dado que se toma la mejor acción disponible. Lo anterior se traduce en la siguiente expresión \cite{Sutton2018},
+\begin{align}
+    V_{*}(x) &= \max_{u \in \mathcal{U}(x)} Q_{\pi_{*}}(x, u) \\
+    &= \max_{u}\left[r(x,u) + \gamma \sum_{x'}p(x'|x,u)V_{*}(x')\right]. 
+    \label{eq:optimal_V}
+\end{align}
+
+
+\section{Aprendizaje en sistemas de control}
+
+El marco teórico, así como las políticas y funciones óptimas de valor necesitan contextualizarse en un planteamiento concreto para resolver problemas reales. Por ejemplo en los planteados por los sistemas de control. Como se discutió anteriormente, los sistemas de control se formulan a partir de espacios de acciones y estados continuos. Para resolver problemas de esta naturaleza, será necesario definir el proceso de decisión de Markov para espacios continuos. 
+
+Este nuevo planteamiento supone un reto para el cálculo de políticas óptimas y funciones de valor. Esto implica un cambio en la representación de las políticas y las funciones de valor. Debido a la naturaleza de los espacios de estados y acciones continuas, no es tarea sencilla definir dichas instancias. Existen varios algoritmos que tienen el objetivo de encontrar un solución aproximada al óptimo teórico. Estos algoritmos deben ser computacionalmente eficientes tales que puedan ser usados en tiempo real y posean eficiencia de muestreo de tal forma que puedan aprender usando poca información \cite{wiering2011}. Los algoritmos usados en este trabajo incorporan elementos del aprendizaje profundo \ref{sec:DL} para estimar funciones de valor y obtener políticas óptimas. Otra disyuntiva patente en este contexto, es el conocimiento o no de un modelo que conforme la estructura del entorno. Esta encrucijada motiva a plantear dos enfoques del aprendizaje por refuerzo. El primer enfoque se basa en usar la información disponible del modelo con el fin de planear estrategias para el agente. En cambio, el segundo se apoya en el aprendizaje por medio de prueba y error para diseñar estrategias para el agente.
+
+\subsection{Procesos de decisión de Markov en espacios continuos}
+
+Ahora se establecerán las características e hipótesis que se seguirán para resolver el problema de control de vuelo de un cudricoptero. Para empezar, se introducirá el concepto de \acrshort{mdp} en espacios continuos. Posteriormente, se examinará la forma de representar a las políticas y funciones de valor como redes neuronales. Finalmente, se discutirán los conceptos de planeación y aprendizaje.
+
+Retomando la formulación establecida en la sección \ref{sec:marco_teorico}, un proceso de decisión de Markov $\mathcal{M}$ se conforma de la tupla $\left\{\mathcal{X}, \mathcal{U}, \mathcal{P}, \mathcal{\gamma}, \mathcal{R}\right\}$. En este contexto el espacio de estados $\mathcal{X}$ generalmente es un conjunto no numerable y acotado \cite{wiering2011}. Para tareas de control se puede asumir que el conjunto de estados es un subconjunto de un espacio euclidiano multidimensional, tal que $\mathcal{X}\subset\mathbb{R}^{n_x}$, dónde $n_x \in \mathbb{N}$ representa la dimensión de cada estado. De la misma forma para un espacio de acciones continuas se asume que $\mathcal{U}\subset \mathbb{R}^{n_u}$, dónde $n_u$ representa la dimensión del espacio de acciones. Bajo esta formulación es necesario establecer una notación vectorial para los estados y acciones, tal que $\mathbf{x}\in \mathcal{X}$ y $\mathbf{u}\in \mathcal{U}$ representan las variables de estado y acción, correspondientemente. Esta notación coincide con la usada para los sistemas de control. Bajo este nuevo tratamiento los estados y acciones se describen como variables aleatorias continuas. Esta nueva caracterización implica un cambio en la descripción de expresiones fundamentales como las ecuaciones de Bellman. Por ejemplo, la función de valor acción se expresa de la siguiente manera,
+\begin{align}
+    Q_{\pi}(\mathbf{x}, \mathbf{u}) = r(\mathbf{x}, \mathbf{u})+ \gamma \int_{\mathcal{X}}p(\mathbf{x}'|\mathbf{x}, \mathbf{u})V_{*}(\mathbf{x}')d\mathbf{x}
+   \label{eq:bellman_Q2_cont}.
+\end{align}
+
+Para los sistemas de control la probabilidad de transición $p(\mathbf{x}'|\mathbf{x}, \mathbf{u})$ en \ref{eq:bellman_Q2_cont} representa la evolución del sistema dinámico en cada paso de tiempo. En general esta expresión se modela desde una perspectiva estocástica. No obstante, esta definición es compatible con los sistemas dinámicos deterministas, si se establece la siguiente relación,
+$$p(\mathbf{x}'|\mathbf{x}, \mathbf{u}) = \mathds{1}_{\mathbf{x}'=f(\mathbf{x}, \mathbf{u})},$$
+dónde $f$ representa el sistema dinámico.
+
+Otra aclaración importante es que al igual que la función de costo en control óptimo, la función recompensa $r$ se considerara como una función determinista, como se expresa a continuación, 
+\begin{align}
+    r : \mathcal{X}\times\mathcal{U}&\rightarrow \mathbb{R} \\
+    (\mathbf{x}, \mathbf{u})&\rightarrow r(\mathbf{x}, \mathbf{u})
+    \label{eq:reward_function}.
+\end{align}
+Esta simplificación resulta útil para determinar la forma de la recompensa. Además permite ligar las capacidades de control óptimo con el aprendizaje por refuerzo.
+
+\subsection{Configuraciones de aprendizaje en espacios continuos}
+
+El principal objetivo de un problema de control es encontrar un política óptima. Sin embargo, en un \acrshort{mdp} con espacios continuos, no es posible encontrar directamente una para esto se requieren condiciones más fuertes sobre los espacios de estados y acciones \cite{Sutton2018}. En lugar de ello se desea encontrar una aproximación de dicha política. 
+
+Como se discutió anteriormente, la política óptima depende de la función de valor óptima, que a su vez esta subordinada a  un \acrshort{mdp}. A partir de este hecho se consideran tres enfoques generales para resolver el problema de aprendizaje. El primer enfoque lleva por nombre \textbf{métodos basados en modelos} (\textit{\textbf{model-based methods}}). Este tipo de algoritmos se basan en un el uso de un modelo (aprendido o conocido) con el fin de aproximar una función de valor o política global \cite{Moerland2018}. Este enfoque se basa en la combinación de técnicas de planificación y aprendizaje. Este tipo de algoritmos combinan los mecanismos descritos por la línea punteado y la línea continua en la figura \ref{fig:RL_configuration}. 
+
+El segundo enfoque es conocido como \textbf{métodos basados en valores} (\textit{\textbf{value-based methods}}). Esta clase de algoritmos tienen la finalidad de construir una representación de la función de valor, que posteriormente permite definir una política \cite{franccois2018}. 
+
+El último conjunto de algoritmos lleva por nombre \textbf{métodos basados en políticas} (\textit{\textbf{policy-based methods}}). Los algoritmos basados en valores infieren una política indirectamente, al estimar los valores de las acciones y estados. En cambio, los métodos basados en políticas almacenan una representación de la política. El proceso de aprendizaje implica actualiza sucesivamente dicha representación. El objetivo de este proceso es aproximar una política óptima.
+
+Estas diferentes clases de algoritmos no se excluyen mutuamente. Usualmente, los métodos basados en políticas y valores conforman un enfoque más amplio denominado \textbf{aprendizaje por refuerzo sin modelos} (\textbf{\textit{model-free} \acrshort{rl}}). Este enfoque se centra
+en optimizar políticas y funciones de valor por medio de las experiencias obtenidas a lo largo de la interacción del agente y el entorno. Como su nombre lo menciona, el aprendizaje en este enfoque no se basa en el uso de un modelo de la dinámica. En cambio, el diseño de las políticas óptimas por medio de una estrategia de prueba y error. Los algoritmos sin modelos se caracterizan por seguir únicamente el proceso descrito por la línea continua de la figura \ref{fig:RL_configuration}.
+
+Habitualmente, se suele pensar que los métodos basados en modelos son la contra parte de aquellos sin modelos.
+Pues, al utilizarse un modelo los algoritmos pueden enfocarse en anticipar el futuro. En tanto que cuando se ignora el modelo, la aproximación depende por completo de las experiencias pasadas. 
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=9cm]{03_aprendizaje_por_refuerzo/rl_configuration.png}
+\caption{Esquema general de diferentes métodos de \acrshort{rl} \cite{franccois2018}. El enfoque directo usa una representación de la función de valor política para actuar en el entorno. El enfoque indirecto usa un modelo del entorno.}
+\label{fig:RL_configuration}
+\end{figure}
+
+Con el fin de de aproximar las funciones de valor y políticas se integra el ajuste de redes neuronales al aprendizaje por refuerzo. Entre las ventajas de usar redes neuronales en este contexto se encuentran las siguientes:
+\begin{itemize}
+    \item Las redes neuronales tienen la capacidad de reconocer patrones ocultos, esta cualidad es fundamental para entender la dinámica de un sistema con el fin de tomar una decisión informada \cite{baeldung2023RL}. 
+    \item Las redes neuronales pueden ser ajustadas usando actualizaciones incrementales, esto le permite aprender en cada interacción con el entorno \cite{gosaviaRL}. 
+    \item Las redes neuronales tienen la capacidad de aproximar funciones con alta precisión y generalizar de manera efectiva a partir de unos pocas muestras de entrenamiento \cite{wiering2011}. 
+\end{itemize}
+
+En los siguientes capítulos la discusión se centrará en el estudio de métodos basados en modelos y sin modelos, con el fin de obtener una metodología viable para el objetivo de este trabajo. En el capítulo \ref{chapter:model_based} se estudiará un algoritmo que tiene la finalidad de aproximar una política óptima a partir de una estrategia informada por el modelo. Para el enfoque sin modelos en el capítulo \ref{chapter:model_free} se estudiarán métodos para aproximar la función óptima de Bellman y diseñar una política óptima, por medio del uso de redes neuronales.
+

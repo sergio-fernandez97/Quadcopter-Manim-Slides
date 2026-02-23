@@ -1,0 +1,43 @@
+\babel@toc {spanish}{}\relax 
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {1.1}{\ignorespaces Sistema de referencia inercial y local de un cuadricóptero, recuperado de \cite {luukkonen_2011}.}}{3}{figure.caption.6}%
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {3.1}{\ignorespaces Diagrama de interacción agente-entorno retomado de \cite {Sutton2018}}}{29}{figure.caption.15}%
+\contentsline {figure}{\numberline {3.2}{\ignorespaces Esquema general de diferentes métodos de \acrshort {rl} \cite {franccois2018}. El enfoque directo usa una representación de la función de valor política para actuar en el entorno. El enfoque indirecto usa un modelo del entorno.}}{38}{figure.caption.16}%
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {5.1}{\ignorespaces Esquema clásico de un método actor-crítico, la política (actor) selecciona acciones que interactúan con el entorno, que devuelve una recompensa y un nuevo estado. Estos son evaluados por la función de valor (crítico), que calcula el error \acrshort {td} y lo manda de regreso a la política para mejorarla. El diagrama esta basado en \cite {Sutton2018}.}}{58}{figure.caption.17}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {6.1}{\ignorespaces Muestra de evolución de coordenadas inerciales $(x, y, z, \phi , \theta , \psi )$ y velocidades locales $(u, v, w, p, q, r)$ simuladas con \ref {eq:discrete_f} bajo algoritmo de control por retroalimentación \ref {alg:Control_retro}.}}{64}{figure.caption.20}%
+\contentsline {figure}{\numberline {6.2}{\ignorespaces Estimación densidad de la norma del supremo de $\mathbf {x}_{T}$ bajo los diferentes controladores \acrshort {ilqr} ajustados con las configuraciones de parámetros del cuadro \ref {tab:reward_set_tests}}}{66}{figure.caption.24}%
+\contentsline {figure}{\numberline {6.3}{\ignorespaces Muestra de evolución de coordenadas inerciales $(x, y, z, \phi , \theta , \psi )$ y velocidades locales $(u, v, w, p, q, r)$ simuladas con \ref {eq:discrete_f} bajo algoritmo \acrshort {ilqr} \ref {alg:ilqr} con la configuración 2 del costo \ref {eq:cost_quadcopter}.}}{66}{figure.caption.25}%
+\contentsline {figure}{\numberline {6.4}{\ignorespaces Velocidad de rotores $(\omega _1, \omega _2, \omega _3, \omega _4)$ generadas por el controlador \acrshort {ilqr} asociadas a la trayectoria de estado mostrado en la figura \ref {fig:state_traj_ilqr}.}}{67}{figure.caption.26}%
+\contentsline {figure}{\numberline {6.5}{\ignorespaces Esquema de búsqueda guiada de política.}}{68}{figure.caption.28}%
+\contentsline {figure}{\numberline {6.6}{\ignorespaces Esquema de \acrshort {ddpg} basado en \cite {jeng23}.}}{70}{figure.caption.29}%
+\contentsline {figure}{\numberline {6.7}{\ignorespaces Evolución del costo acumulado $c(\bm {\tau })$ de $M=800$ trayectorias usando la ley de control $\mu $ (\acrshort {ilqr}) y la política global (\acrshort {gps}) $\pi _{\bm {\theta }}$ después de cada iteración de entrenamiento.}}{71}{figure.caption.30}%
+\contentsline {figure}{\numberline {6.8}{\ignorespaces Densidad de variables de estado al tiempo final $T=30$}}{72}{figure.caption.33}%
+\contentsline {figure}{\numberline {6.9}{\ignorespaces Muestra de evolución de coordenadas inerciales $(x, y, z, \phi , \theta , \psi )$ y velocidades locales $(u, v, w, p, q, r)$ bajo la política $\mu _{\bm {\theta }}$ ajustada con el algoritmo \acrshort {gps} \ref {alg:gps}.}}{73}{figure.caption.35}%
+\contentsline {figure}{\numberline {6.10}{\ignorespaces Velocidad de rotores $(\omega _1, \omega _2, \omega _3, \omega _4)$ generadas por la política $\mu _{\bm {\theta }}$ asociadas a la trayectoria de estado mostrado en la figura \ref {fig:state_traj_gps}.}}{74}{figure.caption.36}%
+\contentsline {figure}{\numberline {6.11}{\ignorespaces Representación en tres dimensiones de una trayectoria de vuelo en el sistema inercial bajo la política $\mu _{\bm {\theta }}$ \acrshort {gps} durante los segundos 1, 5, 15 y 30, respectivamente}}{74}{figure.caption.37}%
+\contentsline {figure}{\numberline {6.12}{\ignorespaces Evolución de las estimaciones de la media y la desviación estándar del retorno de los episodios de entrenamiento (azul) y de validación (rojo).}}{75}{figure.caption.38}%
+\contentsline {figure}{\numberline {6.13}{\ignorespaces Densidad de variables de estado al tiempo final $T=30$.}}{76}{figure.caption.40}%
+\contentsline {figure}{\numberline {6.14}{\ignorespaces Trayectoria de acciones $\omega _1$, $\omega _2$, $\omega _3$ y $\omega _4$ realizadas durante simulaciones con política entrenada después de 10 y 200 \textit {epochs}.}}{77}{figure.caption.42}%
+\contentsline {figure}{\numberline {6.15}{\ignorespaces Cada gráfica de las \crefrange {subfig:z}{subfig:psi} representan las regiones de estabilidad encontradas a partir de $10,000$ simulaciones usando el controlador por retroalimentación de estados descrito en el algoritmo \ref {alg:Control_retro} en cada uno de los conjuntos mencionados. Cada coordenada marcada en azul representa una condición inicial a partir de las cuál su correspondiente trayectoria al tiempo $t=30$ cumplió el criterio de estabilidad \ref {eq:lin_creteria} con $\epsilon =0.5$. Las coordenadas rojas corresponden a trayectorias inestables.}}{80}{figure.caption.46}%
+\contentsline {figure}{\numberline {6.16}{\ignorespaces Regiones de estabilidad sobre los conjuntos $\chi _{vy}$, $\chi _{wz}$, $\chi _{p\varphi }$, $\chi _{q\theta }$ y $\chi _{r\psi }$ del controlador \acrshort {ilqr} determinadas por el criterio \ref {eq:ilqr_criteria} en el tiempo $t=30$ con $\epsilon = 0.5$.}}{81}{figure.caption.49}%
+\contentsline {figure}{\numberline {6.17}{\ignorespaces Regiones de estabilidad sobre los conjuntos $\chi _{vy}$, $\chi _{wz}$, $\chi _{p\varphi }$, $\chi _{q\theta }$ y $\chi _{r\psi }$ del controlador \acrshort {gps} determinadas por el criterio \ref {eq:gps_criteria} en el tiempo $t=15$ con $\epsilon = 0.5$.}}{82}{figure.caption.52}%
+\contentsline {figure}{\numberline {6.18}{\ignorespaces Regiones de estabilidad sobre los conjuntos $\chi _{vy}$, $\chi _{wz}$, $\chi _{p\varphi }$, $\chi _{q\theta }$ y $\chi _{r\psi }$ del controlador \acrshort {gps} determinadas por el criterio \ref {eq:gps_criteria} en el tiempo $t=30$ con $\epsilon = 0.5$.}}{83}{figure.caption.53}%
+\contentsline {figure}{\numberline {6.19}{\ignorespaces Regiones de estabilidad sobre los conjuntos $\chi _{vy}$, $\chi _{wz}$, $\chi _{p\varphi }$, $\chi _{q\theta }$ y $\chi _{r\psi }$ del controlador \acrshort {gps} determinadas por el criterio \ref {eq:gps_criteria} en el tiempo $t=60$ con $\epsilon = 0.5$.}}{84}{figure.caption.54}%
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {B.1}{\ignorespaces Red que representa un perceptrón multicapa de $L$ capas ocultas con $n_0$ valores de entrada y $n_{L+1}$ valores de salida. La $L$-esima capa oculta recibe $n_{L}$ valores de la capa anterior. En este caso $h_{n}^{[\ell ]} = \phi \left (\mathbf {W}^{[\ell ]}\mathbf {h}_{m}^{[\ell -1]} + \mathbf {b}^{[\ell ]}\right ) $ representa la $n$-ésima salida de la $\ell $-ésima capa de la red neuronal, dónde $1 \leq \ell \leq L$.}}{93}{figure.caption.63}%
+\addvspace {10\p@ }
+\babel@toc {spanish}{}\relax 
+\babel@toc {spanish}{}\relax 
+\babel@toc {english}{}\relax 
+\babel@toc {spanish}{}\relax 
+\babel@toc {english}{}\relax 
+\babel@toc {spanish}{}\relax 
+\babel@toc {spanish}{}\relax 
+\babel@toc {spanish}{}\relax 

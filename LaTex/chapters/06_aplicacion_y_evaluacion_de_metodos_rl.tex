@@ -1,0 +1,537 @@
+\chapter{Aplicación y evaluación de métodos RL}
+
+
+\section{Planteamiento del problema}
+
+El objetivo de control que se planteó es simple. Diseñar una política de control que desde una posición  y velocidad inicial aleatoria, contenida en una cierta región del espacio de configuración, guíe al cuadricoptero a una posici\'on determinada que sin perder generalidad asumimos es el origen. La política de control consiste en una \acrshort{ann}, cuyos parámetros se entrenaron usando un esquema de aprendizaje por refuerzo. 
+
+En el modelo de aprendizaje se definieron los estados del sistema como un vector de tamaño 12 que consiste de las velocidades lineales, velocidades angulares y la posición del cuadricoptero (centro de masa y ángulos de Euler). Al igual que en el trabajo \cite{hwangbo2017control} para la implementación resultó más conveniente usar la representación de las coordenadas angulares en términos de la la matriz de rotación \ref{eq:rotation_matrix} por lo que el estado del sistema consiste en un vector de 18 entradas, aunque únicamente 12 son independientes.  
+Las acciones de la política de control están dadas por las cuatro velocidades angulares de los motores del cuadricoptero, como se describe en  \ref{sec:quadcoper_control_system}.
+\subsection{Configuración del entorno}
+Para simular la evolución discreta de estados del entorno del cuadricoptero de la forma,
+\begin{align}
+    \mathbf{x}_{t+1}=f(\mathbf{x}_t, \mathbf{u}_t) \quad \forall t\geq0
+    \label{eq:discrete_f}
+    \end{align}
+se resuelve numéricamente el sistema de ecuaciones diferenciales ordinarias dada por las \crefrange{eq:u}{eq:z}. En particular se utilizó la la función \textit{scipy.integrate.odeint} en Python. Esta función resuelve problemas de valor inicial utilizando Lsoda de la biblioteca de FORTRAN odepack. 
+
+En principio el tiempo de simulación es de 30 segundos, donde cada paso de simulación es un intervalo $\Delta t=0.04$ segundos lo que equivale $T=750$ pasos de tiempo. 
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=1.0\linewidth]{06_aplicacion_y_evaluacion_de_metodos_rl/linear_states.png}
+\caption{Muestra de evolución de coordenadas inerciales $(x, y, z, \phi, \theta, \psi)$ y velocidades locales $(u, v, w, p, q, r)$ simuladas con \ref{eq:discrete_f} bajo algoritmo de control por retroalimentación \ref{alg:Control_retro}.}
+\label{fig:gps_schema}
+\end{figure}
+
+
+
+\subsection{Función de costo y recompensa}
+
+\subsubsection{Diseño de costo para \acrshort{gps}}
+Para especificar por completo el uso de los algoritmos usados en este trabajo es necesario definir una función de costo y recompensa. En el caso del método \acrshort{gps}, la expresión que define al costo es, 
+\begin{align}
+c(\mathbf{x}, \mathbf{u}) = c_1\cdot\|\bm\xi\|_2 + c_2\cdot \|\bm\nu\|_2 + c_3 \cdot \|\bm\omega\|_2 + c_4 \cdot \|\mathbf{I}_{3} - \mathbf{R}(\bm{\eta})\|_2 + c_5 \cdot \|\mathbf{u}\|_2,
+\label{eq:cost_quadcopter}
+\end{align}
+dónde $\bm\xi$, $\bm\eta$, $\bm\nu$ $\bm\omega$ representan la posición, la orientación, la velocidad lineal y la velocidad angular del cuadricoptero, respectivamente. La función $\mathbf{R}$ representa el mapeo de ángulos $\bm\eta$ a la correspondiente matriz de rotación de Euler \ref{eq:rotation_matrix}.  Estas expresiones fueron descritas en las ecuaciones \ref{eq:position_intertial_system} y \ref{eq:position_local_system}. 
+
+La estructura del costo \ref{eq:cost_quadcopter} está diseñada para inducir el comportamiento para cumplir el objetivo fijado, mantener al cuadricoptero en la posición origen, alineado con los ejes y con velocidades angulares y lineales iguales a cero. 
+
+La expresión \ref{eq:cost_quadcopter} queda completamente definida al escoger los valores de los parámetros $c_1, c_2, c_3$, $c_4$ y $c_5$. Para hacer esta elección, se optimizaron varios controladores con el método \acrshort{ilqr} variando los parámetros de \ref{eq:cost_quadcopter}. Se utilizó la implementación de este método del repositorio \cite{ilqr2019}, así como los hiperparámetros preestablecidos. 
+
+Posteriormente bajo cada controlador se simularon 1000 trayectorias del cuadricoptero, donde cada condición inicial se obtiene fijando las velocidades en cero y cambiando uniformemente las coordenadas de la posición $\bm\xi$ y la orientación $\bm\eta$, tal como se describe en el siguiente conjunto,
+\begin{align}
+    \mathcal{X} = \left\{[x, y, z, 0, 0, 0, 0, 0, 0, \varphi, \theta, \psi] |\quad x \sim \mathcal{U}(x_{-}, x_{+})\text{, } y \sim \mathcal{U}(y_{-}, y_{+})\text{, }\cdots\text{, }\psi \sim \mathcal{U}(\psi_{-}, \psi_{+})\right\}.
+    \label{eq:set_initial_conditions}
+\end{align}
+Los parámetros de las distribuciones del conjunto \ref{eq:set_initial_conditions} utilizados se encuentran en la tabla \ref{tab:reward_set_tests}.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|l|l|l|l|}
+\hline
+ $x$ & $y$  &$z$  &$\varphi$  &$\theta$  &$\psi$  \\ \hline
+ $\pm8$&  $\pm8$& $\pm8$ &$\pm\frac{\pi}{32}$  &$\pm\frac{\pi}{32}$  &$\pm\frac{\pi}{32}$  \\ \hline
+\end{tabular}
+\caption{Rangos de las distribuciones uniformes del  conjunto \ref{eq:set_initial_conditions}.}
+\label{tab:set_initial_conditions}
+\end{table}
+ El criterio que se uso para determinar el mejor grupo de constantes $\{c_i\}$, consistió en identificar el conjunto que consiga la menor dispersión con respecto al origen de la norma del supremo sobre el estado final $\mathbf{x}_{T}$ de cada trayectoria simulada. Para ejemplificar la variabilidad de esta dispersión se muestran tres conjuntos de parámetros en la tabla \ref{tab:reward_set_tests}. Se eligió el conjunto número dos ya que fue el que obtuvo mejor resultado como se observa en la figura \ref{fig:reward_density}. Para este conjunto los percentiles $5\%$ y $95\%$ se encuentra en los valores de 0.02 y 0.80, respectivamente.
+
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+\multirow{2}{*} & \multicolumn{3}{c|}{Conjunto} \\ \cline{2-4}
+ & 1  &  2 & 3 \\ \hline
+$c_1$ & 0.1& 10 & 10 \\
+$c_2$ & 0.01& 10 & 10\\
+$c_3$ & 0.01& 10 & 10\\
+$c_4$ & 0.05& 100 & 10\\
+$c_5$ & 0.005& 0.5 & 10\\
+\hline
+\end{tabular}
+\caption{Configuraciones de parámetros del costo \ref{eq:cost_quadcopter}}
+ \label{tab:reward_set_tests}
+\end{table}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.8\linewidth]{06_aplicacion_y_evaluacion_de_metodos_rl/test_distribution.png}
+\caption{Estimación densidad de la norma del supremo de $\mathbf{x}_{T}$ bajo los diferentes controladores \acrshort{ilqr} ajustados con las configuraciones de parámetros del cuadro \ref{tab:reward_set_tests}}
+\label{fig:reward_density}
+\end{figure}
+
+A pesar de que se encontró una configuración del costo que hace que el controlador sea efectivo en su funcionamiento, no se puede afirmar que se eligió una configuración óptima. La optimización de estos parámetros trasciende el propósito de este trabajo por lo que no se indagará más.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.0\linewidth]{06_aplicacion_y_evaluacion_de_metodos_rl/ilqr_states.png}
+\caption{Muestra de evolución de coordenadas inerciales $(x, y, z, \phi, \theta, \psi)$ y velocidades locales $(u, v, w, p, q, r)$ simuladas con \ref{eq:discrete_f} bajo algoritmo \acrshort{ilqr} \ref{alg:ilqr} con la configuración 2 del costo \ref{eq:cost_quadcopter}.}
+\label{fig:state_traj_ilqr}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\linewidth]{06_aplicacion_y_evaluacion_de_metodos_rl/ilqr_actions.png}
+\caption{Velocidad de rotores $(\omega_1, \omega_2, \omega_3, \omega_4)$ generadas por el controlador \acrshort{ilqr} asociadas a la trayectoria de estado mostrado en la figura \ref{fig:state_traj_ilqr}.}
+\end{figure}
+
+\subsubsection{Diseño de recompensa \acrshort{ddpg}}
+Debido a que la forma funcional de la recompensa puede ser mucho más libre para el método \acrshort{ddpg} no tiene que tener estrictamente un signo como \acrshort{gps}. Se diseñó una función 
+incentive de forma continua al agente a cumplir el objetivo, mientras que cuando este lejos de la región de interés sea penalizado. La función descrita anteriormente esta dada por,  
+\begin{align*}
+r(\mathbf{x},\mathbf{u}) = r_1({x,y,z}) + r_2(\psi,\theta,\psi) + r_{3}(x, y, z),
+\end{align*}
+donde,
+\begin{align}
+    r_1(x, y, z) &= 5 - 5 \cdot \tanh^2\left(\| [x, y, z] \|_2\right), \label{eq:reward_1}\\ 
+    r_2(\psi, \theta, \varphi) &= 1 - \tanh^2\left(\| \mathbf{I}_3 - \mathbf{R}(\psi, \theta, \varphi) \|_2 \right), \label{eq:reward_2}\\
+    r_3(x, y, z) &= \begin{cases}  
+-100 & \text{Si }\exists i \in \{x,y,z\} : i < -8 \lor i > 8 \\
+0 & \text{e.o.c}
+\end{cases}. \label{eq:reward_3}
+\end{align}
+El propósito de las funciones \ref{eq:reward_1} y \ref{eq:reward_2} es premiar continuamente al agente cuando la posición inercial del  cuadricoptero esta cerca del origen. En cambio la función \ref{eq:reward_3} tiene la finalidad de penalizar a el agente cuando logra que el cuadricoptero este fuera del espacio de $8\times8\times8$ metros alrededor del origen. 
+
+\section{Proceso de entrenamiento}
+
+La implementación de los métodos \acrshort{gps} y \acrshort{ddpg} requiere de la elección de algunos hiperparámetros que están fuera del modelo de aprendizaje. En esta sección se describirán estos algoritmos por medio de un diagrama, haciendo énfasis en los valores de los hiperparametros que se escogieron. 
+
+\subsection{\acrlong{gps}}
+Para utilizar el método de \acrlong{gps}, primero es necesario obtener $N$ distintos controladores ajustados con el método \acrshort{ilqr} usando el costo \ref{eq:cost_quadcopter}. En este trabajo se ajustó un controlador inicial a partir de una trayectoria generada con el algoritmo \ref{alg:Control_retro} de control por retroalimentación, empleando como estado inicial el origen. Posteriormente, con este controlador inicial, se obtuvieron $N$ trayectorias comenzando en estados cercanos al origen dentro del conjunto $\mathcal{X}$ \ref{eq:set_initial_conditions}. Estas trayectorias se usaron para ajustar los $N$ controladores $p_i$, que serán empleados en el ciclo de entrenamiento de la política global $\pi_{\bm{\theta}}$. La \acrshort{ann} asociada a la política global se inicializa con parámetros aleatorios.
+
+Tomando de referencia el trabajo \cite{zhang2016} se realizaron $K=5$ iteraciones de búsqueda guiada de política. Por otra parte se consideraron en este trabajo se $N=7$ controladores, incluyendo uno con una trayectoria con posición inicial en el origen y por cada controlador se simularon $M=800$ trayectorias en cada iteración.
+
+
+\begin{figure}[h!]
+\centering
+\includegraphics[scale=0.6]{06_aplicacion_y_evaluacion_de_metodos_rl/gps_algorithm.png}
+\caption{Esquema de búsqueda guiada de política.}
+\label{fig:gps_schema}
+\end{figure}
+
+El ciclo de entrenamiento se muestra en la figura \ref{fig:gps_schema}. En cada iteración del ciclo de entrenamiento se comienza con la generación de $M$ trayectorias distintas por cada uno de los $N$ controladores. Las $M \cdot N$ trayectorias son procesadas de tal forma que pueda ser optimizada la política global $\pi_{\bm\theta}$ con respecto a la función objetivo $\mathcal{L}_{\bm\theta}$, como se muestra en la expresión \ref{eq:policy_theta_sim}. Para la optimización se utilizó la implementación en Pytorch del método \acrshort{adam}\footnote{Es un algoritmo de optimización estocástica de primer orden basado en gradientes \cite{ADAM2017}. Es una variante adaptativa del método descenso de gradiente, explicado en \ref{sec:gradient_decent}} con tasa de aprendizaje $\alpha=\text{0.01}$. Una vez actualizada la política global, ésta se añade al costo que será utilizado para ajustar los nuevos $N$ controladores locales. 
+
+Posteriormente se optimiza la transformación de la variable dual $\log(\eta)$ con respecto a $\mathcal{L}_{p_i}$ usando el método de Brent. El valor inicial es $0$, mientras que el rango de búsqueda esta entre los valores $\log(10^{-4})$ y $\log(10^{4})$. 
+
+Para actualizar los valores $\bm\lambda_{t}$ se hace una estimación empírica de la expresión \ref{eq:GPS_lambda} utilizando las $M \cdot N$ trayectorias recolectadas en la iteración. En este caso se utiliza la tasa $\alpha_{\bm\lambda}=\text{0.01}$. 
+
+La actualización de los multiplicadores $\nu_t$ se realiza siguiendo el esquema presentado en \cite{Deep_Visuomotor_Policies}. Se estableció un valor inicial $\nu_{t}=\text{0.001}$ para cada $t$. En cada iteración, se calcula la media y la desviación de la divergencia \acrshort{kl} entre $p(\mathbf{u}_t|\mathbf{x}_t)$ y $\pi_{\bm\theta}(\mathbf{u}_t|\mathbf{x}_t)$ en cada paso de tiempo \cite{Deep_Visuomotor_Policies}. Los valores $\nu_t$ que correspondan a pasos de tiempos donde la divergencia \acrshort{kl} sea más grande que el promedio, será incrementado por un factor de $2$ \cite{Deep_Visuomotor_Policies}. En cambio, en los valores correspondientes a los pasos de tiempo donde la divergencia \acrshort{kl} este por debajo de dos desviaciones estándar, serán reducidos por un factor de $2$ \cite{Deep_Visuomotor_Policies}. 
+
+Para la política $\pi_{\bm\theta}$ se utilizó una \acrshort{ann} con arquitectura de dos capas ocultas de 128 neuronas cada una con función de activación \acrshort{relu}. La \acrshort{ann} tiene una capa de salida de 4 valores correspondientes a las variables de control $\mathbf{u}_t$. Se le aplica la función tangente hiperbólica y se transforman los valores usando la siguiente expresión, 
+\begin{align}
+\mathbf{u}_t^{\pi} = \frac{\omega_{\max} - \omega_{\min}}{2} \, \mathbf{a}_t + \frac{\omega_{\max} + \omega_{\min}}{2},
+\qquad \mathbf{a}_t \in [-1, 1]^4, \; \mathbf{u}_t^{\pi} \in [\omega_{\min}, \omega_{\max}]^4,
+\label{eq:action_transformation}
+\end{align}
+donde $\mathbf{a}_{t}$ representa la salida de la \acrshort{ann}. En este caso se estableció que la acción mínima y máxima son $\omega_{\min}=-\text{0.6}\cdot\omega_{0}$ y $\omega_{\max}=\text{0.6}\cdot\omega_{0}$, respectivamente. 
+
+\subsection{\acrlong{ddpg}}
+\label{sec:train_ddpg}
+
+La implementación del algoritmo \acrshort{ddpg} usada en este trabajo se basa en la biblioteca \textit{Spinning Up} de \textit{OpenAI}. Para empezar a usar este algoritmo sólo se requiere inicializar los parámetros de las \acrshort{ann} del actor $\bm\theta_{\mu}$ y del crítico $\bm\theta_Q$ de forma aleatoria. Se asigna un copia de estos valores a parámetros de de referencia $\bar{\bm\theta}_{\mu}$ y $\bar{\bm\theta}_Q$. Para el actor se utilizó la misma configuración que la política global en \acrshort{gps}, así como la transformación \ref{eq:action_transformation}. Mientras que para el crítico se retoma esta misma arquitectura con la uníca excepción de la última capa, en ese este caso no se aplica función de activación y sólo tiene una dimensión el valor de salida. Se inicializa un buffer $\mathcal{D}$ vacío con una capacidad máxima de $10^5$. 
+
+Para no saturar $\mathcal{D}$ de experiencias que no correspondan al objetivo y así facilitar el aprendizaje en la región deseada, se optó por terminar los episodios de entrenamiento cuando el cuadricoptero este fuera de la región $10\times10\times10$ metros alrededor del origen.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[scale=0.6]{06_aplicacion_y_evaluacion_de_metodos_rl/ddpg_algorithm.png}
+\caption{Esquema de \acrshort{ddpg} basado en \cite{jeng23}.}
+\label{fig:ddpg_schema}
+\end{figure}
+
+Se realizaron 10 \textit{epochs} de entrenamiento, cada \textit{epoch} equivale a realizar $K=5$ episodios con una cantidad máxima de $T=750$ pasos de tiempo. Cada episodio empieza con el muestreo de una posición inicial $\mathbf{x}_1 \in \mathcal{X}$ (conjunto definido en la expresión \ref{eq:set_initial_conditions}). A partir de esta posición inicial se simula un episodio, en cada paso de tiempo se toma una acción a partir de la combinación de la salida del actor y el ruido $\mathcal{O}$, cuya configuración esta definida en \ref{tab:ou_noise}. A partir de la acción ruidosa se observan la recompensa y estado $r_t$, $\mathbf{x}_{t+1}$. Posteriormente, se alamacena la experiencia $(\mathbf{x}_{t}, \mathbf{u}_t, r_t, \mathbf{x}_{t+1})$ en $\mathcal{D}$. Cuando el $\mathcal{D}$ tenga la cantidad suficiente de experiencias se muestrea un \textit{mini-batch} de tamaño $N$ para calcular los gradientes $\nabla _{\bm{\theta}_{\mu}}J$ \ref{eq:actor_grad} y $\nabla_{\bm\theta_{Q}}\mathcal{L}$ \ref{eq:critic_grad} para optimizar $\bm\theta_{\mu}$ y $\bm\theta_{Q}$, los parámetros del actor y crítico, respectivamente. Para la optimización de las redes se utilizó \acrshort{adam}, se retomaron de \cite{singh19} los valores $\alpha_{\mu}=10^{-3}$ y $\alpha_{Q}=$ $10^{-4}$. También de \cite{singh19} se recuperaron los valores $\gamma=0.99$, $\tau=10^{-3}$ y $N=128$. 
+
+\section{Resultados}
+Esta sección comienza con la descripción de los resultados de optimización de distintas políticas usando los métodos \acrshort{ddpg} y \acrshort{gps}. Posteriormente, se mostrará un análisis de la estabilidad en trayectorias de vuelo con condiciones iniciales distintas a las usadas en el entrenamiento con la finalidad de evaluar la confiabilidad de estos métodos.
+
+\subsection{Resultados de entrenamiento \acrshort{gps}}
+Para validar la optimización de la política global al final de cada iteración de entrenamiento se realizaron $M=800$ trayecotorias de prueba con la configuración resultante de la \acrshort{ann}. Se calcularon los costos asociados a las $M$ trayectorias en cada iteración, la evolución de los costos se puede observar en la figura \ref{fig:gps_cost_evolution}, así como la evolución de los percentiles 25\%, 50\% y 75\% en el cuadro \ref{tab:gps_cost_evolution}. Se puede observar una disminución en la dispersión del costo por trayectoria en la evolución de iteraciones.
+\begin{figure}[h!]
+\centering
+\includegraphics[width=1.0\linewidth]{06_aplicacion_y_evaluacion_de_metodos_rl/policy_vs_control_cost.png}
+\caption{Evolución del costo acumulado $c(\bm{\tau})$ de $M=800$ trayectorias usando la ley de control $\mu$ (\acrshort{ilqr}) y la política global (\acrshort{gps}) $\pi_{\bm{\theta}}$ después de cada iteración de entrenamiento.}
+\label{fig:gps_cost_evolution}
+\end{figure}
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+\multirow{2}{*}{Iteración} & \multicolumn{3}{c|}{Percentil de $c(\bm{\tau})$} \\ \cline{2-4}
+                          & $25 \%$ & $50 \%$ & $75\%$ \\ \hline
+1. & $1.22 \times 10^5$ & $1.35 \times 10^5$ & $1.48 \times 10^5$ \\ 
+2. & $1.60 \times 10^5$ & $2.33 \times 10^5$ & $4.07 \times 10^5$ \\ 
+3. & $8.35 \times 10^4$ & $1.09 \times 10^5$ & $1.25 \times 10^5$ \\ 
+4. & $9.38 \times 10^4$ & $1.21 \times 10^5$ & $1.55 \times 10^5$ \\ 
+5. & $5.46 \times 10^4$ & $1.26 \times 10^5$ & $1.63 \times 10^5$ \\ 
+\hline
+\end{tabular}
+\caption{Evolución de los percentiles 25, 50 y 75 de la distribución del  costo $c(\bm\tau)$ de las trayectorias de prueba durante las iteraciones de optimización \acrshort{gps}.}
+\label{tab:gps_cost_evolution}
+\end{table}
+
+Otra métrica significativa medir la mejora de la política global es la norma del supremo sobre el estado final $\mathbf{x}_T$. En este caso se observa una disminución en la dispersión entre el primer cuartil y tercer cuartil de la distribución, al pasar del $[3.09, 6.54]$ al $[0.71, 2.69]$ como se puede observar en el cuadro \ref{tab:gps_norms_percetiles}.
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+\multirow{2}{*}{Iteración} & \multicolumn{3}{c|}{Percentil de $\|\mathbf{x}_T\|_{\infty}$} \\ \cline{2-4}
+                          & $25 \%$ & $50 \%$ & $75\%$ \\ \hline
+1. & $3.09$ & $4.32$ & $6.54$ \\ 
+2. & $11.00$ & $35.40$ & $99.40$ \\ 
+3. & $1.63 $ & $2.36$ & $2.72$ \\ 
+4. & $1.36$ & $2.08$ & $2.84$ \\ 
+5. & $0.71$ & $1.47$ & $2.69$ \\ 
+\hline
+\end{tabular}
+\caption{Evolución de los percentiles 25, 50 y 75 de la distribución de la norma del supremo de $\mathbf{x}_{T}$ de las trayectorias de prueba durante las iteraciones de optimización \acrshort{gps}.}
+\label{tab:gps_norms_percetiles}
+\end{table}
+
+Al hacer un análisis más profundo sobre las muestras de $\mathbf{x}_T$ se puede observar en el cuadro \ref{tab:gps_norms_percetiles} que todas las coordenadas tienen una dispersión muy baja salvo la variable $\psi$ (ver estimación de densidades en \ref{fig:gps_coordinates_density}). El primer y tercer cuartil de las muestras en $\psi$ son $[-1.3, 1.19]$, lo cual contrasta con los valores para $\theta$ y $\varphi$ que son $[-0.003, 0.007]$ y $[-0.004, 0.004]$, respectivamente.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.8\linewidth]{06_aplicacion_y_evaluacion_de_metodos_rl/gps_coordinates_density.png}
+\caption{Densidad de variables de estado al tiempo final $T=30$}
+\label{fig:gps_coordinates_density}
+\end{figure}
+
+
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|r|r|r|}
+\hline
+\textbf{Variable} & \textbf{25\%} & \textbf{50\%} & \textbf{75\%} \\ \hline
+$u$       & -0.074 & 0.003 & 0.086 \\ \hline
+$v$       & -0.121 & -0.025 & 0.036 \\ \hline
+$w$       & -0.226 & -0.001 & 0.100 \\ \hline
+$x$       & 0.042  & 0.094 & 0.232 \\ \hline
+$y$       & -0.010 & 0.091 & 0.153 \\ \hline
+$z$       & -0.217 & 0.015 & 0.161 \\ \hline
+$p$       & -0.005 & 0.000 & 0.007 \\ \hline
+$q$       & -0.008 & 0.000 & 0.004 \\ \hline
+$r$       & -0.203 & -0.042 & 0.037 \\ \hline
+$\psi$    & -\textbf{1.300} & \textbf{0.077} & \textbf{1.190} \\ \hline
+$\theta$  & -0.003 & 0.001 & 0.007 \\ \hline
+$\varphi$ & -0.004 & 0.000 & 0.004 \\ \hline
+\end{tabular}
+\caption{Percentiles 25, 50, 75 de las variables de estado al tiempo final $T=30$ segundos.}
+\label{tab:percentiles_state_gps}
+\end{table}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=1.0\linewidth]{06_aplicacion_y_evaluacion_de_metodos_rl/gps_states.png}
+\caption{Muestra de evolución de coordenadas inerciales $(x, y, z, \phi, \theta, \psi)$ y velocidades locales $(u, v, w, p, q, r)$ bajo la política $\mu_{\bm\theta}$ ajustada con el algoritmo \acrshort{gps} \ref{alg:gps}.}
+\label{fig:state_traj_gps}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\linewidth]{06_aplicacion_y_evaluacion_de_metodos_rl/gps_actions.png}
+\caption{Velocidad de rotores $(\omega_1, \omega_2, \omega_3, \omega_4)$ generadas por la política $\mu_{\bm\theta}$ asociadas a la trayectoria de estado mostrado en la figura \ref{fig:state_traj_gps}.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\linewidth]{06_aplicacion_y_evaluacion_de_metodos_rl/animation.png}
+\caption{Representación en tres dimensiones de una trayectoria de vuelo en el sistema inercial bajo la política $\mu_{\bm\theta}$ \acrshort{gps} durante los segundos 1, 5, 15 y 30, respectivamente}
+\label{fig:gps_results}
+\end{figure}
+
+\subsection{Resultados entrenamiento \acrshort{ddpg}}
+Para monitorear la optimización de la política durante las 10 \textit{epochs} se recuperaron la estimación de la media y desviación estándar del retorno asociado a los episodios realizados tanto en el entrenamiento como en la validación (ver figura \ref{fig:ddpg_return_evolution}). En ambas gráficas se observa una media muy baja y una desviación estándar muy grande lo cuál indica que no hay convergencia en el aprendizaje.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\linewidth]{06_aplicacion_y_evaluacion_de_metodos_rl/ddpg_return_evolution.png}
+\caption{Evolución de las estimaciones de la media y la desviación estándar del retorno de los episodios de entrenamiento (azul) y de validación (rojo).}
+\label{fig:ddpg_return_evolution}
+\end{figure}
+
+Adicionalmente se midió el tamaño promedio de los episodios realizados en el entrenamiento y validación. Se observó en la \textit{epoch} 9 que la política logró terminar todos los episodios en las trayectorias de entrenamiento mientras que en la validación alcanzó a realizar cerca de 600 pasos que equivale a 24 segundos de un máximo de 30. La cantidad de pasos realizados en promedio por \textit{epoch} se puede observar en \ref{tab:epoch_eplen}. Esto indica la política en la \textit{epoch} 9 logró mantenerse cerca del área de interés a pesar de que el retorno recompensas no fue constantemente alto. 
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+\multirow{2}{*}{\textbf{Epoch}} & \multicolumn{2}{c|}{\textbf{Tamaño de episodio}} \\
+\cline{2-3}
+ & \textbf{Entrenamiento} & \textbf{Prueba} \\
+\hline
+1 & 113.0625 & 82.77 \\
+\hline
+2 & 82.06383 & 67.47 \\
+\hline
+3 & 72.05882 & 104.56 \\
+\hline
+4 & 123.29032 & 95.6 \\
+\hline
+5 & 103.27273 & 141.49 \\
+\hline
+6 & 152.0 & 101.91 \\
+\hline
+7 & 113.84375 & 134.34 \\
+\hline
+8 & 230.92857 & 605.61 \\
+\hline
+\textbf{9} & \textbf{750.0} & \textbf{599.02} \\
+\hline
+10 & 313.64285 & 268.87 \\
+\hline
+\end{tabular}
+\caption{\textit{Epoch} vs. Tamaño de episodio promedio}
+\label{tab:epoch_eplen}
+\end{table}
+
+Se recuperó la política asociada a la \textit{epoch} 9. Al igual que en los resultados del método \acrshort{gps} se realizaron $800$ episodios de prueba y se analizaron sus respectivos estados finales $\mathbf{x}_T$. En el cuadro de percentiles \ref{tab:ddpg_coordinates_dispersion} y en las densidades de la figura \ref{fig:ddpg_coordinates_density} se puede observar que la dispersión de las coordenadas esta considerablemente lejos del origen salvo por las variables $u, v, p, q, \theta$ y $\psi$.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\linewidth]{06_aplicacion_y_evaluacion_de_metodos_rl/ddpg_coordinates_density.png}
+\caption{Densidad de variables de estado al tiempo final $T=30$.}
+\label{fig:ddpg_coordinates_density}
+\end{figure}
+
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|r|r|r|}
+\hline
+\textbf{Variable} & \textbf{25\%} & \textbf{50\%} & \textbf{75\%} \\ \hline
+$u$       & -0.771 & -0.158 & 0.653 \\ \hline
+$v$       & -0.811 & -0.081 & 0.749 \\ \hline
+$w$       & \textbf{-2.198} & \textbf{-1.562} & \textbf{-0.861} \\ \hline
+$x$       & \textbf{-9.372} & \textbf{-9.293} & \textbf{-9.161} \\ \hline
+$y$       & \textbf{-7.737} & \textbf{-7.649} & \textbf{-7.571} \\ \hline
+$z$       & \textbf{-3.488} & \textbf{-2.458} & \textbf{-1.489} \\ \hline
+$p$       & -0.049 & 0.027 & 0.092 \\ \hline
+$q$       & -0.066 & 0.006 & 0.082 \\ \hline
+$r$       & \textbf{5.057} & \textbf{8.870} & \textbf{13.300} \\ \hline
+$\psi$    & \textbf{-1.477} & \textbf{0.057} & \textbf{1.516} \\ \hline
+$\theta$  & 0.062 & 0.100 & 0.137 \\ \hline
+$\varphi$ & 0.242 & 0.296 & 0.316 \\ \hline
+\end{tabular}
+\caption{Percentiles 25, 50, 75 de las variables de estado al tiempo final $T=30$ segundos.}
+\label{tab:ddpg_coordinates_dispersion}
+\end{table}
+
+Adicionalmente se realizó un entrenamiento con $200$ \textit{epochs} en lugar de $10$–el resto de parámetros se preservaron–. No se observó una reducción en la desviación estándar ni mejora en el retorno medio. Además al realizar simulaciones de vuelo se observa que las acciones de la política de entrenamiento extendido, prácticamente, las acciones se volvieron constantes en contraste con aquellas de la política entrenada con 10 \textit{epochs} como se puede observar en la figura \ref{fig:ddpg_actions}. 
+
+\begin{figure*}[h!]
+    \centering
+    \subfloat[Trayectoria de acciones después de \\9 \textit{epochs}.]{%
+        \includegraphics[width=.55\linewidth]{06_aplicacion_y_evaluacion_de_metodos_rl/actions_0.png}%
+        \label{subfig:actions_0}
+    }
+    \subfloat[Trayectoria de acciones después de \\200 \textit{epochs}.]{%
+        \includegraphics[width=.55\linewidth]{06_aplicacion_y_evaluacion_de_metodos_rl/actions_1.png}%
+        \label{subfig:actions_1}
+    }
+    \caption{Trayectoria de acciones $\omega_1$, $\omega_2$, $\omega_3$ y $\omega_4$ realizadas durante simulaciones con política entrenada después de 10 y 200  \textit{epochs}.}
+    \label{fig:ddpg_actions}
+\end{figure*}
+
+
+
+\subsection{Análisis de estabilidad}
+El análisis de estabilidad de sistemas de control es crucial para determinar la confiabilidad del método o la ley del control en distintos escenarios \cite{Busoniu2018}. Retomando lo expuesto en la sección \ref{sec:stability}, informalmente, la estabilidad requiere la contención, esto es que, para unas condiciones iniciales (por ejemplo, dentro de la bola de radio $\delta$ con centro en el origen), el sistema permanece acotado (dentro de la bola de radio $\epsilon$). 
+
+Para analizar la estabilidad del sistema utilizando las diferentes estrategias de control expuestas en este trabajo, se estudió la capacidad del sistema mantenerse en una vecindad cerca del punto de equilibrio a lo largo del tiempo, empezando en un condición inicial distinta a dicho punto. Se consideraron seis conjuntos de condiciones iniciales, $\chi_{ux}$, $\chi_{vy}$, $\chi_{wz}$, $\chi_{p\varphi}$, $\chi_{q\theta}$ y $\chi_{r\psi}$, donde un elemento de cada conjunto representa una condición inicial aleatoria del sistema que vive en un vecindad cerca del origen.   
+
+El conjunto $\chi_{ux}$ se obtiene de seleccionar $N$ posiciones del cuadricoptero, donde los valores $(u, x)$ son muestras aleatorias de dos distribuciones uniformes continuas independientes en con rangos de valores $(x_{-}, x_{+})$ y  $(u_{-}, u_{+})$, respectivamente; el resto de coordenadas son nulas. Formalmente, este conjunto se expresa de la siguiente forma, 
+\begin{align}
+    \mathcal{X}_{ux} = \left\{[u, 0, 0, x, 0, 0, 0, 0, 0, 0, 0, 0]|\quad u \sim \mathcal{U}(u_{-}, u_{+})\text{, } x \sim \mathcal{U}(x_{-}, x_{+}) \text{: } u_{-} < u_{+}\text{, }x_{-} < x_{+}  \right\}.
+\end{align}
+Análogamente, se describen los conjuntos $\chi_{vy}$, $\chi_{wz}$, $\chi_{p\varphi}$, $\chi_{q\theta}$ y $\chi_{r\psi}$. Para efectos prácticos $N=10^4$.
+
+\subsubsection{Definición de los criterios de estabilidad}
+De acuerdo a la propiedades y resultados recuperados para las distintas estrategias de control en este trabajo, se requiere definir criterios de estabilidad distintos dependiendo del método. Esta diferencia en alcance de cada método implica que estos criterios no son directamente comparables. 
+
+Para analizar la estabilidad de los métodos siempre se verificará si la norma del supremo de coordenadas del estado correspondientes al tiempo final están dentro de una bola abierta de radio $\epsilon$. Lo que distinguirá a los distintos criterios será los grados de libertad considerados. 
+
+\subsubsection{Regiones de estabilidad para feedback linealizado}
+Debido a que la capacidad de control de este método sólo recae en la posición $z$ y la orientaciones $\psi, \theta$ y $\varphi$, el criterio de control es, 
+    \begin{align}
+    \label{eq:lin_creteria}
+        \|[w, z, p, q, r, \varphi, \theta, \psi]^{\top}\|_{\infty} < \epsilon \qquad \epsilon > 0.
+    \end{align}
+
+Se generaron únicamente trayectorias sobre los conjuntos asociados a las variables relevantes para este controlador: $\mathcal{X}_{wz}, \mathcal{X}_{p\varphi}, \mathcal{X}_{q\theta}$ y $\mathcal{X}_{r\psi}$ Los resultados de este usar este criterio usando $\epsilon=0.5$ sobre los conjuntos se encuentran en el cuadro \ref{tab:stability_region_linear} y la figura \ref{fig:stability_region_linear}. 
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\multirow{2}{*}{Conjunto} & \multirow{2}{*}{Rango} & \% de trayectorias estables \\ 
+                          &                          & $t=30$                        \\ \hline
+$\chi_{wz}$ & $\pm\text{10.0},\quad\pm\text{20.0}$ & 92.3       \\
+$\chi_{p\varphi}$ & $\pm\text{1.0},\quad\pm\pi/2$ & 24.7 \\
+$\chi_{q\theta}$ & $\pm\text{1.0},\quad\pm\pi/2$ & 27.6 \\
+$\chi_{r\psi}$ & $\pm\text{1.0},\quad\pm\pi/2$ & 97.5 \\
+total         & --            & 61.0 \\
+\hline
+\end{tabular}
+\caption{Tasas de trayectorias estables generadas por el controlador ajustado por \textit{feedback} linealizado hasta el segundo $30$ cuya región de estabilidad es mostrada en la figura \ref{fig:stability_region_linear}}
+\label{tab:stability_region_linear}
+\end{table}
+
+\begin{figure*}[h!]
+        \subfloat[Conjunto de condiciones iniciales $\mathcal{X}_{wz}$]{%
+            \includegraphics[width=.42\linewidth]{06_aplicacion_y_evaluacion_de_metodos_rl/stability_w-z_th-0_5_t--1_ord-inf_ex-uvxy.png}%
+            \label{subfig:z}%
+        }
+        \subfloat[Conjunto de condiciones iniciales $\mathcal{X}_{p\varphi}$]{%
+            \includegraphics[width=.42\linewidth]{06_aplicacion_y_evaluacion_de_metodos_rl/stability_p-varphi_th-0_5_t--1_ord-inf_ex-uvxy.png}%
+            \label{subfig:varphi}%
+        }\\
+        \subfloat[Conjunto de condiciones iniciales $\mathcal{X}_{q\theta}$]{%
+            \includegraphics[width=.42\linewidth]{06_aplicacion_y_evaluacion_de_metodos_rl/stability_q-theta_th-0_5_t--1_ord-inf_ex-uvxy.png}%
+            \label{subfig:theta}%
+        }
+        \subfloat[Conjunto de condiciones iniciales $\mathcal{X}_{r\psi}$]{%
+            \includegraphics[width=.42\linewidth]{06_aplicacion_y_evaluacion_de_metodos_rl/stability_r-psi_th-0_5_t--1_ord-inf_ex-uvxy.png}%
+            \label{subfig:psi}%
+        }
+        \caption{Cada gráfica de las \crefrange{subfig:z}{subfig:psi} representan las regiones de estabilidad encontradas a partir de $10,000$ simulaciones usando el controlador por retroalimentación de estados descrito en el algoritmo \ref{alg:Control_retro} en cada uno de los conjuntos mencionados. Cada coordenada marcada en azul representa una condición inicial a partir de las cuál su correspondiente trayectoria al tiempo $t=30$ cumplió el criterio de estabilidad \ref{eq:lin_creteria} con $\epsilon=0.5$. Las coordenadas rojas corresponden a trayectorias inestables.} 
+        \label{fig:stability_region_linear}
+\end{figure*}
+    
+\subsubsection{Regiones de estabilidad para \acrshort{ilqr}}
+Este método tiene una capacidad de control sobre todas la coordenadas \ref{eq:quad_position} asociadas al sistema dinámico completo. Por lo que el criterio se aplicará sobre el estado completo del cuadricoptero, eso es equivalente a la siguiente expresión,
+    \begin{align}
+    \label{eq:ilqr_criteria}
+        \|\mathbf{x}\|_{\infty} < \epsilon \qquad \epsilon > 0.
+    \end{align}
+En este caso se aplico el criterio sobre todos los conjuntos de condiciones iniciales. Los resultados se exhiben en el cuadro \ref{tab:stability_region_ilqr} 
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\multirow{2}{*}{Conjunto} & \multirow{2}{*}{Rango} & \% trayectorias estables \\ 
+                          &                          & $t=30$                        \\ \hline
+$\chi_{ux}$ & $\pm\text{10.0},\quad\pm\text{20.0}$ & 52.0       \\
+$\chi_{vy}$ & $\pm\text{10.0},\quad\pm\text{20.0}$ & 40.0       \\
+$\chi_{wz}$ & $\pm\text{10.0},\quad\pm\text{20.0}$ & 95.0       \\
+$\chi_{p\phi}$ & $\pm\text{1.0},\quad\pm\pi/2$ & 14.0 \\
+$\chi_{q\theta}$ & $\pm\text{1.0},\quad\pm\pi/2$ & 22.0 \\
+$\chi_{r\psi}$ & $\pm\text{1.0},\quad\pm\pi/2$ & 93.0 \\
+total         & --            & 53.0 \\
+\hline
+\end{tabular}
+\caption{Tasas de trayectorias estables generadas por el controlador ajustado por \acrshort{ilqr} hasta el segundo $30$ cuya región de estabilidad es mostrada en la figura \ref{fig:stability_region_ilqr}}
+\label{tab:stability_region_ilqr}
+\end{table}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=1.0\linewidth]{06_aplicacion_y_evaluacion_de_metodos_rl/stability_th-0_5_t--1_ord-inf.png}
+\caption{Regiones de estabilidad sobre los conjuntos $\chi_{vy}$, $\chi_{wz}$, $\chi_{p\varphi}$, $\chi_{q\theta}$ y $\chi_{r\psi}$ del controlador \acrshort{ilqr} determinadas por el criterio \ref{eq:ilqr_criteria} en el tiempo $t=30$ con $\epsilon = 0.5$.}
+\label{fig:stability_region_ilqr}
+\end{figure}
+
+
+\subsubsection{Regiones de estabilidad para \acrshort{gps}}
+A pesar de que la estrategia de control de este método fue entrenada a partir de controladores \acrshort{ilqr}, como se mostró en el cuadro \ref{tab:percentiles_state_gps}, la política no parece tener un control efectivo sobre la coordenada $\psi$ a diferencia del resto de posiciones angulares. En consecuencia, el criterio que se usará excluye a las variables $\psi$ y $r$,
+    \begin{align}
+    \label{eq:gps_criteria}
+        \|[u, v, w, x, y, z, p, q, \varphi, \theta]^{\top}\|_{\infty} < \epsilon \qquad \epsilon > 0.
+    \end{align}
+En este caso sí se tomaron en cuenta todos los conjuntos de prueba. Para validar la independencia con respecto al tiempo de la política \acrshort{gps} se consideraron distintos tiempos de corte para analizar, se usaron $15, 30$ y $60$ segundos. Los resultados se muestran en el cuadro \ref{tab:stability_region_gps}.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\multirow{2}{*}{Conjunto} & \multirow{2}{*}{Rango} & \multicolumn{3}{c|}{\% de trayectorias estables} \\ \cline{3-5}
+                          &                          & $t=15$ & $t=30$ & $t=60$                       \\ \hline
+$\chi_{ux}$ & $\pm\text{10.0},\quad\pm\text{20.0}$ & 20.0 & 24.0  & 25.0       \\
+$\chi_{vy}$ & $\pm\text{10.0},\quad\pm\text{20.0}$ & 24.0 & 33.0  & 33.0       \\
+$\chi_{wz}$ & $\pm\text{10.0},\quad\pm\text{20.0}$ & 42.0 & 43.0  & 43.0      \\
+$\chi_{p\phi}$ & $\pm\text{1.0},\quad\pm\pi/2$ & 5.0 & 6.0  & 6.0\\
+$\chi_{q\theta}$ & $\pm\text{1.0},\quad\pm\pi/2$ & 3.0 & 4.0  & 4.0\\
+$\chi_{r\psi}$ & $\pm\text{1.0},\quad\pm\pi/2$ & 68.0 & 70.0  & 56.0\\
+total         & --            & 27.0 & 30.0  & 28.0 \\
+\hline
+\end{tabular}
+\caption{El porcentaje de trayectorias estables generadas por la política entrenada con el método \acrshort{gps} en los segundos $15$, $30$ y $60$ cuyas regiones son mostradas en las figuras \ref{fig:stability_region_15}, \ref{fig:stability_region_30} y \ref{fig:stability_region_60}, respectivamente.}
+\label{tab:stability_region_gps}
+\end{table}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=1.0\linewidth]{06_aplicacion_y_evaluacion_de_metodos_rl/stability_th-0_5_t-15_ord-inf_ex-rpsi.png}
+\caption{Regiones de estabilidad sobre los conjuntos $\chi_{vy}$, $\chi_{wz}$, $\chi_{p\varphi}$, $\chi_{q\theta}$ y $\chi_{r\psi}$ del controlador \acrshort{gps} determinadas por el criterio \ref{eq:gps_criteria} en el tiempo $t=15$ con $\epsilon = 0.5$.}
+\label{fig:stability_region_15}
+\end{figure}
+
+\newpage
+\begin{figure}[h!]
+\centering
+\includegraphics[width=1.0\linewidth]{06_aplicacion_y_evaluacion_de_metodos_rl/stability_th-0_5_t-30_ord-inf_ex-rpsi.png}
+\caption{Regiones de estabilidad sobre los conjuntos $\chi_{vy}$, $\chi_{wz}$, $\chi_{p\varphi}$, $\chi_{q\theta}$ y $\chi_{r\psi}$ del controlador \acrshort{gps} determinadas por el criterio \ref{eq:gps_criteria} en el tiempo $t=30$ con $\epsilon = 0.5$.}
+\label{fig:stability_region_30}
+\end{figure}
+ 
+\begin{figure}[h!]
+\centering
+\includegraphics[width=1.0\linewidth]{06_aplicacion_y_evaluacion_de_metodos_rl/stability_th-0_5_t-60_ord-inf_ex-rpsi.png}
+\caption{Regiones de estabilidad sobre los conjuntos $\chi_{vy}$, $\chi_{wz}$, $\chi_{p\varphi}$, $\chi_{q\theta}$ y $\chi_{r\psi}$ del controlador \acrshort{gps} determinadas por el criterio \ref{eq:gps_criteria} en el tiempo $t=60$ con $\epsilon = 0.5$.}
+\label{fig:stability_region_60}
+\end{figure}
+
+\newpage
+\subsubsection{Regiones de estabilidad para \acrshort{ddpg}}
+Como se mostró en el cuadro \ref{tab:ddpg_coordinates_dispersion} la política entrenada \acrshort{ddpg} no mostró un control efectivo sobre las variables $w, x, y, z, r$ y $\psi$. Por lo que el criterio que se usó excluye estas variables, 
+\begin{align}
+    \|[u, v, p,q,\phi,\theta]^{\top}\|_{\infty} < 0.5. 
+\end{align}
+Al igual que para el criterio \acrshort{gps} se consideraron los conjuntos de condiciones iniciales $\mathcal{X}_{ux}, \mathcal{X}_{vy}, \mathcal{X}_{wz}, \mathcal{X}_{p\varphi}, \mathcal{X}_{q\theta}$ y $\mathcal{X}_{r\psi}$. También se validó la independencia de la política con respecto al tiempo al aplicar el criterio sobre los cortes de 15, 30 y 60 segundos. Los resultados se muestran en el cuadro \ref{tab:stability_region_ddpg}. 
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\multirow{2}{*}{Conjunto} & \multirow{2}{*}{Rango} & \multicolumn{3}{c|}{\% de trayectorias estables} \\ \cline{3-5}
+                          &                          & $t=15$ & $t=30$ & $t=60$                       \\ \hline
+$\chi_{ux}$ & $\pm\text{10.0},\quad\pm\text{20.0}$ & 0.0 & 0.0015  & 0.0       \\
+$\chi_{vy}$ & $\pm\text{10.0},\quad\pm\text{20.0}$ & 0.0008 & 0.0006  & 0.0004       \\
+$\chi_{wz}$ & $\pm\text{10.0},\quad\pm\text{20.0}$ & 0.0 & 0.0  & 0.0      \\
+$\chi_{p\phi}$ & $\pm\text{1.0},\quad\pm\pi/2$ & 0.0 & 0.0  & 0.0\\
+$\chi_{q\theta}$ & $\pm\text{1.0},\quad\pm\pi/2$ & 0.0 & 0.0  & 0.0\\
+$\chi_{r\psi}$ & $\pm\text{1.0},\quad\pm\pi/2$ & 0.0 & 0.0  & 0.0\\
+total         & --            & 0.0 & 0.0  & 0.0 \\
+\hline
+\end{tabular}
+\caption{El porcentaje de trayectorias estables generadas por la política entrenada con el método \acrshort{ddpg} en los segundos $15$, $30$ y $60$.}
+\label{tab:stability_region_ddpg}
+\end{table}
+

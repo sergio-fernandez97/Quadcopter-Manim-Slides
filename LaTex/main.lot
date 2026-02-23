@@ -1,0 +1,30 @@
+\babel@toc {spanish}{}\relax 
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {6.1}{\ignorespaces Rangos de las distribuciones uniformes del conjunto \ref {eq:set_initial_conditions}.}}{65}{table.caption.22}%
+\contentsline {table}{\numberline {6.2}{\ignorespaces Configuraciones de parámetros del costo \ref {eq:cost_quadcopter}}}{65}{table.caption.23}%
+\contentsline {table}{\numberline {6.3}{\ignorespaces Evolución de los percentiles 25, 50 y 75 de la distribución del costo $c(\bm {\tau })$ de las trayectorias de prueba durante las iteraciones de optimización \acrshort {gps}.}}{71}{table.caption.31}%
+\contentsline {table}{\numberline {6.4}{\ignorespaces Evolución de los percentiles 25, 50 y 75 de la distribución de la norma del supremo de $\mathbf {x}_{T}$ de las trayectorias de prueba durante las iteraciones de optimización \acrshort {gps}.}}{72}{table.caption.32}%
+\contentsline {table}{\numberline {6.5}{\ignorespaces Percentiles 25, 50, 75 de las variables de estado al tiempo final $T=30$ segundos.}}{73}{table.caption.34}%
+\contentsline {table}{\numberline {6.6}{\ignorespaces \textit {Epoch} vs. Tamaño de episodio promedio}}{75}{table.caption.39}%
+\contentsline {table}{\numberline {6.7}{\ignorespaces Percentiles 25, 50, 75 de las variables de estado al tiempo final $T=30$ segundos.}}{77}{table.caption.41}%
+\contentsline {table}{\numberline {6.8}{\ignorespaces Tasas de trayectorias estables generadas por el controlador ajustado por \textit {feedback} linealizado hasta el segundo $30$ cuya región de estabilidad es mostrada en la figura \ref {fig:stability_region_linear}}}{79}{table.caption.45}%
+\contentsline {table}{\numberline {6.9}{\ignorespaces Tasas de trayectorias estables generadas por el controlador ajustado por \acrshort {ilqr} hasta el segundo $30$ cuya región de estabilidad es mostrada en la figura \ref {fig:stability_region_ilqr}}}{79}{table.caption.48}%
+\contentsline {table}{\numberline {6.10}{\ignorespaces El porcentaje de trayectorias estables generadas por la política entrenada con el método \acrshort {gps} en los segundos $15$, $30$ y $60$ cuyas regiones son mostradas en las figuras \ref {fig:stability_region_15}, \ref {fig:stability_region_30} y \ref {fig:stability_region_60}, respectivamente.}}{82}{table.caption.51}%
+\contentsline {table}{\numberline {6.11}{\ignorespaces El porcentaje de trayectorias estables generadas por la política entrenada con el método \acrshort {ddpg} en los segundos $15$, $30$ y $60$.}}{85}{table.caption.56}%
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\babel@toc {spanish}{}\relax 
+\babel@toc {spanish}{}\relax 
+\babel@toc {english}{}\relax 
+\babel@toc {spanish}{}\relax 
+\babel@toc {english}{}\relax 
+\babel@toc {spanish}{}\relax 
+\babel@toc {spanish}{}\relax 
+\babel@toc {spanish}{}\relax 

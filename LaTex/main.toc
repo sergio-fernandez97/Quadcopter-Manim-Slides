@@ -1,0 +1,114 @@
+\babel@toc {spanish}{}\relax 
+\contentsline {chapter}{\'{I}ndice de figuras}{VII}{section*.4}%
+\contentsline {chapter}{\'{I}ndice de cuadros}{IX}{section*.5}%
+\contentsline {chapter}{\numberline {1}Introducción}{1}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Objetivo de este trabajo}{1}{section.1.1}%
+\contentsline {section}{\numberline {1.2}Modelo matemático de un cuadricóptero}{1}{section.1.2}%
+\contentsline {subsection}{\numberline {1.2.1}Sistemas de referencia}{1}{subsection.1.2.1}%
+\contentsline {subsection}{\numberline {1.2.2}Momentos, fuerzas y torques}{3}{subsection.1.2.2}%
+\contentsline {subsection}{\numberline {1.2.3}Ecuaciones de movimiento}{4}{subsection.1.2.3}%
+\contentsline {section}{\numberline {1.3}Trabajo relacionado}{5}{section.1.3}%
+\contentsline {chapter}{\numberline {2}Teoría de control}{7}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Sistemas de control}{7}{section.2.1}%
+\contentsline {subsection}{\numberline {2.1.1}Sistemas lineales}{8}{subsection.2.1.1}%
+\contentsline {subsection}{\numberline {2.1.2}Linealización de sistemas no lineales}{8}{subsection.2.1.2}%
+\contentsline {section}{\numberline {2.2}Controlabilidad}{9}{section.2.2}%
+\contentsline {section}{\numberline {2.3}Estabilidad}{10}{section.2.3}%
+\contentsline {subsection}{\numberline {2.3.1}Estabilización de sistemas lineales de control}{10}{subsection.2.3.1}%
+\contentsline {section}{\numberline {2.4}Control óptimo}{11}{section.2.4}%
+\contentsline {subsection}{\numberline {2.4.1}Planteamiento del problema}{12}{subsection.2.4.1}%
+\contentsline {subsection}{\numberline {2.4.2}Programación dinámica: Iteración de valores}{13}{subsection.2.4.2}%
+\contentsline {subsection}{\numberline {2.4.3}\acrfull {lqr}}{14}{subsection.2.4.3}%
+\contentsline {subsection}{\numberline {2.4.4}\acrfull {ilqr}}{15}{subsection.2.4.4}%
+\contentsline {subsubsection}{Estabilización de trayectorias locales para sistemas no lineales}{15}{subsubsection*.8}%
+\contentsline {subsubsection}{\textit {Backward pass}}{16}{subsubsection*.9}%
+\contentsline {subsubsection}{\textit {Forward pass}}{19}{subsubsection*.10}%
+\contentsline {subsubsection}{Búsqueda de Línea}{19}{subsubsection*.11}%
+\contentsline {subsubsection}{Regularización}{19}{subsubsection*.12}%
+\contentsline {section}{\numberline {2.5}Cuadricóptero como sistema de control}{20}{section.2.5}%
+\contentsline {subsection}{\numberline {2.5.1}Linealización de dinámica de vuelo de cuadricóptero}{23}{subsection.2.5.1}%
+\contentsline {subsection}{\numberline {2.5.2}Aplicación del teorema de asignación de polos}{24}{subsection.2.5.2}%
+\contentsline {chapter}{\numberline {3}Aprendizaje por refuerzo}{28}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Marco teórico}{28}{section.3.1}%
+\contentsline {subsection}{\numberline {3.1.1}Interfaz agente-entorno}{28}{subsection.3.1.1}%
+\contentsline {subsection}{\numberline {3.1.2}Proceso de decisión de Markov}{29}{subsection.3.1.2}%
+\contentsline {subsection}{\numberline {3.1.3}Episodios y retornos}{31}{subsection.3.1.3}%
+\contentsline {subsection}{\numberline {3.1.4}Política y funciones de valor}{32}{subsection.3.1.4}%
+\contentsline {section}{\numberline {3.2}Principio de Optimalidad}{33}{section.3.2}%
+\contentsline {subsection}{\numberline {3.2.1}Ecuación de Bellman}{33}{subsection.3.2.1}%
+\contentsline {subsection}{\numberline {3.2.2}Política óptima y funciones óptimas de valor}{34}{subsection.3.2.2}%
+\contentsline {section}{\numberline {3.3}Aprendizaje en sistemas de control}{35}{section.3.3}%
+\contentsline {subsection}{\numberline {3.3.1}Procesos de decisión de Markov en espacios continuos}{36}{subsection.3.3.1}%
+\contentsline {subsection}{\numberline {3.3.2}Configuraciones de aprendizaje en espacios continuos}{37}{subsection.3.3.2}%
+\contentsline {chapter}{\numberline {4}Búsqueda guiada de políticas (GPS)}{40}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Definición del problema}{40}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Optimización}{41}{section.4.2}%
+\contentsline {subsection}{\numberline {4.2.1}\acrshort {badmm}}{42}{subsection.4.2.1}%
+\contentsline {subsection}{\numberline {4.2.2}\acrshort {badmm} para \acrshort {gps}}{42}{subsection.4.2.2}%
+\contentsline {section}{\numberline {4.3}Optimización de trayectorias locales}{45}{section.4.3}%
+\contentsline {subsection}{\numberline {4.3.1}Optimización de la variable primaria}{47}{subsection.4.3.1}%
+\contentsline {subsection}{\numberline {4.3.2}Optimización del multiplicador de Lagrange}{48}{subsection.4.3.2}%
+\contentsline {section}{\numberline {4.4}Optimización de la política global}{48}{section.4.4}%
+\contentsline {subsection}{\numberline {4.4.1}Optimización de la ley de control}{49}{subsection.4.4.1}%
+\contentsline {subsection}{\numberline {4.4.2}Optimización de la covarianza de la política}{50}{subsection.4.4.2}%
+\contentsline {section}{\numberline {4.5}Algoritmo}{50}{section.4.5}%
+\contentsline {chapter}{\numberline {5}Aprendizaje por diferencias temporales}{52}{chapter.5}%
+\contentsline {section}{\numberline {5.1}\textit {Q-learning}}{52}{section.5.1}%
+\contentsline {subsection}{\numberline {5.1.1}Derivación del algoritmo}{53}{subsection.5.1.1}%
+\contentsline {subsection}{\numberline {5.1.2}Propiedades}{54}{subsection.5.1.2}%
+\contentsline {subsection}{\numberline {5.1.3}Dilema exploración-explotación}{54}{subsection.5.1.3}%
+\contentsline {subsection}{\numberline {5.1.4}Algoritmo}{55}{subsection.5.1.4}%
+\contentsline {section}{\numberline {5.2}\acrlong {ddpg}}{56}{section.5.2}%
+\contentsline {subsection}{\numberline {5.2.1}Distribución de estados con descuento}{56}{subsection.5.2.1}%
+\contentsline {subsection}{\numberline {5.2.2}Actor-Crítico}{57}{subsection.5.2.2}%
+\contentsline {subsection}{\numberline {5.2.3}Actor: \textit {Deterministic Policy Gradient}}{57}{subsection.5.2.3}%
+\contentsline {subsection}{\numberline {5.2.4}Crítico: \textit {Deep Q-learning}}{59}{subsection.5.2.4}%
+\contentsline {subsubsection}{Política de comportamiento}{60}{subsubsection*.18}%
+\contentsline {subsection}{\numberline {5.2.5}Algoritmo}{61}{subsection.5.2.5}%
+\contentsline {chapter}{\numberline {6}Aplicación y evaluación de métodos RL}{63}{chapter.6}%
+\contentsline {section}{\numberline {6.1}Planteamiento del problema}{63}{section.6.1}%
+\contentsline {subsection}{\numberline {6.1.1}Configuración del entorno}{63}{subsection.6.1.1}%
+\contentsline {subsection}{\numberline {6.1.2}Función de costo y recompensa}{64}{subsection.6.1.2}%
+\contentsline {subsubsection}{Diseño de costo para \acrshort {gps}}{64}{subsubsection*.21}%
+\contentsline {subsubsection}{Diseño de recompensa \acrshort {ddpg}}{67}{subsubsection*.27}%
+\contentsline {section}{\numberline {6.2}Proceso de entrenamiento}{67}{section.6.2}%
+\contentsline {subsection}{\numberline {6.2.1}\acrlong {gps}}{68}{subsection.6.2.1}%
+\contentsline {subsection}{\numberline {6.2.2}\acrlong {ddpg}}{69}{subsection.6.2.2}%
+\contentsline {section}{\numberline {6.3}Resultados}{70}{section.6.3}%
+\contentsline {subsection}{\numberline {6.3.1}Resultados de entrenamiento \acrshort {gps}}{71}{subsection.6.3.1}%
+\contentsline {subsection}{\numberline {6.3.2}Resultados entrenamiento \acrshort {ddpg}}{75}{subsection.6.3.2}%
+\contentsline {subsection}{\numberline {6.3.3}Análisis de estabilidad}{78}{subsection.6.3.3}%
+\contentsline {subsubsection}{Definición de los criterios de estabilidad}{78}{subsubsection*.43}%
+\contentsline {subsubsection}{Regiones de estabilidad para feedback linealizado}{78}{subsubsection*.44}%
+\contentsline {subsubsection}{Regiones de estabilidad para \acrshort {ilqr}}{79}{subsubsection*.47}%
+\contentsline {subsubsection}{Regiones de estabilidad para \acrshort {gps}}{80}{subsubsection*.50}%
+\contentsline {subsubsection}{Regiones de estabilidad para \acrshort {ddpg}}{84}{subsubsection*.55}%
+\contentsline {chapter}{\numberline {7}Conclusión}{86}{chapter.7}%
+\contentsline {chapter}{\numberline {A}Hiperparámetros}{88}{appendix.Alph1}%
+\contentsline {section}{\numberline {A.1}Configuración de entorno}{88}{section.Alph1.1}%
+\contentsline {section}{\numberline {A.2}Búsqueda de línea \& regularización (\acrshort {ilqr})}{88}{section.Alph1.2}%
+\contentsline {section}{\numberline {A.3}\acrshort {ddpg}}{89}{section.Alph1.3}%
+\contentsline {subsection}{\numberline {A.3.1}\acrshort {ou}}{89}{subsection.Alph1.3.1}%
+\contentsline {section}{\numberline {A.4}\acrshort {gps}}{89}{section.Alph1.4}%
+\contentsline {chapter}{\numberline {B}Redes neuronales artificiales}{91}{appendix.Alph2}%
+\contentsline {section}{\numberline {B.1}Redes unidireccionales (\textit {feedforward})}{91}{section.Alph2.1}%
+\contentsline {subsection}{\numberline {B.1.1}Arquitectura}{92}{subsection.Alph2.1.1}%
+\contentsline {subsubsection}{Función de activación}{92}{subsubsection*.62}%
+\contentsline {section}{\numberline {B.2}Entrenamiento}{93}{section.Alph2.2}%
+\contentsline {subsection}{\numberline {B.2.1}Aprendizaje supervisado}{94}{subsection.Alph2.2.1}%
+\contentsline {subsection}{\numberline {B.2.2}Descenso de gradiente}{95}{subsection.Alph2.2.2}%
+\contentsline {chapter}{\numberline {C}Métodos Analíticos y Numéricos}{96}{appendix.Alph3}%
+\contentsline {section}{\numberline {C.1}Aproximación estocástica}{96}{section.Alph3.1}%
+\contentsline {subsection}{\numberline {C.1.1}Motivación}{96}{subsection.Alph3.1.1}%
+\contentsline {subsection}{\numberline {C.1.2}Método Robbins-Monro}{97}{subsection.Alph3.1.2}%
+\contentsline {subsubsection}{Aplicación a la estimación del promedio}{98}{subsubsection*.64}%
+\contentsline {section}{\numberline {C.2}Divergencia Kullback-Leibler para distribuciones normales multivariadas}{98}{section.Alph3.2}%
+\contentsline {chapter}{Bibliograf\'{\i }a}{101}{appendix*.65}%
+\babel@toc {spanish}{}\relax 
+\babel@toc {spanish}{}\relax 
+\babel@toc {english}{}\relax 
+\babel@toc {spanish}{}\relax 
+\babel@toc {english}{}\relax 
+\babel@toc {spanish}{}\relax 
+\babel@toc {spanish}{}\relax 
+\babel@toc {spanish}{}\relax 

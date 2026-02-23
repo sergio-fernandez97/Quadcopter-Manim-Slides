@@ -1,0 +1,174 @@
+{
+  "chapters": [
+    {
+      "title": "Introducción",
+      "slug": "01_introduccion",
+      "line_start": 237,
+      "line_end": 516
+    },
+    {
+      "title": "Teoría de control",
+      "slug": "02_teoria_de_control",
+      "line_start": 517,
+      "line_end": 1638
+    },
+    {
+      "title": "Aprendizaje por refuerzo",
+      "slug": "03_aprendizaje_por_refuerzo",
+      "line_start": 1639,
+      "line_end": 1886
+    },
+    {
+      "title": "Búsqueda guiada de políticas (GPS)",
+      "slug": "04_busqueda_guiada_de_politicas_gps",
+      "line_start": 1887,
+      "line_end": 2241
+    },
+    {
+      "title": "Aprendizaje por diferencias temporales",
+      "slug": "05_aprendizaje_por_diferencias_temporales",
+      "line_start": 2242,
+      "line_end": 2514
+    },
+    {
+      "title": "Aplicación y evaluación de métodos RL",
+      "slug": "06_aplicacion_y_evaluacion_de_metodos_rl",
+      "line_start": 2515,
+      "line_end": 3055
+    },
+    {
+      "title": "Conclusión",
+      "slug": "07_conclusion",
+      "line_start": 3056,
+      "line_end": 3071
+    },
+    {
+      "title": "Hiperparámetros",
+      "slug": "08_hiperparametros",
+      "line_start": 3072,
+      "line_end": 3162
+    },
+    {
+      "title": "Redes neuronales artificiales",
+      "slug": "09_redes_neuronales_artificiales",
+      "line_start": 3163,
+      "line_end": 3371
+    },
+    {
+      "title": "Métodos Analíticos y Numéricos",
+      "slug": "10_metodos_analiticos_y_numericos",
+      "line_start": 3372,
+      "line_end": 3587
+    }
+  ],
+  "figures": [
+    {
+      "original_path": "quadcopter_model/reference_system.png",
+      "filename": "reference_system.png"
+    },
+    {
+      "original_path": "cap_3/framework-RL.jpeg",
+      "filename": "framework-RL.jpeg"
+    },
+    {
+      "original_path": "cap_4/rl_configuration.png",
+      "filename": "rl_configuration.png"
+    },
+    {
+      "original_path": "cap_7/actor_critic.png",
+      "filename": "actor_critic.png"
+    },
+    {
+      "original_path": "results/sims/linear/states.png",
+      "filename": "states.png"
+    },
+    {
+      "original_path": "results/reward/test_distribution.png",
+      "filename": "test_distribution.png"
+    },
+    {
+      "original_path": "results/sims/ilqr/states.png",
+      "filename": "states.png"
+    },
+    {
+      "original_path": "results/sims/ilqr/actions.png",
+      "filename": "actions.png"
+    },
+    {
+      "original_path": "results/gps_algorithm.png",
+      "filename": "gps_algorithm.png"
+    },
+    {
+      "original_path": "results/ddpg_algorithm.png",
+      "filename": "ddpg_algorithm.png"
+    },
+    {
+      "original_path": "results/loss/gps/policy_vs_control_cost.png",
+      "filename": "policy_vs_control_cost.png"
+    },
+    {
+      "original_path": "results/sims/gps/gps_coordinates_density.png",
+      "filename": "gps_coordinates_density.png"
+    },
+    {
+      "original_path": "results/sims/gps/states.png",
+      "filename": "states.png"
+    },
+    {
+      "original_path": "results/sims/gps/actions.png",
+      "filename": "actions.png"
+    },
+    {
+      "original_path": "results/sims/gps/animation.png",
+      "filename": "animation.png"
+    },
+    {
+      "original_path": "results/loss/ddpg_return_evolution.png",
+      "filename": "ddpg_return_evolution.png"
+    },
+    {
+      "original_path": "results/sims/ddpg/ddpg_coordinates_density.png",
+      "filename": "ddpg_coordinates_density.png"
+    },
+    {
+      "original_path": "results/sims/ddpg/actions_0.png",
+      "filename": "actions_0.png"
+    },
+    {
+      "original_path": "results/sims/ddpg/actions_1.png",
+      "filename": "actions_1.png"
+    },
+    {
+      "original_path": "results/stability/linear/stability_w-z_th-0_5_t--1_ord-inf_ex-uvxy.png",
+      "filename": "stability_w-z_th-0_5_t--1_ord-inf_ex-uvxy.png"
+    },
+    {
+      "original_path": "results/stability/linear/stability_p-varphi_th-0_5_t--1_ord-inf_ex-uvxy.png",
+      "filename": "stability_p-varphi_th-0_5_t--1_ord-inf_ex-uvxy.png"
+    },
+    {
+      "original_path": "results/stability/linear/stability_q-theta_th-0_5_t--1_ord-inf_ex-uvxy.png",
+      "filename": "stability_q-theta_th-0_5_t--1_ord-inf_ex-uvxy.png"
+    },
+    {
+      "original_path": "results/stability/linear/stability_r-psi_th-0_5_t--1_ord-inf_ex-uvxy.png",
+      "filename": "stability_r-psi_th-0_5_t--1_ord-inf_ex-uvxy.png"
+    },
+    {
+      "original_path": "results/stability/ilqr/stability_th-0_5_t--1_ord-inf.png",
+      "filename": "stability_th-0_5_t--1_ord-inf.png"
+    },
+    {
+      "original_path": "results/stability/gps/stability_th-0_5_t-15_ord-inf_ex-rpsi.png",
+      "filename": "stability_th-0_5_t-15_ord-inf_ex-rpsi.png"
+    },
+    {
+      "original_path": "results/stability/gps/stability_th-0_5_t-30_ord-inf_ex-rpsi.png",
+      "filename": "stability_th-0_5_t-30_ord-inf_ex-rpsi.png"
+    },
+    {
+      "original_path": "results/stability/gps/stability_th-0_5_t-60_ord-inf_ex-rpsi.png",
+      "filename": "stability_th-0_5_t-60_ord-inf_ex-rpsi.png"
+    }
+  ]
+}

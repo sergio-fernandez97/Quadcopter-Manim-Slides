@@ -1,0 +1,64 @@
+This is BibTeX, Version 0.99d (TeX Live 2025)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: main.aux
+The style file: babplain.bst
+Database file #1: references.bib
+Warning--entry type for "MathWorldBrentsMethod" isn't style-file defined
+--line 342 of file references.bib
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Warning--empty language in berkeley2017deeprl
+Warning--empty journal in baeldung2023RL
+Warning--empty journal in fang-i2019
+Warning--empty booktitle in Han2018AMI
+Warning--empty publisher in Moerland2018
+Warning--can't use both volume and number fields in silver14
+Warning--empty publisher in Sontag1998
+Warning--empty publisher in underactuated
+Too many commas in name 1 of "Kenji Doya, Shin Ishii, Alexandre Pouget, Rajesh P.N Rao" for entry Todorov2006
+while executing---line 1382 of file babplain.bst
+Too many commas in name 1 of "Kenji Doya, Shin Ishii, Alexandre Pouget, Rajesh P.N Rao" for entry Todorov2006
+while executing---line 1382 of file babplain.bst
+Warning--empty language in michaelrzhang-gps
+Warning--empty publisher in Shiyu2022
+You've used 61 entries,
+            2788 wiz_defined-function locations,
+            995 strings with 16887 characters,
+and the built_in function-call counts, 22761 in all, are:
+= -- 1906
+> -- 900
+< -- 9
++ -- 359
+- -- 294
+* -- 2331
+:= -- 3217
+add.period$ -- 151
+call.type$ -- 61
+change.case$ -- 312
+chr.to.int$ -- 0
+cite$ -- 71
+duplicate$ -- 1216
+empty$ -- 2260
+format.name$ -- 567
+if$ -- 4834
+int.to.chr$ -- 0
+int.to.str$ -- 61
+missing$ -- 70
+newline$ -- 285
+num.names$ -- 128
+pop$ -- 615
+preamble$ -- 1
+purify$ -- 266
+quote$ -- 0
+skip$ -- 650
+stack$ -- 0
+substring$ -- 602
+swap$ -- 517
+text.length$ -- 9
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 208
+warning$ -- 10
+while$ -- 146
+width$ -- 63
+write$ -- 642
+(There were 2 error messages)
