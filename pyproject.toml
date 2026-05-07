@@ -5,8 +5,10 @@ description = "Animated presentation for dissertation on Quadcopter Control usin
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    "ipython>=9.10.0",
     "manim>=0.18.0",
     "manim-slides>=5.5.3",
+    "openai>=2.24.0",
     "pyqt6>=6.10.2",
 ]
 
