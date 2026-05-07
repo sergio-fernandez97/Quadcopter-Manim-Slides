@@ -74,6 +74,15 @@ Each slide script includes the author, the Manim scene class it defines, and a s
    uv sync
    ```
 
+5. Playwright MCP Setup:
+   ```bash
+   claude mcp add playwright npx @playwright/mcp@latest
+   ```
+
+6. Context7 MCP Setup:
+   ```bash
+   claude mcp add context7 -- npx -y @upstash/context7-mcp@latest
+   ```
 ### Verify Installation
 
 ```bash
