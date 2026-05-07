@@ -65,6 +65,14 @@ class TopicSlide(Slide):
 
 ## Conventions
 
+- **Manim Slides Development Rule**: Whenever the agent generates, edits, or debugs code related to **Manim** or **manim-slides**, it MUST use the `context7` MCP server as the primary reference source.
+the agent MUST:
+
+1. Query the `context7` MCP server before writing code.
+2. Retrieve relevant API usage, examples, or documentation.
+3. Ground generated code in the retrieved context.
+4. Prefer Context7 references over internal memory when conflicts exist.
+
 - **File naming**: `NN_topic_name.py` (two-digit prefix controls order)
 - **Class naming**: `CamelCaseSlide` (must end with "Slide")
 - **Indentation**: 4 spaces
@@ -81,3 +89,44 @@ class TopicSlide(Slide):
 - **Concise text**: Minimize words in theorems and definitions. You may rephrase user-provided content for brevity while preserving meaning.
 - When adding slides: create file in `slides/`, add scene path to `slides.toml`
 - Keep generated media (`media/`) out of commits; only commit source files under `slides/`
+
+## `/slide` Skill — Draft-to-Slide Pipeline
+
+Create or update slides from markdown drafts in `./draft/`:
+
+```bash
+/slide draft/14_td_learning.md          # full pipeline: parse → build → validate → render
+/slide td_learning                       # matches draft by topic name
+/slide draft/14_td_learning.md --no-render    # skip rendering (fast iteration)
+/slide draft/14_td_learning.md --no-validate  # skip math + layout validation
+```
+
+### Draft format
+
+Markdown files in `./draft/` with YAML frontmatter. See `draft/TEMPLATE.md` for the full reference. Drafts can cite LaTeX chapters for equation sourcing:
+
+```markdown
+---
+title: "Temporal Difference Learning"
+slide_number: 14
+---
+
+<!-- cite: LaTex/chapters/05_aprendizaje_por_diferencias_temporales.tex, sections: 5.1 -->
+
+# Temporal Difference Learning
+
+## Key Ideas
+- Bullet points for key concepts
+
+$$V(s_t) \leftarrow V(s_t) + \alpha [r_{t+1} + \gamma V(s_{t+1}) - V(s_t)]$$
+
+> **Definition**: TD error definition here.
+```
+
+### Pipeline
+
+The skill orchestrates these agents: `draft-reader` + `style-inspector` (parallel) → `slide-builder`/`slide-updater` → `math-validator` → render → `slide-layout-validator`.
+
+### Auto-render hook
+
+A PostToolUse hook auto-renders slides when any `slides/*.py` file is created or modified via Write/Edit tools.
