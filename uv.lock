@@ -674,7 +674,7 @@ wheels = [
 
 [[package]]
 name = "manim-slides"
-version = "5.5.3"
+version = "5.6.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "av" },
@@ -694,9 +694,9 @@ dependencies = [
     { name = "rtoml" },
     { name = "tqdm" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/13/2f/8a64eb0f28009a0692dd5a2a712b7f008e2361a08d1bf78a3ae5d3a5fa60/manim_slides-5.5.3.tar.gz", hash = "sha256:8d0c9cc97596259eead0ff1c0ad14755adaa1de8033089d3bbb62779de2d77ea", size = 1977098, upload-time = "2026-01-13T15:48:57.447Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/85/62/9cb29dee734b4cadc3024e99d43bb72fb7e55ef05b592acb56101661265b/manim_slides-5.6.0.tar.gz", hash = "sha256:81748fe353ed3cb850aca62688f2e12dbea2146a9fc003244d47881f3ebd1ec6", size = 1994508, upload-time = "2026-04-15T13:33:39.587Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/55/ec/86784054bbf6feec1188ecde316847fc8447a6ed37179a0be3cf46cd9694/manim_slides-5.5.3-py3-none-any.whl", hash = "sha256:b2a3d28c33db2d44cbe7904d996b7654e7fe2b14c2e259faed4e9d0c231dd387", size = 67760, upload-time = "2026-01-13T15:48:56.047Z" },
+    { url = "https://files.pythonhosted.org/packages/2c/44/5384d2814db1d359ce408d11090cc7157b7bc8cd3c82198b31018fbaae1e/manim_slides-5.6.0-py3-none-any.whl", hash = "sha256:63d08a707b9ed8e8226ad07f374876d8b1f6d3ddd1fe05dc9673d42df37fb1ac", size = 69133, upload-time = "2026-04-15T13:33:37.829Z" },
 ]
 
 [[package]]
@@ -1554,7 +1554,7 @@ dependencies = [
 requires-dist = [
     { name = "ipython", specifier = ">=9.10.0" },
     { name = "manim", specifier = ">=0.18.0" },
-    { name = "manim-slides", specifier = ">=5.5.3" },
+    { name = "manim-slides", specifier = ">=5.6.0" },
     { name = "openai", specifier = ">=2.24.0" },
     { name = "pyqt6", specifier = ">=6.10.2" },
 ]
