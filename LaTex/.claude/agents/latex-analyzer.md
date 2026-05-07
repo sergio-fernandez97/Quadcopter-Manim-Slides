@@ -1,7 +1,7 @@
 ---
 name: latex-analyzer
 description: "Use this agent for parsing `main.tex` and producing a JSON manifest of chapters, their line ranges, and all figure references."
-model: sonnet
+model: inherit
 color: green
 ---
 

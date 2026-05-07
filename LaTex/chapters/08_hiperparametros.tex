@@ -1,7 +1,9 @@
 \chapter{Hiperparámetros}
+\label{appendix:hiperparametros}
 \section{Configuración de entorno}
 \begin{table}[h]
 \centering
+\caption{Hiperparámetros de la configuración del entorno de simulación.}
 \begin{tabular}{|l|l|l|}
 \hline
 \textbf{Símbolo} & \textbf{Significado} & \textbf{Valor} \\ \hline
@@ -11,9 +13,10 @@ $\Delta t$ & Tamaño de paso de simulación & 0.04 \\ \hline
 \end{tabular}
 \end{table}
 
-\section{Búsqueda de línea \& regularización (\acrshort{ilqr})}
+\section{Búsqueda de línea \& regularización de \acrshort{ilqr}}
 \begin{table}[H]
 \centering
+\caption{Parámetros de búsqueda de línea y regularización para \acrshort{ilqr}.}
 \begin{tabular}{|l|l|l|}
 \hline
 \textbf{Símbolo} & \textbf{Significado} & \textbf{Valor} \\ \hline
@@ -30,6 +33,7 @@ $\epsilon_{tol}$ & Tolerancia de convergencia & 0.1 \\ \hline
 \section{\acrshort{ddpg}}
 \begin{table}[H]
 \centering
+\caption{Hiperparámetros del entrenamiento con \acrshort{ddpg}.}
 \begin{tabular}{|l|l|l|}
 \hline
 \textbf{Símbolo} & \textbf{Significado} & \textbf{Valor} \\ \hline
@@ -56,6 +60,7 @@ $\tau$ & Coeficiente de actualización suave & $10^{-3}$ \\ \hline
 \label{tab:ou_noise}
 \begin{table}[H]
 \centering
+\caption{Parámetros del ruido \acrshort{ou}.}
 \begin{tabular}{|l|l|l|}
 \hline
 \textbf{Símbolo} & \textbf{Significado} & \textbf{Valor} \\\hline
@@ -69,6 +74,7 @@ $\sigma_{\text{min}}$ & Volatilidad final (mínima) & 0.01 \\ \hline
 \section{\acrshort{gps}}
 \begin{table}[h]
 \centering
+\caption{Hiperparámetros del entrenamiento con \acrshort{gps}.}
 \begin{tabular}{|l|l|l|}
 \hline
 \textbf{Símbolo} & \textbf{Significado} & \textbf{Valor} \\ \hline

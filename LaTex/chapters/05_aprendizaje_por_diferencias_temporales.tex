@@ -1,107 +1,143 @@
 \chapter{Aprendizaje por diferencias temporales} 
 \label{chapter:model_free}
 
-
+ 
  El \textbf{aprendizaje por diferencias temporales} es un enfoque particular de los métodos sin modelos de aprendizaje por refuerzo. Combina ideas de los métodos Monte Carlo \footnote{Este tipo de métodos son instancia del enfoque de aprendizaje sin modelos. Los métodos Monte Carlo se basan en estimar funciones de valor por medio de promediar muestras de retornos, que se obtienen en múltiples simulaciones.}
- y principios de la programación dinámica \cite{Sutton2000}. Por un lado, al igual que los métodos de Monte Carlo, los métodos por diferencias temporales aprenden de acuerdo a la experiencia sin tener conocimiento de un modelo del entorno. Por otro lado, al igual que en programación dinámica, los métodos de diferencias temporales actualizan sus estimaciones de acuerdo a la estimaciones aprendidas anteriormente (\textit{bootstrapping}). 
+ y principios de la programación dinámica \cite{Sutton2000}. Por un lado, al igual que los métodos de Monte Carlo, los métodos por diferencias temporales aprenden de acuerdo con la experiencia sin tener conocimiento de un modelo del entorno. Por otro lado, al igual que en programación dinámica, los métodos de diferencias temporales actualizan sus estimaciones a partir de estimaciones aprendidas previamente. 
 
 El principio fundamental de los métodos de diferencias temporales o \textbf{\acrfull{td}} es que no se requiere 
 el conocimiento de toda la trayectoria de información obtenida a lo largo de un episodio para actualizar las funciones de valor. En cambio, basta con tener la información inmediata obtenida de la interacción entre el agente y el entorno en un solo paso de tiempo.
 
 
-Este capítulo comenzará por discutir el método \textit{Q-learning}. Este método es un algoritmo de control que aproxima directamente la función de valor óptima $Q_{*}$, independientemente de la política que se sigue \cite{Sutton2018}. A partir de \textit{Q-learning} se introducirá el método \acrshort{ddpg}, que se basa en el aprendizaje por diferencias temporales usando redes neuronales artificiales. Este método se enfoca en resolver tareas de control en problemas con espacios continuos, como el control de la dinámica de vuelo de un cuadricóptero. 
+Este capítulo comenzará por discutir el método \textit{Q-learning}. Este método es un algoritmo de control que aproxima directamente la función de valor óptima $Q_{*}$ definida en la \eqreftext{eq:optimal_Q}, independientemente de la política que se sigue \cite{Sutton2018}. A partir de \textit{Q-learning} se introducirá el método \acrshort{ddpg}, que se basa en el aprendizaje por diferencias temporales usando redes neuronales artificiales. Este método se enfoca en resolver tareas de control en problemas con espacios continuos, como el control de la dinámica de vuelo de un cuadricóptero. 
 
 \section{\textit{Q-learning}}
-El algoritmo de \textit{Q-learning} es resultado de la aplicación de aproximación estocástica para resolver la ecuación óptima de Bellman en terminos de la función de valor acción, dada por la siguiente expresión,
+El algoritmo de \textit{Q-learning} es resultado de la aplicación de aproximación estocástica para resolver la ecuación óptima de Bellman en términos de la función de valor acción, dada por la siguiente expresión,
 \begin{align}
     Q_{*}(x, u) = \mathbb{E}[R_{t+1} + \gamma\max_{u'}Q_{*}(X_{t+1}, u')|X_t=x,U_t=u].
     \label{eq:Bellman_opt_Q}
 \end{align}
 
-La ventaja de estimar la ecuación \ref{eq:Bellman_opt_Q} es que no depende de una política específica. En lugar de ello, se puede utilizar muestras generadas por varias políticas. El fin de este método no es evaluar en si una política, si no que a partir de la aproximación de \ref{eq:Bellman_opt_Q} construir una política óptima.  
+La ventaja de estimar la \eqreftext{eq:Bellman_opt_Q} es que depende de una política voraz. Sin embargo, en la práctica pueden utilizarse muestras generadas por distintas políticas para encontrar dicha política. El objetivo de este método no es evaluar una política en particular, sino construir una política óptima a partir de la aproximación de la \eqreftext{eq:Bellman_opt_Q}.
 
 \subsection{Derivación del algoritmo}
-Basado en la derivación expuesta en \cite{Shiyu2022} el algoritmo de \textit{Q-learning} se obtiene de aplicar el método de \acrfull{rm} \ref{sec:RM} para estimar la ecuación óptima de Bellman. En este caso se busca resolver la ecuación $g(Q^{*}(x, u))=0$, cuyo lado izquierdo esta dado por la siguiente expresión, 
+Basado en la derivación expuesta en \cite{Shiyu2022}, el algoritmo de \textit{Q-learning} se obtiene al aplicar el método de \acrfull{rm} (véase el apéndice \textit{Métodos Analíticos y Numéricos}, sección \ref{sec:RM}) para estimar la ecuación óptima de Bellman. En este caso se busca resolver la ecuación $g(Q_{*}(x, u))=0$, cuyo lado izquierdo está dado por la siguiente expresión, 
 \begin{align} \label{eq:g_Q}
     g(Q_{*}(x, u)) = Q_{*}(x, u) - \mathbb{E}[R + \gamma \max_{u'}Q_{*}(X', u')|x, u] \quad \text{para todas } x\in\mathcal{X}, u\in\mathcal{U}.
 \end{align}
-Al no tener acceso a las probabilidades de transición, dadas las variables $(x,u)$, en la interacción con el entorno se colectan las muestras $r_{k}$ y $x_{k}'$ en cada iteración. Esto permite definir la siguiente observación sesgada,
-\begin{align*}
+Al no tener acceso a las probabilidades de transición, dadas las variables $(x,u)$, en la interacción con el entorno se colectan las muestras $r_{k}$ y $x_{k}'$ en cada iteración. Esto permite definir la observación sesgada en la siguiente ecuación; esto es que para $\tilde{g}$ se asume que se trabaja con valores observados en lugar de valores esperados,
+\begin{equation}
+\begin{aligned}
     \tilde{g}(Q_{*}(x, u)) &= Q_{*}(x, u) - [r_k + \gamma\max_{u'}Q_{*}(x_k', u')] \\
     &= \underbrace{\left(
     Q_{*}(x, u) - \mathbb{E}[R +\gamma\max_{u'}Q_{*}(X',u')|x, u] 
-    \right)}_{g(Q^{*}(x, u))} \\
+    \right)}_{g(Q_{*}(x, u))} \\
     &+ 
     \underbrace{
     \left(
     \mathbb{E}[R+\gamma\max_{u'} Q_{*}(X', u')|x, u] 
-    - [r+ \gamma\max_{u'} Q_{*}(x', u')]
+    - [r_k+ \gamma\max_{u'} Q_{*}(x_k', u')]
     \right)}_{\eta}.
-\end{align*}
+\end{aligned}
+\end{equation}
 En consecuencia, al aplicar el método \acrshort{rm} para resolver la ecuación $g(Q_{*}(x,u))=0$ se obtiene lo siguiente,
-\begin{align}
+\begin{equation}
+\begin{aligned}
     Q^{(k+1)}(x, u) &= Q^{(k)}(x, u) -\alpha_k \tilde{g}\left(Q^{(k)}(x,u)\right)
     \\
-    &= Q^{(k)}(x, u) - \alpha_k \left(Q^{(k)}(x, u)- \left[r + \gamma \max_{u'}Q_{*}(x', u')\right] \right), \label{eq:RM_Q}
-\end{align}
-dónde $Q^{(k)}(x, u)$ representa la $k$-ésima estimación de la función de valor óptima $Q_{*}(x, u)$.
+    &= Q^{(k)}(x, u) - \alpha_k \left(Q^{(k)}(x, u)- \left[r_k + \gamma \max_{u'}Q_{*}(x_k', u')\right] \right), \label{eq:RM_Q}
+\end{aligned}
+\end{equation}
+donde $Q^{(k)}(x, u)$ representa la $k$-ésima estimación de la función de valor óptima $Q_{*}(x, u)$.
 
-El método \acrshort{rm} hace dos supuestos que merecen atención. En primer lugar con el fin de utilizar el algoritmo, se debe empezar en repetidas ocasiones con la pareja $(x, u)$ para obtener el conjunto $\{(x, u, x_k', r_k)\}$. En segundo lugar se asume el conocimiento del valor $Q_{*}(x_k', u')$ en el lado derecho de la expresión \ref{eq:RM_Q}. En la práctica estos supuestos no son factibles, ya que no es posible empezar a usar el algoritmo a partir de los valores $(x, u)$. En cambio se remplaza el conjunto $\{(x, u, r_k, x_k')\}$ por $\{(x_t, u_t, r_{t+1}, x_{t+1})\}$. Esto implica que en lugar de fijar una pareja estado-acción, se utilizan muestras secuenciales. Finalmente, en lugar de que el lado derecho de la igualdad \ref{eq:RM_Q} dependa de $Q_{*}(x_{t+1}, u')$ se usa $Q^{(k)}(x_{t+1}, u')$, debido a que la expresión anterior también es desconocida en la práctica. Este proceso se le conoce como \textbf{\textit{bootstrapping}}. \cite{Shiyu2022}
+El método \acrshort{rm} hace dos supuestos que merecen atención. En primer lugar con el fin de utilizar el algoritmo, se debe empezar en repetidas ocasiones con la pareja $(x, u)$ para obtener el conjunto $\{(x, u, x_k', r_k)\}$. En segundo lugar se asume el conocimiento del valor $Q_{*}(x_k', u')$ en el lado derecho de la \eqreftext{eq:RM_Q}. En la práctica estos supuestos no son factibles, ya que no es posible empezar a usar el algoritmo a partir de los valores $(x, u)$. En cambio se remplaza el conjunto $\{(x, u, r_k, x_k')\}$ por $\{(x_t, u_t, r_{t+1}, x_{t+1})\}$. Esto implica que en lugar de fijar una pareja estado-acción, se utilizan muestras secuenciales. Finalmente, en lugar de que el lado derecho de la igualdad en la \eqreftext{eq:RM_Q} dependa de $Q_{*}(x_{t+1}, u')$ se usa $Q^{(k)}(x_{t+1}, u')$, debido a que la expresión anterior también es desconocida en la práctica. Este proceso se le conoce como \textbf{\textit{bootstrapping}}. \cite{Shiyu2022}
 
 \subsection{Propiedades}
-El método \textit{Q-learning} tiene varias propiedades que vale la pena resaltar. Para empezar hacer un análisis se reescribe la expresión \ref{eq:RM_Q} de la siguiente manera, 
-\begin{align*}
+El método \textit{Q-learning} tiene varias propiedades que vale la pena resaltar. Para empezar a hacer un análisis se reescribe la \eqreftext{eq:RM_Q} de la siguiente manera, 
+\begin{align}
     Q^{(k+1)}(x_t, u_t) &= Q^{(k)}(x_t, u_t) + \alpha_k \left(\underbrace{
-    r_{t+1} + \gamma \max_{u'}Q_{*}(x_{t+1}, u')  - Q^{(k)}(x_t, u_t)}_{\delta_{t}}\right).
-\end{align*}
+    r_{t+1} + \gamma \max_{u'}Q^{(k)}(x_{t+1}, u')  - Q^{(k)}(x_t, u_t)}_{\delta_{t}}\right).
+\end{align}
 
 El término $\delta_t$ se denomina \textbf{error \acrshort{td}}. Este error refleja la deficiencia entre la estimación $Q^{(k)}$ y el verdadero valor $Q_{*}$. En términos del valor esperado este error es cero, como se exhibe debajo, 
-\begin{align*}
-    \mathbb{E}[\delta_{t}|X_t=x, U_t=u] &= \mathbb{E}[R_{t+1} + \gamma\max_{u'}Q^{*}(X_{t+1}, u')- Q^{*}(X_t, U_t)|X_t=x, U_t=u] \\
-    &= \mathbb{E}[R_{t+1} + \gamma\max_{u'}Q^{*}(X_{t+1}, u')|X_t=x, U_t=u] 
-    - Q^{*}(x, u) \\
+\begin{equation}
+\begin{aligned}
+        \mathbb{E}[\delta_{t}|X_t=x, U_t=u] &= \mathbb{E}[R_{t+1} + \gamma\max_{u'}Q_{*}(X_{t+1}, u')- Q_{*}(X_t, U_t)|X_t=x, U_t=u] \\
+    &= \mathbb{E}[R_{t+1} + \gamma\max_{u'}Q_{*}(X_{t+1}, u')|X_t=x, U_t=u] 
+    - Q_{*}(x, u) \\
     &= 0.
-\end{align*}
+\end{aligned}
+\end{equation}
 El cálculo anterior implica que una buena estimación de la función $Q_{*}$ da como resultado un error \acrshort{td} cercano a cero \cite{Shiyu2022}. Este error tiene mayor relevancia en los métodos de aproximación de funciones de valor como \textit{Deep Q-learning} que será estudiado más adelante.
 
 \subsection{Dilema exploración-explotación}
 \label{sec:exp_vs_exp}
-Para lograr una estimación efectiva de la ecuación \ref{eq:Bellman_opt_Q} usando \textit{Q-learning}, se requiere de la recolección de muestras de la forma $e_t=(x_t, u_t, r_{t+1}, x_{t+1})$. Esto genera la interrogante de cómo recolectar dichas muestras. 
+Para lograr una estimación efectiva de la \eqreftext{eq:Bellman_opt_Q} usando \textit{Q-learning}, se requiere de la recolección de muestras de la forma $e_t=(x_t, u_t, r_{t+1}, x_{t+1})$. Esto genera la interrogante de cómo recolectar dichas muestras. 
 
-Para resolver dicha interrogante es necesario abordar el dilema \textbf{exploración versus explotación}, comúnmente tratado en el aprendizaje sin modelos. Este dilema plantea la necesidad de lograr un equilibrio entre el uso de la mejor política disponible para resolver la ecuación de Bellman y la búsqueda de nuevas experiencias para mejorar la política.
+Para resolver dicha interrogante es necesario abordar el dilema \textbf{exploración versus explotación}, comúnmente tratado en el aprendizaje sin modelos. En este contexto, \textbf{explotación} significa usar la mejor política disponible para maximizar la recompensa esperada con la información actual, mientras que \textbf{exploración} consiste en probar acciones o trayectorias menos conocidas para recolectar nuevas experiencias que puedan mejorar la política. Este dilema plantea la necesidad de equilibrar ambos objetivos al resolver la ecuación de Bellman. \cite{Sutton2018}
 
-En este contexto una política puede recibir las siguientes dos etiquetas: política de comportamiento o política objetivo. Una \textbf{política objetivo} es constantemente actualizada con la meta de ser la política óptima para la tarea de aprendizaje. En cambio, la \textbf{política de comportamiento} se usa para generar muestras de experiencia durante la interacción entre el agente y el entorno. Comúnmente, cuando se usa la política objetivo como de comportamiento, es decir, que son iguales, al método se le denomina \textbf{dentro de política} (\textit{\textbf{on-policy}}). En caso contrario se denomina método \textbf{fuera de política} (\textit{\textbf{off-policy}}).\cite{Shiyu2022}
+En este contexto una política puede recibir las siguientes dos etiquetas: política de comportamiento o política objetivo. Una \textbf{política objetivo} es constantemente actualizada con la meta de ser la política óptima para la tarea de aprendizaje. En cambio, la \textbf{política de comportamiento} se usa para generar muestras de experiencia durante la interacción entre el agente y el entorno. Comúnmente, cuando se usa la política objetivo como de comportamiento, es decir, que son iguales, al método se le denomina \textbf{dentro de la política} (\textit{\textbf{on-policy}}). En caso contrario se denomina método \textbf{fuera de la política} (\textit{\textbf{off-policy}}).\cite{Shiyu2022}
 
 La ventaja de los métodos \textit{off-policy} es que permiten hacer un mejor balance entre la exploración y explotación. Pues durante la interacción con el entorno se puede emplear una política con alta exploración y, posteriormente, usar las observaciones obtenidas para aprender una política óptima.
 
-\subsection{Algoritmo}
-
-El proceso de aprendizaje que sigue este método se puede expresar en los siguientes pasos. En primer lugar, las experiencias a lo largo de un episodio son generadas por una política de comportamiento $\beta$, esta debe ser una política exploratoria. Una vez que una muestra de experiencia sea capturada, es posible utilizarla para actualizar la función $Q$ y la política objetivo $\mu$. La política $\mu$ deberá ser voraz (\textit{greedy}) y en principio no será usada para generar más experiencias.
-
-Para una acción $u_t$ siguiendo la política $\beta(\cdot|x_t)$, la regla de actualización de la función $Q$ y la política objetivo están dadas por las siguientes expresiones,
-\begin{align*}
-    Q^{(k+1)}(x_t, u_t) &= Q^{(k)}(x_t, u_t) + \alpha \left( r_{t+1} + \gamma \max_{u}Q^{(k)}(x_{t+1}, u) - Q^{(k)}(x_t, u_t)\right) \\
-    \mu^{(k+1)}(x)&= \argmax_{u} Q^{(k+1)}(x, u) \quad \forall x \in \mathcal{X}.
-\end{align*}
-
-El algoritmo \textit{Q-learning} es en principio \textit{off-policy}, pero puede usar de manera \textit{on-policy}. Esto se logra cuando se modifica la política objetivo de tal forma que se pueda asumir el rol de política comportamiento en la fase exploratoria. Comúnmente, se ocupa una política denominada $\epsilon-$\textit{greedy} ($\pi_{\epsilon}$). Esta política se puede pensar que es voraz casi todo el tiempo, lo que permite explorar nuevas acciones cercanas al óptimo.
-\begin{align*}
+Comúnmente, para promover la exploración se utiliza una política $\epsilon$-\textit{greedy} ($\pi_{\epsilon}$). Esta política actúa de forma voraz la mayor parte del tiempo y, con una probabilidad pequeña, selecciona acciones alternativas para recolectar nueva información. Su definición es la siguiente, 
+\begin{align}
+\label{eq:epsilon_greedy}
 \pi_{\epsilon}(u|x) = 
 \begin{cases}
-\argmax_{u} Q^{(k)}(u, x) & 1-\epsilon \\
-u \in \mathcal{U}(x) & \epsilon .
+\arg\max_{u'\in\mathcal{U}(x)} Q^{(k)}(x, u') &  1-\epsilon, \\
+ u \in \mathcal{U}(x) & \epsilon.
 \end{cases}  \qquad
 \epsilon \in (0, 1).
-\end{align*}
+\end{align}
 
-Normalmente, se emplea una política $\epsilon-$\textit{greedy}, cuando no esta disponible una política de comportamiento adecuada. 
+En entornos con espacios de estados y acciones finitos, la convergencia del procedimiento hacia una política óptima y la función de valor óptima $Q_*$ está garantizada, siempre que todas las parejas estado-acción se visiten infinitas veces y que la política de exploración converja en el límite a una política voraz \cite{Sutton2018}. A este tipo de política se le denomina \acrfull{glie} \cite{rao_rl_control_tour}. Por ejemplo, la política definida en la \eqreftext{eq:epsilon_greedy} es \acrshort{glie} si el valor de $\epsilon$ se reduce en cada iteración, e.g, cuando $\epsilon = 1/k$, donde $k$ es el número de iteración del método. 
+
+\subsection{Algoritmo}
+
+El proceso de aprendizaje que sigue este método se puede expresar en los siguientes pasos. En primer lugar, las experiencias a lo largo de un episodio son generadas por una política de comportamiento $\beta$, está será una política exploratoria. Una vez que una muestra de experiencia sea capturada, es posible utilizarla para actualizar la función $Q$ y la política objetivo $\mu$. La política $\mu$ será voraz (\textit{greedy}) y en principio no será usada para generar más experiencias.
+
+Para una acción $u_t$ siguiendo la política $\beta(\cdot|x_t)$, la regla de actualización de la función $Q$ y la política objetivo están dadas por las siguientes expresiones,
+\begin{align}
+    Q^{(k+1)}(x_t, u_t) &= Q^{(k)}(x_t, u_t) + \alpha \left( r_{t+1} + \gamma \max_{u}Q^{(k)}(x_{t+1}, u) - Q^{(k)}(x_t, u_t)\right), \\
+    \mu^{(k+1)}(x)&= \argmax_{u} Q^{(k+1)}(x, u) \quad \forall x \in \mathcal{X}.
+\end{align}
+
+El algoritmo \textit{Q-learning} es en principio \textit{off-policy}, pero se puede usar de manera \textit{on-policy}. Esto se logra cuando se modifica la política objetivo de tal forma que se pueda asumir el rol de política de comportamiento en la fase exploratoria.
+
+Cuando no está disponible una política de comportamiento adecuada, se emplea una política $\epsilon-$\textit{greedy}. Una descripción completa de este método con una política $\epsilon-$\textit{greedy} \acrshort{glie} se presenta en el algoritmo \ref{alg:q_learning}.
+
+\begin{algorithm}[h]
+    \caption{\textit{Q-learning} con política $\epsilon$-\textit{greedy}\cite{Sutton2018}}
+    \label{alg:q_learning}
+    \KwData{$\alpha \in (0,1]$, $\gamma \in [0,1)$, $\epsilon_0 \in (0,1)$, $K \in \mathbb{N}$, espacios $\mathcal{X}$ y $\mathcal{U}(x)\subseteq\mathcal{U}$.}
+    \KwResult{Estimaciones $Q^{(k)}:\mathcal{X}\times\mathcal{U}\rightarrow\mathbb{R}$ y política objetivo $\mu:\mathcal{X}\rightarrow\mathcal{U}$.}
+    Inicializar $Q^{(0)}(x,u) = 0 \quad \forall (x,u) \in \mathcal{X} \times \mathcal{U}$. \\
+    \For{$k \in \{1, \cdots, K\}$}{
+        Definir $\epsilon_k$ a partir de $\epsilon_0$ (por ejemplo, con decaimiento en $k$), de modo que pueda reducirse en cada iteración. \\
+        Inicializar estado $x_1 \in \mathcal{X}$. \\
+        \While{$x_t \in \mathcal{X}$ no sea terminal}{
+            Muestrear $u_t \sim \pi_{\epsilon_k}(\cdot|x_t)$, donde
+            $$\pi_{\epsilon_k}(u|x_t)=
+            \begin{cases}
+                \arg\max_{u'\in\mathcal{U}(x_t)}Q^{(k)}(x_t,u') & 1-\epsilon_k,\\
+                u \in \mathcal{U}(x_t) & \epsilon_k.
+            \end{cases}$$ \\
+            Ejecutar $u_t$, observar $r_{t+1} \in \mathbb{R}$ y $x_{t+1} \in \mathcal{X}$. \\
+            $\delta_t = r_{t+1} + \gamma \max_{u'\in\mathcal{U}(x_{t+1})}Q^{(k)}(x_{t+1},u') - Q^{(k)}(x_t,u_t)$. \\
+            $Q^{(k+1)}(x_t,u_t) = Q^{(k)}(x_t,u_t) + \alpha \delta_t$. \\
+            $x_t \in \mathcal{X} = x_{t+1}$.
+        }
+    }
+    $\mu(x) = \arg\max_{u\in\mathcal{U}(x)}Q^{(K)}(x,u) \quad \forall x \in \mathcal{X}$.
+\end{algorithm}
 
 \section{\acrlong{ddpg}}
 \label{sec:DDPG}
 
-El algoritmo \textbf{\acrfull{ddpg}} \cite{lillicrap2015continuous} combina las capacidades de las redes neuronales artificiales con el método \textit{Q-learning} para resolver tareas de control continuo. Al igual que \textit{Q-learning}, este método tiene el objetivo de construir una política óptima basada en la estimación de la función de valor $Q$. La contribución de este algoritmo es proporcionar modificaciones al método \acrfull{dpg} inspirados por el éxito de \acrfull{dqn} \cite{lillicrap2015continuous}. En si \acrshort{ddpg} combina las competencias de los métodos \acrshort{dpg} y \acrshort{dqn} en un esquema algorítmico conocido como actor-crítico.
+El algoritmo \textbf{\acrfull{ddpg}} \cite{lillicrap2015continuous} combina las capacidades de las redes neuronales artificiales con el método \textit{Q-learning} para resolver tareas de control continuo. Al igual que \textit{Q-learning}, este método tiene el objetivo de construir una política óptima basada en la estimación de la función de valor $Q$. La contribución de este algoritmo es proporcionar modificaciones al método \acrfull{dpg} inspirados por el éxito de \acrfull{dqn} \cite{lillicrap2015continuous}. En sí \acrshort{ddpg} combina las competencias de los métodos \acrshort{dpg} y \acrshort{dqn} en un esquema algorítmico conocido como actor-crítico.
 
-El propósito de esta sección es explicar los fundamentos teóricos de este método. Esto implica explicar el funcionamiento del marco actor-crítico para este método, así como la utilización de redes neuronales artificiales para aproximar la función $Q$ y construir la política óptima. Adicionalmente, se discutirá como almacenar la información generada por la interacción entre el agente y el entorno y técnicas para mejorar la eficiencia del aprendizaje.
+El propósito de esta sección es explicar los fundamentos teóricos de este método. Esto implica explicar el funcionamiento del marco actor-crítico para este método, así como la utilización de redes neuronales artificiales para aproximar la función $Q$ y construir la política óptima. Adicionalmente, se discutirá cómo almacenar la información generada por la interacción entre el agente y el entorno y técnicas para mejorar la eficiencia del aprendizaje.
 
 \subsection{Distribución de estados con descuento}
 
@@ -119,23 +155,27 @@ En este caso $\rho_{0}(\mathbf{x})$ se refiere a la distribución inicial de $\m
 \end{definition}
 
 De forma complementaria se puede definir la frecuencia de visita de la pareja estado-acción de la siguiente forma,
-$$\rho_{\beta}(\mathbf{x}, \mathbf{u}) = \beta(\mathbf{u}|\mathbf{x})\rho_{\beta}(\mathbf{x}).$$
+\begin{align}
+    \rho_{\beta}(\mathbf{x}, \mathbf{u}) = \beta(\mathbf{u}|\mathbf{x})\rho_{\beta}(\mathbf{x}).    
+\end{align}
 
 En el contexto de diferencias temporales, la definición \ref{def:state_frecuency} permite establecer la probabilidad de transición de la experiencia $(\mathbf{x}, \mathbf{u}, r, \mathbf{x}')$, como se muestra a continuación, 
-$$\mathbf{x}, \mathbf{u} \sim \rho_{\beta}\text{, } \mathbf{x}'\sim p(\cdot|\mathbf{x}, \mathbf{u}) \quad \forall \mathbf{x}\in \mathcal{X}\text{, } \mathbf{u}\in \mathcal{U}.$$
+\begin{align}
+    \mathbf{x}, \mathbf{u} \sim \rho_{\beta}\text{, } \mathbf{x}'\sim p(\mathbf{x}'|\mathbf{x}, \mathbf{u}) \quad \forall \mathbf{x}\in \mathcal{X}\text{, } \mathbf{u}\in \mathcal{U}.
+\end{align}
 
 Esta expresión de transición de las experiencias será importante para definir la función objetivo que se utilizará para el proceso de aproximación de valores. De la misma manera, la definición \ref{def:state_frecuency} será fundamental para hacer lo propio en el proceso de aproximación de políticas.
 
 \subsection{Actor-Crítico}
 El término \textbf{actor-crítico} (\textbf{\textit{actor-critic}}) es el nombre que lleva un esquema algorítmico que tiene la función de mejorar el aprendizaje y la toma de decisiones en problemas secuenciales. Este esquema combina los objetivos  tanto de los métodos de aprendizaje basados en valores, como de los métodos basados en políticas. 
 
-El esquema actor-crítico como su nombre lo sugiere se compone de dos elementos importantes cada uno representado por una \acrshort{ann}, éstas interactúan y aprenden entre sí. En primer lugar, el \textbf{actor} se refiere a la política representada por una \acrshort{ann}. Se utilizan métodos basados en políticas para ajustar la política. Por otra parte, el \textbf{crítico} aproxima a la función de valor asociada al actor. Esta aproximación se realiza utilizando los métodos basados en valores. La interacción de estos dos elementos se puede apreciar en la figura \ref{fig:RL_configuration}.
+El esquema actor-crítico, como su nombre lo sugiere, se compone de dos elementos importantes que interactúan y aprenden entre sí. En este trabajo se considera un caso particular en el que ambos elementos se parametrizan con redes neuronales artificiales. En primer lugar, el \textbf{actor} corresponde a la política y se ajusta mediante métodos basados en políticas. Por otra parte, el \textbf{crítico} aproxima la función de valor asociada al actor, empleando métodos basados en valores. La interacción entre ambos elementos se muestra en la figura \ref{fig:actor_critic}.
 
 \begin{figure}[h!]
 \centering
 \includegraphics[width=9cm]{05_aprendizaje_por_diferencias_temporales/actor_critic.png}
-\caption{Esquema clásico de un método actor-crítico, la política (actor) selecciona acciones que interactúan con el entorno, que devuelve una recompensa y un nuevo estado. Estos son evaluados por la función de valor (crítico), que calcula el error \acrshort{td} y lo manda de regreso a la política para mejorarla. El diagrama esta basado en \cite{Sutton2018}.}
-\label{fig:RL_configuration}
+\caption{Esquema clásico de un método actor-crítico, la política (actor) selecciona acciones que interactúan con el entorno, que devuelve una recompensa y un nuevo estado. Estos son evaluados por la función de valor (crítico), que calcula el error \acrshort{td} y lo manda de regreso a la política para mejorarla. El diagrama está basado en \cite{Sutton2018}.}
+\label{fig:actor_critic}
 \end{figure}
 
 El estructura actor-crítico del método \acrshort{ddpg}
@@ -143,38 +183,45 @@ se basa en dos trabajos previos. Para empezar, usa el método \textit{Determinis
 
 \subsection{Actor: \textit{Deterministic Policy Gradient}}
 \label{subsec:actor}
-Este método pertenece a la familia de algoritmos denominados \textbf{gradiente de política} o \textbf{\textit{policy gradient}}, que se basan en la optimización de políticas parametrizadas. El diseño del actor se basa en el ajuste de una red neuronal artificial para construir una política determinista capaz de resolver un problema de control continuo. 
+Este método pertenece a la familia de algoritmos denominados \textbf{gradiente de política} o \textbf{\textit{policy gradient}}, que se basan en la optimización de políticas parametrizadas. El diseño del actor se basa en el ajuste de una \acrshort{ann} para construir una política determinista capaz de resolver un problema de control continuo. 
 
 En general, estos algoritmos funcionan a partir del muestreo de una política estocástica y ajustan los parámetros de la política en la dirección de la mayor suma acumulada de recompensas. En principio, se planteo que la política optimizada debía ser estocástica, esto se deriva de los resultados del teorema de gradiente de política. Sin embargo, en \cite{silver14} se demostró la representación determinista de dicho teorema. 
 
-En el planteamiento de este método, el actor esta dado por una política determinista parametrizada por $\bm\theta_{\mu} \in \Theta$. Esta política se denota como $\mu: \mathcal{X}\times\Theta\rightarrow \mathcal{U}$. Con el propósito de optimizar esta política determinista, se utiliza una función desempeño, que se define en términos de las funciones de valor, como se muestra a continuación,
-\begin{align}
+En el planteamiento de este método, el actor está dado por una política determinista parametrizada por $\bm\theta_{\mu} \in \Theta$. Esta política se denota como $\mu: \mathcal{X}\times\Theta\rightarrow \mathcal{U}$. Con el propósito de optimizar esta política determinista, se utiliza una función desempeño, que se define en términos de las funciones de valor, como se muestra en la ecuación de bajo,
+\begin{equation}
+    \begin{aligned}
     J(\bm\theta_{\mu}) &= \mathbb{E}_{\mathbf{x}\sim\rho^{\beta}}\left[V_{\mu}(\mathbf{x})\right] \\
     &= \int_{\mathcal{X}}\rho^{\beta}(\mathbf{x})V_{\mu}(\mathbf{x})d\mathbf{x}\\
     &= \int_{\mathcal{X}}\rho^{\beta}(\mathbf{x})Q_{\mu}(\mathbf{x}, \mu(\mathbf{x};\bm\theta_{\mu}))d\mathbf{x} \\
     &= \mathbb{E}_{\mathbf{x}\sim\rho^{\beta}}\left[
-    Q_{\mu}(\mathbf{x}, \mu(\mathbf{x}; \bm\theta_{\mu}))\right].
+    Q_{\mu}(\mathbf{x}, \mu(\mathbf{x}; \bm\theta_{\mu}))\right],
+    \end{aligned}
     \label{eq:dpg_objective}
-\end{align}
-En este caso $\beta$ denota a la política de comportamiento presentada anteriormente. Esta consideración establece que la configuración de la función \ref{eq:dpg_objective} es \textit{off-policy}. 
+\end{equation}
+donde $V_{\mu}$ y $Q_{\mu}$ representan la funciones de valor siguiendo la política $\mu$.
+En este caso $\beta$ denota a la política de comportamiento presentada anteriormente. Esta consideración establece que la configuración de la función en la \eqreftext{eq:dpg_objective} es \textit{off-policy}. 
 
-Con el propósito de obtener una política que permita acumular el mayor retorno posible, se debe encontrar el mayor valor posible de \ref{eq:dpg_objective}. Esto se logra utilizando el método de gradiente ascendente. Este método de optimización requiere el cálculo del gradiente de la función \ref{eq:dpg_objective} con respecto a $\bm{\theta}_{\mu}$. La existencia del gradiente de \ref{eq:dpg_objective} esta garantizada por el teorema de gradiente de política determinista \cite{silver14}. Este teorema permite expresar el gradiente de la función objetivo \ref{eq:dpg_objective} de la siguiente manera, 
-\begin{align*}       \nabla_{\bm\theta_{\mu}}J(\bm\theta_{\mu}) &= \int_{\mathcal{X}} \rho^{\beta}(\mathbf{x}) \nabla_{\mathbf{u}}Q(\mathbf{x}, \mathbf{u})\nabla \mu(\mathbf{x};\bm\theta_{\mu})\big|_{\mathbf{u}=\mu(\mathbf{x};\bm\theta_{\mu})}d\mathbf{x} \\
+Con el propósito de obtener una política que permita acumular el mayor retorno posible, se debe encontrar el valor máximo de la \eqreftext{eq:dpg_objective}. Esto se logra mediante el método de \textbf{ascenso por el gradiente}, el cual puede entenderse como una variación del método de descenso por el gradiente (véase el apéndice \textit{Redes neuronales artificiales}, sección \ref{sec:gradient_decent}), mientras el descenso actualiza parámetros en la dirección de máximo decrecimiento para encontrar un mínimo, el ascenso actualiza en la dirección opuesta para encontrar un máximo \cite{lillicrap2015continuous}. Este método de optimización requiere el cálculo del gradiente de la función en la \eqreftext{eq:dpg_objective} con respecto a $\bm{\theta}_{\mu}$. La existencia del gradiente en la \eqreftext{eq:dpg_objective} está garantizada por el teorema de gradiente de política determinista \cite{silver14}. Este teorema permite expresar el gradiente de la función objetivo en la \eqreftext{eq:dpg_objective} de la siguiente manera, 
+\begin{equation}
+    \begin{aligned}       
+\nabla_{\bm\theta_{\mu}}J(\bm\theta_{\mu}) &= \int_{\mathcal{X}} \rho^{\beta}(\mathbf{x}) \nabla_{\mathbf{u}}Q(\mathbf{x}, \mathbf{u})\nabla \mu(\mathbf{x};\bm\theta_{\mu})\big|_{\mathbf{u}=\mu(\mathbf{x};\bm\theta_{\mu})}d\mathbf{x} \\
         &= \mathbb{E}_{\mathbf{x}\sim \rho^{\beta}} 
         \left[
         \nabla_{\mathbf{u}}Q(\mathbf{x}, \mathbf{u})\nabla \mu(\mathbf{x};\bm\theta_{\mu})\big|_{\mathbf{u}=\mu(\mathbf{x};\bm\theta_{\mu})}
         \right].
-\end{align*}
-A partir de la expresión anterior, se puede establecer la siguiente regla de actualización para los parámetros de la red neuronal, 
+\end{aligned}
+\end{equation}
+A partir de la expresión anterior, se obtiene la siguiente regla de actualización para los parámetros de la \acrshort{ann},
     \begin{align}
-        \bm\theta^{(k+1)}_{\mu} &= \bm\theta^{(k)}_{\mu} + \alpha_{\mu} \nabla_{\bm\theta_{\mu}}J\left(\bm\theta_{\mu}^{(k)}\right). \label{eq:update_policy_gradient}
+        \bm\theta^{(k+1)}_{\mu} &= \bm\theta^{(k)}_{\mu} + \alpha_{\mu} \nabla_{\bm\theta_{\mu}}J\left(\bm\theta_{\mu}^{(k)}\right), \label{eq:update_policy_gradient}
     \end{align}
+la cual corresponde al método de ascenso por el gradiente. 
 
-Una vez estimado el actor $\mu$, se procede a a definir su crítico que aproxime a la función de valor $Q_{\mu}$. Esta función de valor resulta fundamental para actualizar $\mu$. Dentro de \acrshort{ddpg} el entrenamiento del crítico se basa en el algoritmo llamado \textit{Deep-Q-learning}, que es una extensión de \textit{Q-learning}.
+Una vez estimado el actor $\mu$, se procede a definir su crítico que aproxime a la función de valor $Q_{\mu}$. Esta función de valor resulta fundamental para actualizar $\mu$. Dentro de \acrshort{ddpg} el entrenamiento del crítico se basa en el algoritmo llamado \textit{Deep-Q-learning}, que es una extensión de \textit{Q-learning}.
 
 \subsection{Crítico: \textit{Deep Q-learning}}
 \label{sub_sec:DQN}
-La estimación que realiza el crítico  se basa en el entrenamiento de una \acrshort{ann} para aproximar la función $Q$, similarmente a como se hizo en \cite{mnih2013}. La gran diferencia radica en que el algoritmo propuesto en \cite{mnih2013} esta planteado para la toma de decisiones sobre un conjunto de acciones discreto. Este planteamiento no es adecuado para las tareas de control. Por lo que se cambia la estructura de \acrshort{ann} asociada al crítico. Concretamente, el crítico se representa por la función $Q:\mathcal{X}\times\mathcal{U}\times\Theta \rightarrow \mathbb{R}$. Esta \acrshort{ann} tiene el propósito de aproximarse a la función de valor acción, como se muestra en la siguiente relación,
+La estimación que realiza el crítico  se basa en el entrenamiento de una \acrshort{ann} para aproximar la función $Q$, similarmente a como se hizo en \cite{mnih2013}. La gran diferencia radica en que el algoritmo propuesto en \cite{mnih2013} está planteado para la toma de decisiones sobre un conjunto de acciones discreto. Este planteamiento no es adecuado para las tareas de control. Por lo que se cambia la estructura de \acrshort{ann} asociada al crítico. Concretamente, el crítico se representa por la función $Q:\mathcal{X}\times\mathcal{U}\times\Theta \rightarrow \mathbb{R}$. Esta \acrshort{ann} tiene el propósito de aproximarse a la función de valor acción, como se muestra en la siguiente relación,
 \begin{align}\label{eq:Deep_Q_approx}
     Q(\mathbf{x}, \mathbf{u}; \bm\theta_{Q}) \approx
 Q_{\mu}(\mathbf{x}, \mathbf{u}).    
@@ -185,15 +232,17 @@ Para lograr este propósito, se necesita que la \acrshort{ann} se asemeje a la d
     \mathcal{L}\left(\bm{\theta}_Q\right) &= \mathbb{E}_{\mathbf{x}, \mathbf{u}\sim \rho_{\beta}\text{, }\mathbf{x}'\sim p}\left[\left(\underbrace{r(\mathbf{x}, \mathbf{u}) + \gamma \max_{\mathbf{u}'}Q\left(\mathbf{x}', \mathbf{u}';\bar{\bm{\theta}}_{Q}\right)-Q\left(\mathbf{x}, \mathbf{u};\bm{\theta}_{Q}\right)}_{\delta_{t}(\bar{\bm\theta}_{Q}, \bm{\theta}_{Q})}\right)^2\right].
 \end{align}
 
-El termino $\bar{\bm\theta}_{Q}$ representa a los parámetros fijados de la actualización anterior. La \acrshort{ann} $Q(\cdot, \cdot; \bar{\bm\theta}_{Q})$ se le denomina \textbf{red de referencia}. Esta red se preserva en la expresión \ref{eq:Q_objective} para estabilizar el aprendizaje \cite{lillicrap2015continuous}. 
+El término $\bar{\bm\theta}_{Q}$ representa a los parámetros fijados de la actualización anterior. La \acrshort{ann} $Q(\cdot, \cdot; \bar{\bm\theta}_{Q})$ se le denomina \textbf{red de referencia}. Esta red se preserva en la \eqreftext{eq:Q_objective} para estabilizar el aprendizaje \cite{lillicrap2015continuous}. 
 
-En la práctica la función objetivo \ref{eq:Q_objective} 
-es difícil de estimar y tiene poca eficiencia en el aprendizaje. Esto se debe a que el valor esperado depende de la distribución de frecuencia de visitas. No obstante, en \cite{mnih2013} se propone como alternativa el uso de un método llamado \textit{\textbf{experience replay}}. Este método consiste que en cada paso $t$ de la simulación se almacena una experiencia $e_t=\left(\mathbf{x}_t, \mathbf{u}_t, r_{t+1}, \mathbf{x}_{t+1}\right)$ dentro de un cache de memoria denotado por $\mathcal{D}$. Posteriormente, se muestrean experiencias almacenadas de manera uniforme, que serán utilizadas para el ajuste de la función $Q$. 
+En la práctica la función objetivo en la \eqreftext{eq:Q_objective} 
+es difícil de estimar y tiene poca eficiencia en el aprendizaje. Esto se debe a que el valor esperado depende de la distribución de frecuencia de visitas. No obstante, en \cite{mnih2013} se propone como alternativa el uso de un método llamado \textit{\textbf{experience replay}}. Este método consiste en que en cada paso $t$ de la simulación se almacena una experiencia $e_t=\left(\mathbf{x}_t, \mathbf{u}_t, r_{t+1}, \mathbf{x}_{t+1}\right)$ dentro de un caché de memoria denotado por $\mathcal{D}$. Posteriormente, se muestrean experiencias almacenadas de manera uniforme, que serán utilizadas para el ajuste de la función $Q$. 
 
 La técnica \textit{experience replay} tiene varias ventajas sobre el planteamiento original. En primer lugar, permite hacer un uso eficiente de las experiencias, ya que al estar almacenadas, estas se pueden usar durante múltiples actualizaciones de la red neuronal. En segundo lugar, el aprendizaje por muestras consecutivas es ineficiente, debido a la fuerte correlación que existe entre las muestras. Tomar uniformemente las muestras permite romper la correlación y reduce la varianza en las actualizaciones. Además permite agrupar a las experiencias en \textit{mini-batches}(mini-lotes) para el ajuste de redes neuronales, una técnica ampliamente utilizada en aprendizaje automático. \cite{mnih2013}
 
-Por otro lado, para definir adecuadamente el error $\delta_{t}^{*}$ en la expresión \ref{eq:Q_objective}, se requiere establecer la siguiente relación,
-$$Q(\mathbf{x}, \mu(\mathbf{x};\bm\theta_{\mu}); \bm\theta_{Q}) := \max_{\mathbf{u}'}Q(\mathbf{x}, \mathbf{u}; \bm\theta_{Q}).$$
+Por otro lado, para definir adecuadamente el error $\delta_{t}^{*}$ en la \eqreftext{eq:Q_objective}, se requiere establecer la siguiente relación,
+\begin{align}
+    Q(\mathbf{x}, \mu(\mathbf{x};\bm\theta_{\mu}); \bm\theta_{Q}) := \max_{\mathbf{u}'}Q(\mathbf{x}, \mathbf{u}; \bm\theta_{Q}).
+\end{align}
 Esta modificación resulta idónea, ya que $\mu$ tiene la finalidad de aproximarse a la política óptima.
 
 La incorporación de las modificaciones anteriores alteran la función objetivo de la siguiente forma,
@@ -201,12 +250,12 @@ La incorporación de las modificaciones anteriores alteran la función objetivo 
     \mathcal{L}\left(\bm{\theta}_Q\right) &= \mathbb{E}_{(\mathbf{x}, \mathbf{u}, r, \mathbf{x}')\sim U(\mathcal{D}) }\left[\left(r + \gamma Q\left(\mathbf{x}, \mu\left(\mathbf{x};\bar{\bm\theta}_{\mu}\right); \bar{\bm\theta}_{Q}\right) - Q\left(\mathbf{x}, \mathbf{u};\bm{\theta}_{Q}\right)\right)^2\right].
     \label{eq:ddpg_critic_objective}
 \end{align}
-La optimización de la función \ref{eq:ddpg_critic_objective} se realiza de acuerdo al método de descenso de gradiente, como se expresa en la siguiente actualización, 
+La optimización de la función en la \eqreftext{eq:ddpg_critic_objective} se realiza mediante el método de descenso por el gradiente, como se expresa en la siguiente actualización, 
 \begin{align}
     \bm\theta_Q^{(k+1)} &= \bm\theta_{Q}^{(k)} - \alpha_{Q} \nabla_{\bm\theta_Q} \mathcal{L}\left(\bm\theta_Q^{(k)}\right),
-    \label{eq:upadate_Q}
+    \label{eq:update_Q}
 \end{align}
-dónde el gradiente $\nabla_{\bm\theta_Q}\mathcal{L}$ se define de la siguiente manera,
+donde el gradiente $\nabla_{\bm\theta_Q}\mathcal{L}$ se define de la siguiente manera,
 \begin{align}
 \nabla_{\bm\theta_Q}\mathcal{L}(\bm\theta_Q) &= \mathbb{E}_{(\mathbf{x}, \mathbf{u}, r, \mathbf{x}')\sim U(\mathcal{D}) } 
 [\delta_{t}^{*}(\bar{\bm\theta}_{Q}, \bm\theta_Q)\nabla_{\bm\theta_Q}Q(\mathbf{x}, \mathbf{u};\bm\theta_Q)].
@@ -215,38 +264,39 @@ dónde el gradiente $\nabla_{\bm\theta_Q}\mathcal{L}$ se define de la siguiente 
 
 \subsubsection{Política de comportamiento}
 
-Un de los mayores retos del aprendizaje en espacios continuos es la exploración \cite{lillicrap2015continuous}. Esto se debe a que no hay un criterio exacto para definir una política de comportamiento adecuada para problemas de control. Los autores del método \acrshort{ddpg} emplean una política de exploración basada en la adición de muestras de ruido de un proceso estocástico a la política determinista $\mu$. La selección de acciones usando la política exploratoria, se puede definir de la siguiente manera, 
+Uno de los mayores retos del aprendizaje en espacios continuos es la exploración \cite{lillicrap2015continuous}. Esto se debe a que no hay un criterio exacto para definir una política de comportamiento adecuada para problemas de control. Los autores del método \acrshort{ddpg} emplean una política de exploración basada en la adición de muestras de ruido de un proceso estocástico a la política determinista $\mu$. La selección de acciones mediante esta política exploratoria se define de acuerdo a la ecuación debajo,
 \begin{align}
     \mathbf{u}_t = \mu(\mathbf{x}_t;\bm\theta_{\mu}) + \mathcal{O}_t \quad \forall t \in \mathcal{T}, \label{eq:noisy_policy}
 \end{align}
-dónde $\mathcal{O}_t$  representa una muestra de una proceso estocástico. Los autores de este método proponen usar un proceso de Ornstein-Ulhenbeck. Este proceso permite generar una correlación temporal en la exploración \cite{lillicrap2015continuous}. 
+donde $\mathcal{O}_t$ representa un proceso estocástico. Los autores de este método proponen usar un proceso de Ornstein-Uhlenbeck. Este proceso permite generar una correlación temporal en la exploración \cite{lillicrap2015continuous}. 
 
 A pesar de que la política de comportamiento depende de la política optimizada $\mu$, el algoritmo sigue siendo \textit{off-policy}. Esto se debe al uso de \textit{experience replay}. Concretamente, el uso de este método permite almacenar experiencias resultantes del uso de la política optimizada de actualizaciones anteriores. Por lo que al momento de actualizar el actor y el crítico, para efectos prácticos, se usa información de distintas políticas. 
 
 \subsection{Algoritmo}
-Hasta ahora se esbozado el entrenamiento del actor y el crítico. Ahora se procederá a explicar como se integran ambos elementos dentro del método \acrshort{ddpg}. Antes de comenzar el proceso de aprendizaje, se inicializan de forma aleatoria los parámetros del actor y crítico $\bm\theta_{\mu}$ y $\bm\theta_{Q}$. Y se introducen unas redes neuronales de referencia para estabilizar el aprendizaje el actor y crítico. Los parámetros de la referencia del actor y del crítico son $\bar{\bm\theta}_{\mu}$ y $\bar{\bm\theta}_{Q}$, en el mismo orden. El primer paso que debe realizarse dentro de este algoritmo, consiste en la recolección de experiencias $e_t$ a partir de la interacción entre el entorno y el agente, siguiendo la política de comportamiento $\beta$, es decir, siguiendo la expresión \ref{eq:noisy_policy}. Después de cada interacción se debe guardar la información $e_t$ en la memoria $\mathcal{D}$. Una vez que la memoria tenga por lo menos $N$ experiencias, se muestrean de forma uniforme las $N$ experiencias para entrenar al actor y crítico.
+Hasta ahora se ha esbozado el entrenamiento del actor y el crítico. Ahora se procederá a explicar cómo se integran ambos elementos dentro del método \acrshort{ddpg}. Antes de comenzar el proceso de aprendizaje, se inicializan de forma aleatoria los parámetros del actor y crítico $\bm\theta_{\mu}$ y $\bm\theta_{Q}$. Y se introducen unas redes neuronales de referencia para estabilizar el aprendizaje del actor y del crítico. Los parámetros de referencia del actor y del crítico son $\bar{\bm\theta}_{\mu}$ y $\bar{\bm\theta}_{Q}$, en el mismo orden. El primer paso que debe realizarse dentro de este algoritmo, consiste en la recolección de experiencias $e_t$ a partir de la interacción entre el entorno y el agente, siguiendo la política de comportamiento $\beta$, es decir, siguiendo la \eqreftext{eq:noisy_policy}. Después de cada interacción se debe guardar la información $e_t$ en la memoria $\mathcal{D}$. Una vez que la memoria tenga por lo menos $N$ experiencias, se muestrean de forma uniforme las $N$ experiencias para entrenar al actor y crítico.
 
-Teniendo un lote de experiencias de tamaño $N$, los parámetros del actor se actualizan de acuerdo a la expresión \ref{eq:update_policy_gradient} donde la expresión $\nabla_{\bm\theta_{\mu}}J$ se estima usando el gradiente de política por muestreo, que se describe de la siguiente forma,
+Teniendo un lote de experiencias de tamaño $N$, los parámetros del actor se actualizan de acuerdo a la \eqreftext{eq:update_policy_gradient} donde la expresión $\nabla_{\bm\theta_{\mu}}J$ se estima usando el gradiente de política por muestreo, que se describe de la siguiente forma,
 \begin{align}
 \nabla_{\bm\theta_{\mu}} J \approx \frac{1}{N}\sum_{i=1}^{N} \nabla_{\mathbf{u}}Q(\mathbf{x},\mathbf{u};\bm\theta_{Q})\Big|_{\mathbf{x}=\mathbf{x}_i, \mathbf{u}= \mu(\mathbf{x}_i)} \nabla_{\bm\theta_{\mu}}\mu(\mathbf{x};\bm\theta_{\mu})\Big |_{\mathbf{x}=\mathbf{x}_i}.
 \label{eq:actor_grad}
 \end{align}
 
-De la misma forma, los parámetros del crítico se actualizan usando la regla de actualización \ref{eq:upadate_Q}. En este caso la expresión $\nabla_{\bm\theta_{Q}}\mathcal{L}$ se estima usando las muestras del lote proveniente de la memoria $\mathcal{D}$ de la siguiente manera,
+De la misma forma, los parámetros del crítico se actualizan usando la regla de actualización en la \eqreftext{eq:update_Q}. En este caso la expresión $\nabla_{\bm\theta_{Q}}\mathcal{L}$ se estima usando las muestras del lote proveniente de la memoria $\mathcal{D}$ de la siguiente manera,
 \begin{align}
 \nabla_{\bm\theta_{Q}}\mathcal{L} \approx \frac{1}{N}\sum_{i=1}^{N}\left(r_{i+1} + \gamma Q\left(\mathbf{x}_{i+1},\mu(\mathbf{x}_{i+1};\bar{\bm\theta}_{\mu});\bar{\bm{\theta}}_{Q}\right)-Q\left(\mathbf{x}, \mathbf{u};\bm{\theta}_{Q}\right)\right)\nabla_{\bm\theta_Q}Q(\mathbf{x}, \mathbf{u};\bm\theta_Q).
 \label{eq:critic_grad}
 \end{align}
 Finalmente, la actualización $k+1$ de las redes de referencia del actor y el crítico se actualizan de forma convexa utilizando los parámetros aprendidos anteriormente. Esto se resume en la expresiones debajo, 
-\begin{align*}
+\begin{align}
     \bar{\bm\theta}_{Q}^{(k+1)} &= \tau \bm\theta_{Q}^{(k+1)} +(1- \tau)\bar{\bm\theta}_{Q}^{(k)}, \\
     \bar{\bm\theta}_{\mu}^{(k+1)} &= \tau \bm\theta_{\mu}^{(k+1)} +(1- \tau)\bar{\bm\theta}_{\mu}^{(k)},
-\end{align*}
-dónde $\tau << 1$ es un parámetro dado. Esta actualización restringe a que los cambios de los parámetros sea más lento, pero estable. Esto permite transformar el problema de estimar la función de valor $Q$ de un problema relativamente inestable a un caso más parecido al que se tiene en aprendizaje supervisado. \cite{lillicrap2015continuous}  
+\end{align}
+donde $\tau \ll 1$ es un parámetro dado. Esta actualización restringe a que los cambios de los parámetros sea más lento, pero estable. Esto permite transformar el problema de estimar la función de valor $Q$ de un problema relativamente inestable a un caso más parecido al que se tiene en aprendizaje supervisado. \cite{lillicrap2015continuous} Una descripción completa del procedimiento de entrenamiento se presenta en el algoritmo \ref{alg:DDPG}.
 \begin{algorithm}[h]
-    \caption{\textit{Deep deterministic policy gradient} (Lillicrap et at., \cite{lillicrap2015continuous}) }
+    \caption{\textit{Deep Deterministic Policy Gradient} (Lillicrap et al., \cite{lillicrap2015continuous}) }
+    \label{alg:DDPG}
    % \KwData{política: $\pi$}
-   \KwResult{Parámetros optimizados de política $\bm\theta_{\mu}$ y función de valor $\bm\theta_{Q}$.}
+   \KwResult{Parámetros optimizados de política $\bm\theta_{\mu}\in\Theta$ y función de valor $\bm\theta_{Q}\in\Theta$.}
     Inicializar aleatoriamente los parámetros de las redes $Q\left(\cdot,\cdot;\bm\theta_Q\right)$ y $\mu\left(\cdot;\bm\theta_{\mu}\right)$.\\
     Inicializar las redes de referencia $Q$ $\mu$ con los parámetros  $\bm\theta_{Q}$, $\bm\theta_{\mu}$, respectivamente. \\
     Inicializar el replay buffer $\mathcal{D}$ \\
@@ -268,6 +318,5 @@ dónde $\tau << 1$ es un parámetro dado. Esta actualización restringe a que lo
     \bar{\bm\theta}_{\mu} &\leftarrow \tau \bm\theta_{\mu} +(1- \tau)\bar{\bm\theta}_{\mu}.
 \end{align*}
         }
-        \label{alg:DDPG}
-    }\end{algorithm}
-
+    }
+\end{algorithm}

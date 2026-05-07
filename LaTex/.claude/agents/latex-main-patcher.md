@@ -1,7 +1,7 @@
 ---
 name: latex-main-patcher
 description: "Rewrites main.tex to use \\input{} calls and adds \\graphicspath. Run after latex-figure-mover."
-model: sonnet
+model: inherit
 color: cyan
 ---
 

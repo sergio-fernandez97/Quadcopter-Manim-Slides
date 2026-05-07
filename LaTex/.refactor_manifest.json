@@ -1,0 +1,300 @@
+{
+  "chapters": [
+    {
+      "title": "Introducción",
+      "slug": "01_introduccion",
+      "file": "chapters/01_introduccion.tex",
+      "line_start": 1,
+      "line_end": 426,
+      "input_line_in_main": 245
+    },
+    {
+      "title": "Teoría de control",
+      "slug": "02_teoria_de_control",
+      "file": "chapters/02_teoria_de_control.tex",
+      "line_start": 1,
+      "line_end": null,
+      "input_line_in_main": 247
+    },
+    {
+      "title": "Aprendizaje por refuerzo",
+      "slug": "03_aprendizaje_por_refuerzo",
+      "file": "chapters/03_aprendizaje_por_refuerzo.tex",
+      "line_start": 1,
+      "line_end": 281,
+      "input_line_in_main": 249
+    },
+    {
+      "title": "Búsqueda guiada de políticas",
+      "slug": "04_busqueda_guiada_de_politicas_gps",
+      "file": "chapters/04_busqueda_guiada_de_politicas_gps.tex",
+      "line_start": 1,
+      "line_end": null,
+      "input_line_in_main": 251
+    },
+    {
+      "title": "Aprendizaje por diferencias temporales",
+      "slug": "05_aprendizaje_por_diferencias_temporales",
+      "file": "chapters/05_aprendizaje_por_diferencias_temporales.tex",
+      "line_start": 1,
+      "line_end": 322,
+      "input_line_in_main": 253
+    },
+    {
+      "title": "Aplicación y evaluación de métodos RL",
+      "slug": "06_aplicacion_y_evaluacion_de_metodos_rl",
+      "file": "chapters/06_aplicacion_y_evaluacion_de_metodos_rl.tex",
+      "line_start": 1,
+      "line_end": null,
+      "input_line_in_main": 255
+    },
+    {
+      "title": "Conclusión",
+      "slug": "07_conclusion",
+      "file": "chapters/07_conclusion.tex",
+      "line_start": 1,
+      "line_end": 28,
+      "input_line_in_main": 257
+    },
+    {
+      "title": "Hiperparámetros",
+      "slug": "08_hiperparametros",
+      "file": "chapters/08_hiperparametros.tex",
+      "line_start": 1,
+      "line_end": 98,
+      "is_appendix": true,
+      "input_line_in_main": 264
+    },
+    {
+      "title": "Redes neuronales artificiales",
+      "slug": "09_redes_neuronales_artificiales",
+      "file": "chapters/09_redes_neuronales_artificiales.tex",
+      "line_start": 1,
+      "line_end": 219,
+      "is_appendix": true,
+      "input_line_in_main": 266
+    },
+    {
+      "title": "Métodos Analíticos y Numéricos",
+      "slug": "10_metodos_analiticos_y_numericos",
+      "file": "chapters/10_metodos_analiticos_y_numericos.tex",
+      "line_start": 1,
+      "line_end": 233,
+      "is_appendix": true,
+      "input_line_in_main": 268
+    }
+  ],
+  "figures": [
+    {
+      "file": "chapters/01_introduccion.tex",
+      "line": 175,
+      "original_path": null,
+      "type": "tikz",
+      "caption": "Diagrama de un cuadricóptero...",
+      "label": "fig:sistemas_referencia_quadcoptero"
+    },
+    {
+      "file": "chapters/03_aprendizaje_por_refuerzo.tex",
+      "line": 19,
+      "original_path": "03_aprendizaje_por_refuerzo/framework-RL.jpeg",
+      "filename": "framework-RL.jpeg",
+      "label": "fig:interaccion_RL"
+    },
+    {
+      "file": "chapters/03_aprendizaje_por_refuerzo.tex",
+      "line": 267,
+      "original_path": "03_aprendizaje_por_refuerzo/rl_configuration.png",
+      "filename": "rl_configuration.png",
+      "label": "fig:RL_configuration"
+    },
+    {
+      "file": "chapters/05_aprendizaje_por_diferencias_temporales.tex",
+      "line": 176,
+      "original_path": "05_aprendizaje_por_diferencias_temporales/actor_critic.png",
+      "filename": "actor_critic.png",
+      "label": "fig:actor_critic"
+    },
+    {
+      "file": "chapters/06_aplicacion_y_evaluacion_de_metodos_rl.tex",
+      "line": 23,
+      "original_path": "06_aplicacion_y_evaluacion_de_metodos_rl/linear_states.png",
+      "filename": "linear_states.png",
+      "label": "fig:gps_schema"
+    },
+    {
+      "file": "chapters/06_aplicacion_y_evaluacion_de_metodos_rl.tex",
+      "line": 82,
+      "original_path": "06_aplicacion_y_evaluacion_de_metodos_rl/test_distribution.png",
+      "filename": "test_distribution.png"
+    },
+    {
+      "file": "chapters/06_aplicacion_y_evaluacion_de_metodos_rl.tex",
+      "line": 91,
+      "original_path": "06_aplicacion_y_evaluacion_de_metodos_rl/ilqr_states.png",
+      "filename": "ilqr_states.png"
+    },
+    {
+      "file": "chapters/06_aplicacion_y_evaluacion_de_metodos_rl.tex",
+      "line": 98,
+      "original_path": "06_aplicacion_y_evaluacion_de_metodos_rl/ilqr_actions.png",
+      "filename": "ilqr_actions.png"
+    },
+    {
+      "file": "chapters/06_aplicacion_y_evaluacion_de_metodos_rl.tex",
+      "line": 130,
+      "original_path": "06_aplicacion_y_evaluacion_de_metodos_rl/gps_algorithm.png",
+      "filename": "gps_algorithm.png"
+    },
+    {
+      "file": "chapters/06_aplicacion_y_evaluacion_de_metodos_rl.tex",
+      "line": 160,
+      "original_path": "06_aplicacion_y_evaluacion_de_metodos_rl/ddpg_algorithm.png",
+      "filename": "ddpg_algorithm.png"
+    },
+    {
+      "file": "chapters/06_aplicacion_y_evaluacion_de_metodos_rl.tex",
+      "line": 174,
+      "original_path": "06_aplicacion_y_evaluacion_de_metodos_rl/policy_vs_control_cost.png",
+      "filename": "policy_vs_control_cost.png"
+    },
+    {
+      "file": "chapters/06_aplicacion_y_evaluacion_de_metodos_rl.tex",
+      "line": 219,
+      "original_path": "06_aplicacion_y_evaluacion_de_metodos_rl/gps_coordinates_density.png",
+      "filename": "gps_coordinates_density.png"
+    },
+    {
+      "file": "chapters/06_aplicacion_y_evaluacion_de_metodos_rl.tex",
+      "line": 250,
+      "original_path": "06_aplicacion_y_evaluacion_de_metodos_rl/gps_states.png",
+      "filename": "gps_states.png"
+    },
+    {
+      "file": "chapters/06_aplicacion_y_evaluacion_de_metodos_rl.tex",
+      "line": 257,
+      "original_path": "06_aplicacion_y_evaluacion_de_metodos_rl/gps_actions.png",
+      "filename": "gps_actions.png"
+    },
+    {
+      "file": "chapters/06_aplicacion_y_evaluacion_de_metodos_rl.tex",
+      "line": 263,
+      "original_path": "06_aplicacion_y_evaluacion_de_metodos_rl/animation.png",
+      "filename": "animation.png"
+    },
+    {
+      "file": "chapters/06_aplicacion_y_evaluacion_de_metodos_rl.tex",
+      "line": 273,
+      "original_path": "06_aplicacion_y_evaluacion_de_metodos_rl/ddpg_return_evolution.png",
+      "filename": "ddpg_return_evolution.png"
+    },
+    {
+      "file": "chapters/06_aplicacion_y_evaluacion_de_metodos_rl.tex",
+      "line": 317,
+      "original_path": "06_aplicacion_y_evaluacion_de_metodos_rl/ddpg_coordinates_density.png",
+      "filename": "ddpg_coordinates_density.png"
+    },
+    {
+      "file": "chapters/06_aplicacion_y_evaluacion_de_metodos_rl.tex",
+      "line": 350,
+      "original_path": "06_aplicacion_y_evaluacion_de_metodos_rl/actions_0.png",
+      "filename": "actions_0.png"
+    },
+    {
+      "file": "chapters/06_aplicacion_y_evaluacion_de_metodos_rl.tex",
+      "line": 354,
+      "original_path": "06_aplicacion_y_evaluacion_de_metodos_rl/actions_1.png",
+      "filename": "actions_1.png"
+    },
+    {
+      "file": "chapters/06_aplicacion_y_evaluacion_de_metodos_rl.tex",
+      "line": 407,
+      "original_path": "06_aplicacion_y_evaluacion_de_metodos_rl/stability_w-z_th-0_5_t--1_ord-inf_ex-uvxy.png",
+      "filename": "stability_w-z_th-0_5_t--1_ord-inf_ex-uvxy.png"
+    },
+    {
+      "file": "chapters/06_aplicacion_y_evaluacion_de_metodos_rl.tex",
+      "line": 411,
+      "original_path": "06_aplicacion_y_evaluacion_de_metodos_rl/stability_p-varphi_th-0_5_t--1_ord-inf_ex-uvxy.png",
+      "filename": "stability_p-varphi_th-0_5_t--1_ord-inf_ex-uvxy.png"
+    },
+    {
+      "file": "chapters/06_aplicacion_y_evaluacion_de_metodos_rl.tex",
+      "line": 415,
+      "original_path": "06_aplicacion_y_evaluacion_de_metodos_rl/stability_q-theta_th-0_5_t--1_ord-inf_ex-uvxy.png",
+      "filename": "stability_q-theta_th-0_5_t--1_ord-inf_ex-uvxy.png"
+    },
+    {
+      "file": "chapters/06_aplicacion_y_evaluacion_de_metodos_rl.tex",
+      "line": 419,
+      "original_path": "06_aplicacion_y_evaluacion_de_metodos_rl/stability_r-psi_th-0_5_t--1_ord-inf_ex-uvxy.png",
+      "filename": "stability_r-psi_th-0_5_t--1_ord-inf_ex-uvxy.png"
+    },
+    {
+      "file": "chapters/06_aplicacion_y_evaluacion_de_metodos_rl.tex",
+      "line": 455,
+      "original_path": "06_aplicacion_y_evaluacion_de_metodos_rl/stability_th-0_5_t--1_ord-inf.png",
+      "filename": "stability_th-0_5_t--1_ord-inf.png"
+    },
+    {
+      "file": "chapters/06_aplicacion_y_evaluacion_de_metodos_rl.tex",
+      "line": 490,
+      "original_path": "06_aplicacion_y_evaluacion_de_metodos_rl/stability_th-0_5_t-15_ord-inf_ex-rpsi.png",
+      "filename": "stability_th-0_5_t-15_ord-inf_ex-rpsi.png"
+    },
+    {
+      "file": "chapters/06_aplicacion_y_evaluacion_de_metodos_rl.tex",
+      "line": 498,
+      "original_path": "06_aplicacion_y_evaluacion_de_metodos_rl/stability_th-0_5_t-30_ord-inf_ex-rpsi.png",
+      "filename": "stability_th-0_5_t-30_ord-inf_ex-rpsi.png"
+    },
+    {
+      "file": "chapters/06_aplicacion_y_evaluacion_de_metodos_rl.tex",
+      "line": 505,
+      "original_path": "06_aplicacion_y_evaluacion_de_metodos_rl/stability_th-0_5_t-60_ord-inf_ex-rpsi.png",
+      "filename": "stability_th-0_5_t-60_ord-inf_ex-rpsi.png"
+    },
+    {
+      "file": "chapters/09_redes_neuronales_artificiales.tex",
+      "line": 70,
+      "original_path": null,
+      "type": "tikz",
+      "caption": "Red que representa un perceptrón multicapa...",
+      "label": "fig:multilayer-perceptron"
+    }
+  ],
+  "math_environments": {
+    "chapters/01_introduccion.tex": {
+      "align": 22,
+      "equation": 1,
+      "align*": 0
+    },
+    "chapters/03_aprendizaje_por_refuerzo.tex": {
+      "align": 17,
+      "equation": 0,
+      "align*": 4
+    },
+    "chapters/05_aprendizaje_por_diferencias_temporales.tex": {
+      "align": 23,
+      "equation": 8,
+      "align*": 1
+    },
+    "chapters/09_redes_neuronales_artificiales.tex": {
+      "align": 9,
+      "equation": 0,
+      "align*": 0
+    },
+    "chapters/10_metodos_analiticos_y_numericos.tex": {
+      "align": 19,
+      "equation": 3,
+      "align*": 0
+    }
+  },
+  "summary": {
+    "total_chapters": 10,
+    "main_chapters": 7,
+    "appendices": 3,
+    "total_figures": 29,
+    "tikz_figures": 2,
+    "includegraphics_figures": 27
+  }
+}

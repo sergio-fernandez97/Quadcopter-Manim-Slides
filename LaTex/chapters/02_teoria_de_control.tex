@@ -1,7 +1,8 @@
 \chapter{Teoría de control}
+\label{chapter:control_theory}
 La teoría de control es el área de las matemáticas aplicadas que estudia los principios en los que se basa el análisis y diseño de sistemas regidos por modelos matemáticos. En este contexto, la acción controlar significa influir en su comportamiento de tal forma que permita alcanzar el objetivo deseado \cite{Sontag1998}. Este campo de estudio permite examinar las características principales de la dinámica de vuelo de un cuadricóptero. Lo cual dará lugar al diseño de estrategias de control con el fin de llevarlo a la posición deseada.
 
-El propósito de este capítulo es  introducir el objeto de estudio de esta área, llamado sistema de control. Posteriormente, se discutirán las características principales de estos sistemas: controlabilidad y estabilidad. Estas características darán pie a examinar estrategias de control, como estabilización por retroalimentación, regulador cuadrático lineal, mejor conocido como \acrfull{lqr} y su versión iterativa llamada \acrfull{ilqr}. Finalmente, se aplica el estudio de teoría de control al sistema dinámico de vuelo de un cuadricoptero y se obtiene una primera estrategia de control.
+El propósito de este capítulo es  introducir el objeto de estudio de esta área, llamado sistema de control. Posteriormente, se discutirán las características principales de estos sistemas: controlabilidad y estabilidad. Estas características darán pie a examinar estrategias de control, como estabilización por retroalimentación, regulador cuadrático lineal, mejor conocido como \acrfull{lqr} y su versión iterativa llamada \acrfull{ilqr}. Finalmente, se aplica el estudio de teoría de control al sistema dinámico de vuelo de un cuadricóptero y se obtiene una primera estrategia de control.
 
 \section{Sistemas de control}
 
@@ -12,67 +13,71 @@ En este trabajo tendrán mayor relevancia los sistemas de control invariantes en
     \dot{\mathbf{x}}= f(\mathbf{x}(t), \mathbf{u}(t)).
 \end{align}
 La variable $t\in \mathbb{R}^{+}$ se interpreta como el tiempo, mientras que $\mathbf{x}(t) \in \mathbb{R}^{n_x}$ y $\mathbf{u}(t)\in \mathbb{R}^{n_u}$ representan las variables de estado y control al tiempo $t$, respectivamente. El mapeo $f:\mathbb{R}^{n_x}\times\mathbb{R}^{n_u}\rightarrow\mathbb{R}^{n_x}$
-es el campo vectorial del sistema \ref{eq:control_system_con}. \cite{Gruene2021}
+es el campo vectorial en la \eqreftext{eq:control_system_con}. \cite{Gruene2021}
 
 Análogamente, un sistema de control en tiempo discreto se compone de una ecuación en diferencias, que se expresa de la siguiente manera,
 \begin{align}
 \label{eq:control_system_dis}
     \mathbf{x}_{k+1}= f(\mathbf{x}_k, \mathbf{u}_k ).
 \end{align}
-Dónde $k\in \mathbb{N}$ es un índice de tiempo discreto. En tanto que $f:\mathbb{R}^{n_x}\times\mathbb{R}^{n_u}\rightarrow\mathbb{R}^{n_x}$ es llamado mapeo o función de transición. \cite{Gruene2021}
+Donde $k\in \mathbb{N}$ es un índice de tiempo discreto. En tanto que $f:\mathbb{R}^{n_x}\times\mathbb{R}^{n_u}\rightarrow\mathbb{R}^{n_x}$ es llamado mapeo o función de transición. \cite{Gruene2021}
 
 \subsection{Sistemas lineales}
-Los sistemas de control lineales hace referencia a la clase de sistemas dinámicos que describen la relación entre los estados y controles usando ecuaciones diferenciales o ecuaciones en diferencias lineales, según corresponda. Particularmente, la expresión \ref{eq:linear_control_system} muestra una ecuación diferencial lineal para el caso de tiempo continuo, 
+El término \textbf{sistema de control lineal} hace referencia a la clase de sistemas dinámicos que describen la relación entre los estados y controles usando ecuaciones diferenciales o ecuaciones en diferencias lineales, según corresponda. Particularmente, la \eqreftext{eq:linear_control_system} muestra una ecuación diferencial lineal para el caso de tiempo continuo, 
 \begin{align}\label{eq:linear_control_system}
     \dot{\mathbf{x}} = \mathbf{A}\mathbf{x}+\mathbf{B}\mathbf{u},
 \end{align}
-dónde $\mathbf{A}\in \mathbb{R}^{n_x\times n_x}$ y $ \mathbf{B}\in\mathbb{R}^{n_x\times n_u}$. \cite{Gruene2021}
+donde $\mathbf{A}\in \mathbb{R}^{n_x\times n_x}$ y $ \mathbf{B}\in\mathbb{R}^{n_x\times n_u}$. \cite{Gruene2021}
 
 Los sistemas lineales poseen varias propiedades notables que propician que sean herramientas con múltiples aplicaciones en la vida real. Entre estas propiedades se encuentran: linealidad, controlabilidad y estabilidad. Estos conceptos serán estudiados más adelante. En última instancia estas propiedades permitirán diseñar estrategias de control efectivas.
 
-Un resultado importante es el teorema de existencia y unicidad de los sistemas de control en tiempo continuo. Este teorema no sólo garantiza las propiedades que lleva su nombre, si no que especifica la forma de la solución. Una solución de \ref{eq:linear_control_system} que satisface la condición inicial $\mathbf{x}(t_0)=\mathbf{x}_0$ esta dada por la siguiente expresión,
+Un resultado importante es el teorema de existencia y unicidad de los sistemas de control en tiempo continuo. Este teorema no sólo garantiza las propiedades que lleva su nombre, si no que especifica la forma de la solución. Una solución de la \eqreftext{eq:linear_control_system} que satisface la condición inicial $\mathbf{x}(t_0)=\mathbf{x}_0$ está dada por la siguiente expresión,
 \begin{align}\label{eq:linear_solution}
     \mathbf{x}(t;t_0, \mathbf{x}_0, \mathbf{u}) &=
     e^{\mathbf{A}(t-t_0)}\mathbf{x}_0 + \int_{t_0}^{t}e^{\mathbf{A}(t-s)}\mathbf{Bu}(s)ds,
 \end{align}
-dónde,
-\begin{align*}
+donde,
+\begin{align}
     e^{t\mathbf{A}} &= \sum^{\infty}_{k=0}\frac{\mathbf{A}^kt^k}{k!}.
-\end{align*}
+\end{align}
 En esta instancia $\mathbf{u}\in \mathcal{U}$ es una función continua por partes. \cite{Gruene2021}
 
 \subsection{Linealización de sistemas no lineales}
-A diferencia de los sistemas de lineales, los sistemas no lineales tienen un comportamiento complejo, lo que hace que el análisis y control de estos sistemas desafiante. Sin embargo, en muchos casos es posible obtener una representación lineal de estos sistemas por medio un proceso llamado linealización. Este proceso tiene la finalidad de transformar un sistema no lineal en uno lineal alrededor de una vecindad. Esto simplifica el análisis y el diseño de estrategias de control sobre los sistemas no lineales. Esto se hace, haciendo uso de herramientas proporcionadas por la teoría de sistemas lineales. \cite{capella2020clase}
+A diferencia de los sistemas lineales, los sistemas no lineales tienen un comportamiento complejo, lo que hace que el análisis y control de estos sistemas sea desafiante. Sin embargo, en muchos casos es posible obtener una representación lineal de estos sistemas por medio un proceso llamado linealización. Este proceso tiene la finalidad de transformar un sistema no lineal en uno lineal alrededor de una vecindad. Esto simplifica el análisis y el diseño de estrategias de control sobre los sistemas no lineales. Esto se hace, haciendo uso de herramientas proporcionadas por la teoría de sistemas lineales. \cite{capella2020clase}
 
-En una primera etapa se considera la linealización de un sistema de la forma \ref{eq:control_system_con} alrededor de un punto fijo. En este caso el proceso consiste en utilizar los términos lineales de la expansión en serie de Taylor alrededor de un punto fijo del propio sistema. Concretamente, para las variables  $(\mathbf{x}, \mathbf{u})$ en una vecindad alrededor del punto fijo $(\mathbf{x}^{*}, \mathbf{u}^{*})$, el sistema dinámico \ref{eq:control_system_con} se aproxima linealmente de la siguiente forma,
+En una primera etapa se considera la linealización de un sistema de la forma en la \eqreftext{eq:control_system_con} alrededor de un punto fijo. En este caso el proceso consiste en utilizar los términos lineales de la expansión en serie de Taylor alrededor de un punto fijo del propio sistema. Concretamente, para las variables  $(\mathbf{x}, \mathbf{u})$ en una vecindad alrededor del punto fijo $(\mathbf{x}^{*}, \mathbf{u}^{*})$, el sistema dinámico en la \eqreftext{eq:control_system_con} se aproxima linealmente de la siguiente forma,
 \begin{align}
     f(\mathbf{x}^{*}+ \overline{\mathbf{x}}, \mathbf{u}^{*}+ \overline{\mathbf{u}}) &\approx f(\mathbf{x}^{*}, \mathbf{u}^{*}) + \nabla_{\mathbf{x}} f(\mathbf{x}^{*}, \mathbf{u}^{*})\cdot \overline{\mathbf{x}}+ \nabla_{\mathbf{u}}f(\mathbf{x}^{*}, \mathbf{u}^{*}) \cdot \overline{\mathbf{u}}, 
     \label{eq:taylor_f}
 \end{align}
-dónde $\overline{\mathbf{x}} = \mathbf{x}-\mathbf{x}^{*}$ y  $\overline{\mathbf{u}} = \mathbf{u} - \mathbf{u}^{*}$ representan un cambio de coordenadas para las variables de estado y control, respectivamente. Debido a que $(\mathbf{x}^{*}, \mathbf{u}^{*})$ es un punto fijo del sistema, se obtiene que $f(\mathbf{x}^{*}, \mathbf{u}^{*})= \mathbf{0}$. De manera que se obtiene la siguiente representación del sistema de control,
+donde $\overline{\mathbf{x}} = \mathbf{x}-\mathbf{x}^{*}$ y  $\overline{\mathbf{u}} = \mathbf{u} - \mathbf{u}^{*}$ representan un cambio de coordenadas para las variables de estado y control, respectivamente. Debido a que $(\mathbf{x}^{*}, \mathbf{u}^{*})$ es un punto fijo del sistema, se puede establcer $f(\mathbf{x}^{*}, \mathbf{u}^{*})= \mathbf{0}$. De manera que se obtiene la siguiente representación del sistema de control,
 \begin{align}\label{eq:taylor_linear_control_system}
     \dot{\mathbf{x}}\approx \underbrace{\mathbf{A}}_{\nabla_{\mathbf{x}} f(\mathbf{x}^{*}, \mathbf{u}^{*})} \overline{\mathbf{x}} + \underbrace{\mathbf{B}}_{\nabla_{\mathbf{u}} f(\mathbf{x}^{*}, \mathbf{u}^{*})}\overline{\mathbf{u}}.
 \end{align}
 
 \section{Controlabilidad}
-La controlabilidad es la propiedad de un sistema de control que determina si puede alcanzar un estado en particular, empleando una secuencia de control apropiada dentro de una ventana de tiempo especifica. Esta propiedad es fundamental para estudiar los sistema de control. Para describir formalmente esta propiedad se recupera la siguiente definición de \cite{Gruene2021}.
+La controlabilidad es la propiedad de un sistema de control que determina si puede alcanzar un estado en particular, empleando una secuencia de control apropiada dentro de una ventana de tiempo especifica. Esta propiedad es fundamental para estudiar los sistema de control. Para describir formalmente está propiedad se recupera la siguiente definición de \cite{Gruene2021}.
 
 \begin{definition}
-    Considerando el sistema de control lineal \ref{eq:linear_control_system}, un estado $\mathbf{x}_0 \in \mathbb{R}^{n_x}$ se dice que es \textbf{controlable} al estado $\mathbf{x}_1\in \mathbb{R}^{n_x}$ en el tiempo $t_1>0$, si existe $\mathbf{u}\in \mathcal{U}$ tal que 
-    $$\mathbf{x}_1 = \mathbf{x}(t_1; \mathbf{x}_0, \mathbf{u}),$$
-    dónde $\mathbf{x}(t_1; \mathbf{x}_0, \mathbf{u})$ representa una solución particular de la forma \ref{eq:linear_solution}. En este caso, $\mathbf{x}_1$ es llamado estado \textbf{alcanzable} desde $\mathbf{x}_0$ al tiempo $t_1$.
+    Considerando el sistema de control lineal en la \eqreftext{eq:linear_control_system}, un estado $\mathbf{x}_0 \in \mathbb{R}^{n_x}$ se dice que es \textbf{controlable} al estado $\mathbf{x}_1\in \mathbb{R}^{n_x}$ en el tiempo $t_1>0$, si existe $\mathbf{u}\in \mathcal{U}$ tal que 
+    \begin{align}
+        \mathbf{x}_1 = \mathbf{x}(t_1; \mathbf{x}_0, \mathbf{u}),
+    \end{align}
+    donde $\mathbf{x}(t_1; \mathbf{x}_0, \mathbf{u})$ representa una solución particular de acuerdo a la \eqreftext{eq:linear_solution}. En este caso, $\mathbf{x}_1$ es llamado estado \textbf{alcanzable} desde $\mathbf{x}_0$ al tiempo $t_1$.
 \end{definition}
 
 En el caso de los sistemas de control lineales se tiene una condición para determinar si es un sistema es controlable. Esta condición es conocida como criterio de Kalman y se deriva de una análisis utilizando métodos de álgebra lineal. Este trabajo se limitará a enunciar el criterio recuperado de \cite{Gruene2021} por medio de la siguiente definición y teorema.
 
 \begin{definition}
-    La matriz $R(\mathbf{A}, \mathbf{B}) = (\mathbf{B}\ \mathbf{AB}\cdots\mathbf{A}^{n_x -1}\mathbf{B}) \in \mathbb{R}^{n_x \times n_u\cdot n_x}$ se conoce como la \textbf{matriz de controlabilidad} del sistema \ref{eq:linear_control_system}.
+    La matriz descrita por la siguiente ecuación, 
+    $$R(\mathbf{A}, \mathbf{B}) = [\mathbf{B}\ \mathbf{AB}\ \mathbf{A}^2\mathbf{B}\ \cdots\ \mathbf{A}^{n_x-1}\mathbf{B}] \in \mathbb{R}^{n_x \times n_u\cdot n_x},$$ 
+    se conoce como la \textbf{matriz de controlabilidad} del sistema en la \eqreftext{eq:linear_control_system}, donde $[\cdot]$ denota la concatenación horizontal (por columnas) de los bloques.
 \end{definition}
 
 \begin{theorem}(\textbf{Criterio de Kalman})
-    El sistema \ref{eq:linear_control_system} es completamente controlable si y sólo si
+    El sistema en la \eqreftext{eq:linear_control_system} es completamente controlable si y sólo si
     $$rango(R(\mathbf{A}, \mathbf{B})) = n_x.$$
-    En este caso pareja de matrices $(\mathbf{A},\mathbf{B})$ se denomina \textbf{controlable}.
+    En este caso la pareja de matrices $(\mathbf{A},\mathbf{B})$ se denomina \textbf{controlable}.
 \end{theorem} 
 
 \section{Estabilidad}
@@ -87,11 +92,11 @@ Supóngase que $f$ tiene un equilibrio en $\mathbf{x}^{*}\in \mathbb{R}^{n_x}$.
 \begin{enumerate}
     \item El equilibrio se denomina \textbf{estable en el sentido de Liapunov}, si para cada $\epsilon> 0$ existe una $\delta>0$ tal que si 
     $$\|\mathbf{x}_0-\mathbf{x}^{*}\|\leq \delta \quad \Rightarrow \quad \|\mathbf{x}(t; \mathbf{x}_0) -\mathbf{x}^{*}\|\leq \epsilon \quad \forall t\geq 0.$$
-    \item El equilibrio es llamado \textbf{localmente asitóticamente estable}, si es estable y cumple que 
-    $$\lim_{t\rightarrow\infty}\|\mathbf{x}(t;\mathbf{x}_0)-\mathbf{x}^{*}\|=0$$
-    para cualquier $\mathbf{x}_0\in\mathcal{D}$, dónde $\mathcal{D}$ es una vecindad abierta de $\mathbf{x}^{*}$. En particular, se le llama \textbf{globalmente asitóticamente estable} si $\mathcal{D}=\mathbb{R}^{n_x}$.
+    \item El equilibrio es llamado \textbf{localmente asintóticamente estable}, si es estable y cumple que 
+    $$\lim_{t\rightarrow\infty}\|\mathbf{x}(t;\mathbf{x}_0)-\mathbf{x}^{*}\|=0,$$
+    para cualquier $\mathbf{x}_0\in\mathcal{D}$, donde $\mathcal{D}$ es una vecindad abierta de $\mathbf{x}^{*}$. En particular, se le llama \textbf{globalmente asintóticamente estable} si $\mathcal{D}=\mathbb{R}^{n_x}$.
     \item El equilibrio se denomina \textbf{localmente} o \textbf{globalmente exponencialmente estable} si existen las constantes $c, \rho >0$ tales que 
-    $$\|\mathbf{x}(t;\mathbf{x}_0)-\mathbf{x}^{*}\| \leq ce^{-\rho t}\|\mathbf{x}_0-\mathbf{x}^{*}\| \quad \forall t\geq 0$$
+    $$\|\mathbf{x}(t;\mathbf{x}_0)-\mathbf{x}^{*}\| \leq ce^{-\rho t}\|\mathbf{x}_0-\mathbf{x}^{*}\| \quad \forall t\geq 0,$$
     para cualquier $\mathbf{x}_0\in\mathcal{D}$.
 \end{enumerate}
 \end{definition}
@@ -103,22 +108,30 @@ Los distintos tipos de estabilidad expuestos en la definición
 La siguiente definición retoma de lo mostrado en \cite{Gruene2021, capella2020clase}.
 
 \begin{definition}
-    El \textbf{problema de estabilización por retroalimentación} para el sistema de control lineal \ref{eq:linear_control_system} consiste en encontrar el mapeo lineal $\mu:\mathbb{R}^{n_x}\rightarrow\mathbb{R}^{n_u}$ (o, la correspondiente matriz $\mathbf{K}\in \mathbb{R}^{n_u\times n_x}$), tal que el equilibrio $\mathbf{x}^{*}=\mathbf{0}$ es asintóticamente estable para el sistema de circuito cerrado dado por la siguiente ecuación diferencial ordinaria,
+    Sea el sistema lineal,
+    \begin{align}
+        \dot{\mathbf{x}}(t) = \mathbf{A}\mathbf{x}(t) + \mathbf{B}\mathbf{u}(t).
+        \label{eq:open_linear_system}
+    \end{align}
+    El \textbf{problema de estabilización por retroalimentación} consiste en encontrar una ley de control de estados $\mu:\mathbb{R}^{n_x}\rightarrow\mathbb{R}^{n_u}$ de la forma
+    \begin{align}
+        \label{eq:state-feedback}
+        \mathbf{u}(t)=\mu(\mathbf{x}(t))=\mathbf{K}\mathbf{x}(t), \qquad \mathbf{K}\in\mathbb{R}^{n_u\times n_x},
+    \end{align}
+    donde $\mathbf{K}$ se denomina \textbf{ganancia de retroalimentación}. Al sustituir esta ley en el sistema lineal de la ecuación \ref{eq:open_linear_system}, se obtiene el \textbf{sistema de circuito cerrado} descrito por la siguiente ecuación, 
     \begin{align}
     \label{eq:closed-loop}
-        \dot{\mathbf{x}} &= (\mathbf{A} + \mathbf{BK})\mathbf{x}(t),\\
-        \label{eq:state-feedback}
-        \mu(\mathbf{x}) &= \mathbf{K}\mathbf{x}.
+        \dot{\mathbf{x}}(t) &= (\mathbf{A} + \mathbf{BK})\mathbf{x}(t).
     \end{align}
-    El mapeo $\mu$ recibe el nombre de \textbf{ley de retroalimentación de estados} y tiene la función de ser una estrategia de control. 
+    El objetivo es elegir $\mathbf{K}$ de modo que el equilibrio $\mathbf{x}^{*}=\mathbf{0}$ del sistema en la \eqreftext{eq:closed-loop} sea asintóticamente estable.
 \end{definition}
-La dinámica de circuito cerrado esta completamente determinada por la matriz,  \begin{align}
+La dinámica de circuito cerrado está completamente determinada por la matriz,  \begin{align}
 (\mathbf{A}+\mathbf{B K}).
 \label{eq:matrix_abk}
 \end{align}
-A su vez la estabilidad del sistema de circuito cerrado así como la tasa de regulación de $\mathbf{x}$ a $\mathbf{0}$ esta determinada por los valores propios de \ref{eq:matrix_abk}, que se denotaran por polos del sistema \cite{Kwong2008}. Se puede afirmar que el sistema \ref{eq:closed-loop} es asintóticamente estable si sólo si la parte real de todos los valores propios son estrictamente negativos \cite{Gruene2021}. Para regular \ref{eq:closed-loop} usando \ref{eq:state-feedback}, es necesario determinar que tanto control se tiene sobre los valores propios de la matriz \ref{eq:matrix_abk} \cite{Kwong2008}. El problema de encontrar $\mathbf{K}$ tal que permita determinar un conjunto prescrito de valores propios del sistema \ref{eq:closed-loop} se llama \textbf{problema de asignación de polos} \cite{Kwong2008}. 
+A su vez la estabilidad del sistema de circuito cerrado así como la tasa de regulación de $\mathbf{x}$ a $\mathbf{0}$ está determinada por los valores propios de la matriz en la \eqreftext{eq:matrix_abk}, que se denotarán por polos del sistema \cite{Kwong2008}. Se puede afirmar que el sistema en la \eqreftext{eq:closed-loop} es asintóticamente estable si y sólo si la parte real de cada valor propio es estrictamente negativa \cite{Gruene2021}. Para regular el sistema en la \eqreftext{eq:closed-loop} usando la \eqreftext{eq:state-feedback}, es necesario determinar que tanto control se tiene sobre los valores propios de la matriz en la \eqreftext{eq:matrix_abk} \cite{Kwong2008}. El problema de encontrar $\mathbf{K}$ tal que permita determinar un conjunto prescrito de valores propios del sistema en la \eqreftext{eq:closed-loop} se llama \textbf{problema de asignación de polos} \cite{Kwong2008}. 
 
-Un resultado importante para los sistemas de control, que fue demostrado en \cite{Kwong2008, Gruene2021}, establece que los polos del circuito cerrado \ref{eq:closed-loop} pueden ser arbitrariamente asignados si y sólo si la pareja $(\mathbf{A}, \mathbf{B})$ es controlable. Este resultado es conocido como \textbf{teorema de asignación de polos}. Las implicaciones de este teorema son notables, pues relacionan la controlabilidad y estabilidad, además de permitir diseñar estrategias de control.
+Un resultado importante para los sistemas de control, que fue demostrado en \cite{Kwong2008, Gruene2021}, establece que los polos del circuito cerrado en la \eqreftext{eq:closed-loop} pueden ser arbitrariamente asignados si y sólo si la pareja $(\mathbf{A}, \mathbf{B})$ es controlable. Este resultado es conocido como \textbf{teorema de asignación de polos}. Las implicaciones de este teorema son notables, pues relacionan la controlabilidad y estabilidad, además de permitir diseñar estrategias de control.
 
 \section{Control óptimo}
 
@@ -127,71 +140,80 @@ En segundo lugar permite describir de manera concisa comportamientos complejos p
 
 El control óptimo tiene un rol fundamental en la resolución de varios problemas reales. En particular, ha sido ampliamente usado en aplicaciones de la ingeniería donde se desea conseguir el mejor desempeño posible.
 
-Una método de control óptimo extensamente utilizado es \textbf{regulador cuadrático lineal} o mejor conocido por su nombre en inglés \textbf{\acrfull{lqr}}. Este método en sí es una estrategia de control que explota las capacidades de la teoría de sistemas lineales y la optimización de funciones cuadráticas. 
+Un método de control óptimo extensamente utilizado es el \textbf{regulador cuadrático lineal} o mejor conocido por su nombre en inglés \textbf{\acrfull{lqr}}. Este método en sí es una estrategia de control que explota las capacidades de la teoría de sistemas lineales y la optimización de funciones cuadráticas. 
 
-Esta sección se enfocará en discutir los principios del control óptimo para dar pie al estudio del método \acrshort{lqr} sobre sistemas dinámicos discretos. Posteriormente, se estudiará como modificar el método de \acrshort{lqr} para utilizarlo en sistemas de control no lineales, como el sistema dinámico que se desea resolver en este trabajo.
+Esta sección se enfocará en discutir los principios del control óptimo para dar pie al estudio del método \acrshort{lqr} sobre sistemas dinámicos discretos. Posteriormente, se estudiará cómo modificar el método \acrshort{lqr} para utilizarlo en sistemas de control no lineales, como el sistema dinámico que se desea resolver en este trabajo.
 
 \subsection{Planteamiento del problema}
-El planteamiento de los problemas de control óptimo discutidos en este trabajo tendrán las siguientes particularidades. Se discuten únicamente problemas para sistemas de control en tiempo discreto de la forma \ref{eq:control_system_dis} con horizonte finito.
+El planteamiento de los problemas de control óptimo discutidos en este trabajo tendrá la particularidad de considerar únicamente problemas para sistemas de control en tiempo discreto de la forma en la \eqreftext{eq:control_system_dis} con horizonte finito.
 
-Bajo las condiciones anteriores el problema de control óptimo se describe como la siguiente tarea: dada un a condición inicial $\mathbf{x}_{1}$ encontrar una trayectoria,  
-$$\bm\tau = \{\mathbf{x}_{1}, \mathbf{u}_1, \mathbf{x}_2, \cdots, \mathbf{u}_{T}, \mathbf{x}_{T+1}\},$$ 
-tal que optimicen un costo en función de cada pareja estado-acción por paso de tiempo de la misma trayectoria. Considerando que la evolución de los estados se determina por una función de transición, la tarea se reduce a encontrar la sucesión de acciones óptimas. Matemáticamente, esto se puede expresar como el siguiente objetivo de optimización con restricción,
+Bajo las condiciones anteriores, el problema de control óptimo se plantea como la siguiente tarea: dada una condición inicial $\mathbf{x}_{0}\in\mathbb{R}^{n_x}$, encontrar una trayectoria, es decir, una secuencia de pares estado-control $(\mathbf{x}_t, \mathbf{u}_t)$ a lo largo del horizonte temporal, como se muestra en la siguiente ecuación,
 \begin{align}
-\min_{\mathbf{u}_1, \mathbf{u}_2, \cdots \mathbf{u}_T}
-\underbrace{\sum_{t=1}^{T+1} c(\mathbf{x}_t, \mathbf{u}_t)}_{c(\bm\tau)} \quad \text{sujeto a} \quad \mathbf{x}_{t+1}= f(\mathbf{x}_{t}, \mathbf{u}_{t}), \quad \mathbf{x}_{1}\in \mathcal{X},
+    \bm\tau = \{\mathbf{x}_{0}, \mathbf{u}_0, \mathbf{x}_1, \cdots, \mathbf{x}_{T-1}\mathbf{u}_{T-1}, \mathbf{x}_{T}\},
+\end{align}
+En este contexto, la variable de control $\mathbf{u}_t\in\mathbb{R}^{n_u}$ también se denotará como \textbf{acción}. De este modo, la tarea consiste en encontrar la sucesión de acciones óptimas que minimice un costo sobre la trayectoria. Dado que la evolución de los estados se determina mediante una función de transición, esto se expresa mediante el siguiente problema de optimización con restricción,
+\begin{align}
+\min_{\mathbf{u}_0, \mathbf{u}_1, \cdots \mathbf{u}_{T-1}}
+\underbrace{\sum_{t=0}^{T} c(\mathbf{x}_t, \mathbf{u}_t)}_{c(\bm\tau)} \quad \text{sujeto a} \quad \mathbf{x}_{t+1}= f(\mathbf{x}_{t}, \mathbf{u}_{t}), \quad \mathbf{x}_{0}\in \mathcal{X}\subset\mathbb{R}^{n_x},
 \label{eq:OC_objective}
 \end{align}
-donde $\mathbf{u}_t \in \mathcal{U}(\mathbf{x}_t)$ para cada tiempo $t\in \{1, \cdots, T\}$. En este caso la función $c:\mathcal{X}\times\mathcal{U}\rightarrow\mathbb{R}^{+}$ corresponde al costo instantáneo. En particular, el valor $c(\mathbf{x}_{T+1}, \mathbf{u}_{T+1})$ representa el costo final con $\mathbf{u}_{T+1}=\bm{0}$. Mientras que representamos el costo acumulado de la trayectoria $\bm\tau$ por $c(\bm\tau)$. \cite{underactuated}
+donde $\mathbf{u}_t \in \mathcal{U}(\mathbf{x}_t)$ para cada tiempo $t\in \{0, \cdots, T-1\}$. En este caso la función $c:\mathcal{X}\times\mathcal{U}\rightarrow\mathbb{R}^{+}$ corresponde al costo instantáneo. En particular, el valor $c(\mathbf{x}_{T}, \mathbf{u}_{T})$ representa el costo final con $\mathbf{u}_{T}=\bm{0}$. Mientras que se representa el costo acumulado de la trayectoria $\bm\tau$ por $c(\bm\tau)$. \cite{underactuated}
 
 De la misma forma se puede expresar explícitamente el objetivo de la optimización como se muestra en la siguiente expresión \cite{underactuated},
-\begin{align*}
-    \min_{\mathbf{u}_1, \mathbf{u}_2, \cdots \mathbf{u}_{T}}c(\mathbf{x}_1, \mathbf{u}_1) + c(f(\mathbf{x}_1, \mathbf{u}_1), \mathbf{u}_2) + \cdots + c(f(f\cdots f(\cdots)), 
-    \mathbf{u}_{T}).
-\end{align*}
+\begin{align}
+    \min_{\mathbf{u}_0, \mathbf{u}_1, \cdots \mathbf{u}_{T-1}}c(\mathbf{x}_0, \mathbf{u}_0) + c(f(\mathbf{x}_10, \mathbf{u}_0), \mathbf{u}_1) + \cdots + c(f(f\cdots f(\cdots)), 
+    \mathbf{u}_{T-1}).
+\end{align}
 \subsection{Programación dinámica: Iteración de valores}
 
  Una forma eficiente de resolver esta clase de problemas es por medio de los algoritmos de  programación dinámica.  En general, la \textbf{programación dinámica} hace referencia al conjunto de técnicas que optimizan un programa para resolver un problema secuencial o temporal. Estos métodos parten un problema de alta complejidad en problemas secundarios que se resuelven de forma recursiva \cite{silver2015}. 
 
-Se menciona en \cite{meyn2022} que el problema de control óptimo de estos métodos parten del siguiente hecho: si una pareja de secuencias de estados y acciones dada es óptima y se removiera el primer estado y su respectiva acción, el resto de la secuencia sigue siendo óptima. Este hecho lleva por nombre \textbf{principio de optimalidad de Bellman}.  
-Este principio permite interpretar de forma recursiva el objetivo de control óptimo planteado en la expresión \ref{eq:OC_objective} de la siguiente forma,
-\begin{align}
-V^{*}(\mathbf{x}_t) &= 
-\min_{\mathbf{u}_t}\left\{ c(\mathbf{x}_t, \mathbf{u}_t) + \min_{\mathbf{u}_{t+1},\cdots, \mathbf{u}_{T}}
-\sum_{s=t+1}^{T+1}c(\mathbf{x}_s, \mathbf{u}_s)\right\} \qquad 1 \leq t \leq T, \\
+Se menciona en \cite{meyn2022} que el problema de control óptimo de estos métodos parte del siguiente hecho: si una pareja de secuencias de estados y acciones dada es óptima y se removiera el primer estado y su respectiva acción, el resto de la secuencia sigue siendo óptima. Este hecho lleva por nombre \textbf{principio de optimalidad de Bellman}.  
+Este principio permite interpretar de forma recursiva el objetivo de control óptimo planteado en la \eqreftext{eq:OC_objective} de la siguiente forma,
+\begin{equation}
+\begin{aligned}
+    V_{*}(\mathbf{x}_t) &= 
+\min_{\mathbf{u}_t}\left\{ c(\mathbf{x}_t, \mathbf{u}_t) + \min_{\mathbf{u}_{t+1},\cdots, \mathbf{u}_{T-1}}
+\sum_{s=t+1}^{T}c(\mathbf{x}_s, \mathbf{u}_s)\right\} \qquad 0 \leq t \leq T-1, \\
 &=
-\min_{\mathbf{u}_t\in \mathcal{U}(\mathbf{x}_t)} \left\{\underbrace{c(\mathbf{x}_t, \mathbf{u}_t) + V^{*}(\mathbf{x}_{t+1})}_{Q(\mathbf{x}_t, \mathbf{u}_t)}\right\} \qquad \mathbf{x}_{t+1} = f(\mathbf{x}_t, \mathbf{u}_t),
-\label{eq:bellman_eq} 
-\end{align}
-dónde $V^{*}(\mathbf{x}_{T+1})=c(\mathbf{x}_{T+1}, \bm{0})$. La expresión \ref{eq:bellman_eq} lleva por nombre \textbf{ecuación de Bellman}. Esta expresión se suele interpretar como una ecuación de punto fijo sobre la función $V^{*}$ \cite{meyn2022}. 
+\min_{\mathbf{u}_t\in \mathcal{U}(\mathbf{x}_t)} \left\{\underbrace{c(\mathbf{x}_t, \mathbf{u}_t) + V_{*}(\mathbf{x}_{t+1})}_{Q(\mathbf{x}_t, \mathbf{u}_t)}\right\},
+\end{aligned}
+\label{eq:bellman_eq}     
+\end{equation}
+donde $\mathbf{x}_{t+1} = f(\mathbf{x}_t, \mathbf{u}_t)$ y $V_{*}(\mathbf{x}_{T})=c(\mathbf{x}_{T+1}, \bm{0})$. Además, la función $Q:\mathcal{X}\times\mathcal{U}\rightarrow\mathbb{R}$, llamada \textbf{función de valor de la acción}, cuantifica el costo inmediato más el costo óptimo futuro asociado a ejecutar la acción $\mathbf{u}_t$ en el estado $\mathbf{x}_t$. La expresión \ref{eq:bellman_eq}, conocida como \textbf{ecuación de Bellman}, se interpreta como una ecuación de punto fijo sobre la función $V_{*}$ \cite{meyn2022}. 
 
 En este contexto la programación dinámica se refiere al uso de algoritmos recursivos para obtener una solución de la ecuación de Bellman \cite{meyn2022}.  
 
-Uno de los métodos más ampliamente utilizados, lleva por nombre \textbf{iteración de valores}. Este algoritmo utiliza el método de aproximaciones sucesivas para resolver la ecuación de punto fijo \ref{eq:bellman_eq} de forma recursiva. Dado un valor inicial $V_0$ la aproximación de $V^{*}$ se realiza usando la siguiente expresión,
+Uno de los métodos más ampliamente utilizados, lleva por nombre \textbf{iteración de valores}. Este algoritmo utiliza el método de aproximaciones sucesivas para resolver la ecuación de punto fijo \ref{eq:bellman_eq} de forma recursiva. Dado un valor inicial $V_0$ la aproximación de $V_{*}$ se realiza usando la siguiente expresión,
 \begin{align}
     V_{k+1}(\mathbf{x}) = \min_{\mathbf{u}}\left\{
     c(\mathbf{x}, \mathbf{u})+ V_{k}(f(\mathbf{x}, \mathbf{u}))\right\}\qquad \mathbf{x}\in \mathcal{X}, k\geq 0.
     \label{eq:policy_evaluation}
 \end{align}
-La expresión \ref{eq:policy_evaluation} permite definir una estrategia para seleccionar acciones óptimas. Dicha estrategia lleva por nombre \textbf{ley de control óptimo} y esta dada por,
+La \eqreftext{eq:policy_evaluation} permite definir una estrategia para seleccionar acciones óptimas. Dicha estrategia lleva por nombre \textbf{ley de control óptimo} y está dada por,
 \begin{align}
     \mu_{k+1}(\mathbf{x}) = \argmin_{u}\left\{
         c(\mathbf{x}, \mathbf{u})+ V_{k}(f(\mathbf{x}, \mathbf{u}))
         \label{eq:policy_update} 
     \right\}.
 \end{align}
-En general este algoritmo consiste en realizar de forma iterativa los pasos llamados: \textbf{evaluación de política} y \textbf{actualización de política}, que consisten en utilizar las expresiones \ref{eq:policy_evaluation} y \ref{eq:policy_update}, respectivamente. 
+En general este algoritmo consiste en realizar de forma iterativa los pasos llamados: \textbf{evaluación de política} y \textbf{actualización de política}, que consisten en utilizar las ecuaciones \ref{eq:policy_evaluation} y \ref{eq:policy_update}, respectivamente. 
 
-\subsection{\acrfull{lqr}}
+\subsection{\acrlong{lqr}}
 No existe ninguna garantía de que para cualquier sistema de control el método de iteración de valores converja a una solución. No obstante, el método de \acrshort{lqr} garantiza su convergencia valiéndose de los principios de teoría de control en sistemas lineales.
+El desarrollo presentado en esta subsección se basa en la formulación clásica descrita en \cite{Bertsekas1995a} y \cite{underactuated}.
 
 Para el uso de este método se establecen las siguientes condiciones. En primer lugar, se considerara un sistema dinámico lineal autónomo de tiempo discreto de la forma,
-$$f(\mathbf{x}, \mathbf{u}) = \mathbf{A}\mathbf{x}+ \mathbf{B}\mathbf{u}.$$
+\begin{align}
+    f(\mathbf{x}, \mathbf{u}) = \mathbf{A}\mathbf{x}+ \mathbf{B}\mathbf{u}.
+\end{align}
 En segundo lugar, se pide un costo cuadrático de la forma,
-$$c(\mathbf{x}, \mathbf{u}) = \mathbf{x}^{\top}\mathbf{P}\mathbf{x} + \mathbf{u}^{\top}\mathbf{R}\mathbf{u}, $$
-dónde $\mathbf{P} \in \mathbb{R}^{n_x\times n_x}$ y $\mathbf{R} \in \mathbb{R}^{n_u\times n_u}$ son matrices simétricas positiva semi definida y positiva estrictamente definida, respectivamente. \cite{underactuated}
+\begin{align}
+c(\mathbf{x}, \mathbf{u}) = \mathbf{x}^{\top}\mathbf{P}\mathbf{x} + \mathbf{u}^{\top}\mathbf{R}\mathbf{u},
+\end{align}
+donde $\mathbf{P} \in \mathbb{R}^{n_x\times n_x}$ y $\mathbf{R} \in \mathbb{R}^{n_u\times n_u}$ son matrices simétricas positiva semi definida y positiva estrictamente definida, respectivamente. \cite{underactuated}
 
-En este caso la ecuación de Bellman esta dada por la siguiente expresión,
+En este caso la ecuación de Bellman está dada por la siguiente expresión,
 \begin{align}
 V(\mathbf{x}_{t}) = \min_{
 \mathbf{u}}
@@ -200,31 +222,33 @@ V(\mathbf{x}_{t}) = \min_{
     \right\}.
     \label{eq:LQR_Bellman}
 \end{align}
-La solución de la ecuación \ref{eq:LQR_Bellman} se obtiene de forma recursiva siguiendo el orden del conjunto $\{T, T-1, \cdots, 1\}$. Para empezar, en el tiempo $t=T+1$ se establece como condición de frontera la siguiente igualdad \cite{underactuated},
+La solución de la \eqreftext{eq:LQR_Bellman} se obtiene de forma recursiva siguiendo el orden del conjunto $\{T, T-1, \cdots, 1\}$. Para empezar, en el tiempo $t=T+1$ se establece como condición de frontera la siguiente igualdad \cite{underactuated},
 \begin{align}
-    V(\mathbf{x}_{T+1}) &= \mathbf{x}_{T+1}^{\top}\mathbf{P}\mathbf{x}_{T+1} \qquad \forall \mathbf{x}\in\mathcal{X}.
+    V(\mathbf{x}_{T}) &= \mathbf{x}_{T}^{\top}\mathbf{P}\mathbf{x}_{T} \qquad \forall \mathbf{x}_{T}\in\mathcal{X}.
     \label{eq:frontier_cond}
 \end{align}
 
- A partir de la condición \ref{eq:frontier_cond} se deduce explícitamente la solución a la ecuación \ref{eq:LQR_Bellman} y la ley de control óptimo asociada, que están dadas por las siguientes expresiones,
-\begin{align*}
-    V^{*}(\mathbf{x}_t) &= \mathbf{x}_t^{\top}\mathbf{V}_{t}\mathbf{x}_t, \\
-    \mu^{*}(\mathbf{x}_t)&= \mathbf{K}_{t}\mathbf{x}_t. 
-\end{align*}
-dónde para cada $t \in \{1, 2, \cdots, T\}$
-\begin{align*}
-    \mathbf{K}_t &= - (\mathbf{R}+\mathbf{B}^{\top}\mathbf{V}_{t+1}\mathbf{B})^{-1}\mathbf{B}^{\top}\mathbf{V}_{t+1}\mathbf{A} \\
+ A partir de la condición en la \eqreftext{eq:frontier_cond} se deduce explícitamente la solución a la \eqreftext{eq:LQR_Bellman} y la ley de control óptimo asociada, que están dadas por las siguientes expresiones \cite{Bertsekas1995a},
+\begin{align}
+    V_{*}(\mathbf{x}_t) &= \mathbf{x}_t^{\top}\mathbf{V}_{t}\mathbf{x}_t, \\
+    \mu^{*}(\mathbf{x}_t)&= \mathbf{K}_{t}\mathbf{x}_t,
+\end{align}
+donde para cada $t \in \{0, 1, \cdots, T-1\}$,
+\begin{align}
+    \mathbf{K}_t &= - (\mathbf{R}+\mathbf{B}^{\top}\mathbf{V}_{t+1}\mathbf{B})^{-1}\mathbf{B}^{\top}\mathbf{V}_{t+1}\mathbf{A}, \\
     \mathbf{V}_{t} &= \underbrace{\mathbf{Q}}_{\text{costo actual}} + \underbrace{\mathbf{K}_t^{\top}\mathbf{R}\mathbf{K}_t}_{\text{costo de acción $t$}} + 
     \underbrace{(\mathbf{A}+\mathbf{B}\mathbf{K}_{t})^{\top}
     \mathbf{V}_{t+1}
     (\mathbf{A}+\mathbf{B}\mathbf{K}_{t})}_{\text{costo acumulado}}.
-\end{align*}
+\end{align}
 En este caso el sistema dinámico descrito como un sistema por retroalimentación mediante la ley de control se expresa de la siguiente manera \cite{underactuated}, 
-$$\mathbf{x}_{t+1} = (\mathbf{A} +\mathbf{B}\mathbf{K}_{t})\mathbf{x}_t.$$
+\begin{align}
+    \mathbf{x}_{t+1} = (\mathbf{A} +\mathbf{B}\mathbf{K}_{t})\mathbf{x}_t.
+\end{align}
 
-El método de \acrshort{lqr} resulta ser bastante efectivo con sistemas lineales. No obstante, posee varias limitaciones con respecto a una variedad con problemas de la vida real. Entre estas limitaciones se encuentra que problemas de control (como el que se planteo este trabajo) están representados por sistemas no lineales. A pesar de que se puede utilizar una aproximación lineal del sistema, esto sólo es efectivo en regiones pequeñas. Otra limitación importante, es que restringe la forma que debe tener la función de costo. 
+El método de \acrshort{lqr} resulta ser bastante efectivo con sistemas lineales. No obstante, posee varias limitaciones con respecto a una variedad de problemas de la vida real. Entre estas limitaciones se encuentra que problemas de control (como el que se plantea en este trabajo) están representados por sistemas no lineales. A pesar de que se puede utilizar una aproximación lineal del sistema, esto sólo es efectivo en regiones pequeñas. Otra limitación importante, es que restringe la forma que debe tener la función de costo. 
 
-\subsection{\acrfull{ilqr}}\label{sub_sec:iLQR}
+\subsection{\acrlong{ilqr}}\label{sub_sec:iLQR}
 
 Para superar los retos discutidos anteriormente, se introduce el método conocido como \textbf{regulador cuadrático lineal iterativo} o \textbf{\acrfull{ilqr}}. Este método hereda las capacidades del algoritmo \acrshort{lqr} para aplicarlos sobre un sistema no lineal y una función de costo diferenciable. 
 
@@ -232,18 +256,21 @@ Este algoritmo en lugar de usar la dinámica dada por un sistema lineal, constru
 
 Para lograr obtener las representaciones aproximadas de la dinámica y el costo, será necesario establecer ciertas hipótesis. Para empezar el sistema dinámico $f$ debe  de ser diferenciable, es decir, que $f\in\mathcal{C}^{1}(\mathcal{X}\times\mathcal{U}, \mathcal{X})$. Por otra parte el costo $c$ se asume que por lo menos es una función doblemente diferenciable, lo que quiere decir que $c \in \mathcal{C}^{2}\left(\mathcal{X}\times\mathcal{U}, \mathbb{R}^{+}\right)$.  
 
-La siguiente descripción del algoritmo \acrshort{ilqr} esta basada en el curso \textit{CS 294: Deep Reinforcement Learning, Fall 2017} de la universidad de Berkeley \cite{berkeley2017deeprl, hui2018rl}.
+La siguiente descripción del algoritmo \acrshort{ilqr} está basada en el curso \textit{CS 294: Deep Reinforcement Learning, Fall 2017} de la universidad de Berkeley \cite{berkeley2017deeprl, hui2018rl}.
 
 \subsubsection{Estabilización de trayectorias locales para sistemas no lineales}
-El método requiere de trayectoria factible de estados y acciones para resolver el problema \ref{eq:OC_objective} de forma iterativa. Esta trayectoria inicial se representará por medio de la expresión,
+El método requiere una trayectoria factible de estados y acciones para resolver de forma iterativa el problema en la \eqreftext{eq:OC_objective}. A esta secuencia de referencia inicial se le denomina \textbf{trayectoria nominal} y se representa mediante la expresión,
 \begin{align}
-\hat{\bm\tau} = \left\{\hat{\mathbf{x}}_1, \hat{\mathbf{u}}_1, \hat{\mathbf{x}}_2, \hat{\mathbf{u}}_2\cdots, \hat{\mathbf{x}}_T, \hat{\mathbf{u}}_T\right\}    
+\hat{\bm\tau} = \left\{\hat{\mathbf{x}}_0, \hat{\mathbf{u}}_0, \hat{\mathbf{x}}_1, \hat{\mathbf{u}}_1\cdots, \hat{\mathbf{x}}_{T-1}, \hat{\mathbf{u}}_{T-1}, \hat{\mathbf{x}}_{T} \right\},    
 \label{eq:nominal_traj}
 \end{align}
-A partir de la trayectoria $\hat{\bm\tau}$ en cada paso de tiempo se construye un nuevo sistema de coordenadas. Concretamente, para cada $t \in \{1, \cdots, T\}$, las variables de estado y control están dadas por las siguiente expresiones,
-$$\bar{\mathbf{x}}_t = \mathbf{x}_t - \hat{\mathbf{x}}_t, \qquad \bar{\mathbf{u}}_t = \mathbf{u}_t - \hat{\mathbf{u}}_t.$$
-Estas nuevas coordenadas serán útiles para obtener una aproximación lineal del sistema dinámico $f$. Específicamente esta aproximación se realiza calculando el polinomio de Taylor de grado uno para $f$. Este cálculo se realiza alrededor de cada pareja estado-acción de $\hat{\bm{\tau}}$, como se muestra en la siguiente expresión \cite{underactuated},
+A partir de la trayectoria $\hat{\bm\tau}$ en cada paso de tiempo se construye un nuevo sistema de coordenadas. Concretamente, para cada $t \in \{0, \cdots, T-1\}$, las variables de estado y control están dadas por las siguiente expresiones,
 \begin{align}
+    \bar{\mathbf{x}}_t = \mathbf{x}_t - \hat{\mathbf{x}}_t, \qquad \bar{\mathbf{u}}_t = \mathbf{u}_t - \hat{\mathbf{u}}_t.
+\end{align}
+Estas nuevas coordenadas serán útiles para obtener una aproximación lineal del sistema dinámico $f$. Específicamente esta aproximación se realiza calculando el polinomio de Taylor de grado uno para $f$. Este cálculo se realiza alrededor de cada pareja estado-acción de $\hat{\bm{\tau}}$, como se muestra en la siguiente expresión \cite{underactuated},
+\begin{equation}
+    \begin{aligned}
     \bar{\mathbf{x}}_{t+1} &= \mathbf{x}_{t+1} - \hat{\mathbf{x}}_{t+1} = f(\mathbf{x}_t, \mathbf{u}_t) - f(\hat{\mathbf{x}}_t, \hat{\mathbf{u}}_{t}) \\
     &\approx f(\hat{\mathbf{x}}_t, \hat{\mathbf{u}}_t) + \underbrace{\nabla_{\mathbf{x}} f(\hat{\mathbf{x}}_t, \hat{\mathbf{u}}_t)}_{\mathbf{A}_t}(\mathbf{x}_t - \hat{\mathbf{x}}_t) + \underbrace{\nabla_{\mathbf{u}} f(\hat{\mathbf{x}}_t, \hat{\mathbf{u}}_t)}_{\mathbf{B}_t} (\mathbf{u}_t - \hat{\mathbf{u}}_t) -f(\hat{\mathbf{x}}_t, \hat{\mathbf{u}}_t) \\
     & \approx \mathbf{A}_t \bar{\mathbf{x}}_t + \mathbf{B}_t \bar{\mathbf{u}}_t \\
@@ -251,14 +278,16 @@ Estas nuevas coordenadas serán útiles para obtener una aproximación lineal de
     \begin{bmatrix}
         \bar{\mathbf{x}}_t \\
         \bar{\mathbf{u}}_t
-    \end{bmatrix}\qquad t\in \{1, \cdots, T\}.
+    \end{bmatrix}\qquad t\in \{0, \cdots, T-1\}.
+    \end{aligned}
     \label{eq:taylor_control_system}
-\end{align} 
+\end{equation} 
 
-La expresión \ref{eq:taylor_control_system} se asemeja a la representación del sistema de control utilizada para el método \acrshort{lqr}. Sin embargo, esta expresión representa un sistema de control no autónomo en tiempo discreto. La linealización varía con respecto a la evolución del tiempo y no se hace específicamente sobre un punto fijo del sistema. Esta linealización es valida para cualquier trayectoria factible. Esta representación permitirá tener las propiedades de un sistema lineal, mientras que la región de estabilidad es más grande. \cite{underactuated} 
+La \eqreftext{eq:taylor_control_system} se asemeja a la representación del sistema de control utilizada para el método \acrshort{lqr}. Sin embargo, esta expresión representa un sistema de control no autónomo en tiempo discreto. La linealización varía con respecto a la evolución del tiempo y no se hace específicamente sobre un punto fijo del sistema. Esta linealización es valida para cualquier trayectoria factible. Esta representación permitirá tener las propiedades de un sistema lineal, mientras que la región de estabilidad es más grande. \cite{underactuated} 
 
 Para obtener una aproximación cuadrática del costo $c$, se calcula el polinomio de Taylor de grado dos, alrededor de los elementos de $\bm\tau$, como se muestra la siguiente expresión,
-\begin{align}
+\begin{equation}
+\begin{aligned}
     c(\mathbf{x}_t, \mathbf{u}_t) \approx& 
     c\left(\hat{\mathbf{x}}_t, \hat{\mathbf{u}}_t\right) 
     + 
@@ -279,7 +308,7 @@ Para obtener una aproximación cuadrática del costo $c$, se calcula el polinomi
         \mathbf{x}_t - \hat{\mathbf{x}}_t \\
         \mathbf{u}_t - \hat{\mathbf{u}}_t
     \end{bmatrix} \\
-=& \text{ constante} + \frac{1}{2} 
+=& \text{ C} + \frac{1}{2} 
 \begin{bmatrix}
         \bar{\mathbf{x}}_t \\
         \bar{\mathbf{u}}_t
@@ -294,12 +323,14 @@ Para obtener una aproximación cuadrática del costo $c$, se calcula el polinomi
         \bar{\mathbf{x}}_t \\
         \bar{\mathbf{u}}_t
     \end{bmatrix}^{\top}
-    \mathbf{c}_t .
+    \mathbf{c}_t ,
+\end{aligned}
     \label{eq:taylor_cost}
-\end{align}
+\end{equation}
+donde $C\in\mathbb{R}$ es una constante.
 
-Se usará la representación del costo dada por la expresión \ref{eq:taylor_cost}. En este caso la matriz $\mathbf{C}_{t}$ y el vector $\mathbf{c}_t$ representan el hessiano y el gradiente evaluados en cada estado-acción de $\bm{\tau}$, respectivamente. Con la intención de tener expresiones más simples, se parte la matriz $\mathbf{C}_t$ y el vector $\mathbf{c}_t$ en componentes, como se muestra en la siguiente expresión, 
-\begin{align*}
+Se usará la representación del costo dada por la \eqreftext{eq:taylor_cost}. En este caso la matriz $\mathbf{C}_{t}$ y el vector $\mathbf{c}_t$ representan el hessiano y el gradiente evaluados en cada estado-acción de $\bm{\tau}$, respectivamente. Con la intención de tener expresiones más simples, se parte la matriz $\mathbf{C}_t$ y el vector $\mathbf{c}_t$ en componentes, como se muestra en la siguiente expresión, 
+\begin{align}
 \mathbf{C}_t =
     \begin{bmatrix}
      \mathbf{C}_{\mathbf{x}\mathbf{x}_t}& \rvline & \mathbf{C}_{\mathbf{x} \mathbf{u}_t} \\ \hline 
@@ -315,269 +346,285 @@ Se usará la representación del costo dada por la expresión \ref{eq:taylor_cos
         \mathbf{c}_{\mathbf{u}_t}
     \end{bmatrix} 
     \in \mathbb{R}^{n_x + n_u}
-    \qquad t\in \{1, \cdots, T\}.
-\end{align*} 
+    \qquad t\in \{0, \cdots, T-1\}.
+\end{align} 
 \subsubsection{\textit{Backward pass}}
 Al igual que en el algoritmo \acrshort{lqr}, este método resuelve la ecuación de Bellman de forma recursiva. En este caso se establece la siguiente condición de frontera,
 \begin{align}\label{eq:Q_front}
-    Q(\mathbf{x}_{T}, \mathbf{u}_{T}) = c(\mathbf{x}_{T}, \mathbf{u}_{T}) \quad \forall\mathbf{x}_{T} = \mathcal{X}, \mathbf{u}_T \in \mathcal{U},
+    Q(\mathbf{x}_{T-1}, \mathbf{u}_{T-1}) = c(\mathbf{x}_{T-1}, \mathbf{u}_{T-1}) \quad \forall\mathbf{x}_{T-1} \in\mathcal{X}, \mathbf{u}_{T-1} \in \mathcal{U},
 \end{align}
-dónde recordamos que  $\mathcal{X}$ y $\mathcal{U}$ son los conjuntos de estados y variables de control, respectivamente.
+donde, como se indicó anteriormente, $\mathcal{X}$ y $\mathcal{U}$ representan los conjuntos de estados y de variables de control, respectivamente.
 
-En este caso se usa la forma cuadrática del costo para la igualdad \ref{eq:Q_front}. Si se asume que la matriz $\mathbf{C}_T$ es positiva definida, es posible encontrar la función de valor óptima. A partir de resolver la ecuación $\nabla_{\mathbf{u}_{T}}Q(\mathbf{x}_{T}, \mathbf{u}_{T})=0$ para la variable $\mathbf{u}_T$, como se muestra en la siguiente expresión,
-\begin{align*}
-   0 &= \mathbf{C}_{\mathbf{u}\mathbf{x}_{T}}\bar{\mathbf{x}}_{T}
-    + \mathbf{C}_{\mathbf{u}\mathbf{u}_{T}}\bar{\mathbf{u}}_{T}
-    + \mathbf{c}_{\mathbf{u}_{T}} \\
-    \iff \bar{\mathbf{u}}_{T} &= -\mathbf{C}_{\mathbf{u}\mathbf{u}_{T}}^{-1}(\mathbf{C}_{\mathbf{u}\mathbf{x}_{T}}\bar{\mathbf{x}}_{T} + \mathbf{c}_{\mathbf{u}_{T}}) \\
-    \iff \mathbf{u}_{T} &= \hat{\mathbf{u}}_{T} + \mathbf{K}_{T}(\mathbf{x}_{T} - \hat{\mathbf{x}}_{T}) + \mathbf{k}_{T},
-\end{align*}
-dónde 
-$$\mathbf{K}_{T} = -\textbf{C}_{\mathbf{u} \mathbf{u}_{T}}^{-1}\mathbf{C}_{\mathbf{u}\mathbf{x}_{T}}, \quad \mathbf{k}_{T}= -\mathbf{C}_{\mathbf{u} \mathbf{u}_{T}}^{-1}\mathbf{c}_{\mathbf{u}_{T}}.$$
-Una vez teniendo el valor óptimo $\textbf{u}_{T}$
-se calcula la función de valor óptima para el paso $t=T$,
+En este caso se usa la forma cuadrática del costo para la igualdad en la \eqreftext{eq:Q_front}. Si se asume que la matriz $\mathbf{C}_{T-1}$ es positiva definida, es posible encontrar la función de valor óptima. A partir de resolver la ecuación $\nabla_{\mathbf{u}_{T-1}}Q(\mathbf{x}_{T-1}, \mathbf{u}_{T-1})=0$ para la variable $\mathbf{u}_{T-1}$, como se muestra en la siguiente expresión,
+\begin{equation}
+    \begin{aligned}
+       0 &= \mathbf{C}_{\mathbf{u}\mathbf{x}_{T-1}}\bar{\mathbf{x}}_{T-1}
+    + \mathbf{C}_{\mathbf{u}\mathbf{u}_{T-1}}\bar{\mathbf{u}}_{T-1}
+    + \mathbf{c}_{\mathbf{u}_{T-1}}, \\
+    \iff \bar{\mathbf{u}}_{T-1} &= -\mathbf{C}_{\mathbf{u}\mathbf{u}_{T-1}}^{-1}(\mathbf{C}_{\mathbf{u}\mathbf{x}_{T-1}}\bar{\mathbf{x}}_{T-1} + \mathbf{c}_{\mathbf{u}_{T-1}}), \\
+    \iff \mathbf{u}_{T-1} &= \hat{\mathbf{u}}_{T-1} + \mathbf{K}_{T-1}(\mathbf{x}_{T-1} - \hat{\mathbf{x}}_{T-1}) + \mathbf{k}_{T-1},
+    \end{aligned}
+\end{equation}
+donde, 
 \begin{align}
-    V(\mathbf{x}_{T}) &= \min_{\mathbf{u}_{T}}Q(\mathbf{x}_{T}, \mathbf{u}_{T}) \\
-    &= \text{ constante} + \frac{1}{2}
+    \mathbf{K}_{T-1} = -\textbf{C}_{\mathbf{u} \mathbf{u}_{T-1}}^{-1}\mathbf{C}_{\mathbf{u}\mathbf{x}_{T-1}}, \quad \mathbf{k}_{T-1}= -\mathbf{C}_{\mathbf{u} \mathbf{u}_{T-1}}^{-1}\mathbf{c}_{\mathbf{u}_{T-1}}.
+\end{align} 
+
+Una vez teniendo el valor óptimo $\textbf{u}_{T-1}$
+se calcula la función de valor óptima para el paso $t=T-1$,
+\begin{equation}
+    \begin{aligned}
+    V(\mathbf{x}_{T-1}) &= \min_{\mathbf{u}_{T-1}}Q(\mathbf{x}_{T-1}, \mathbf{u}_{T-1}) \\
+    &= \text{ C} + \frac{1}{2}
     \begin{bmatrix}
-        \bar{\mathbf{x}}_{T} \\
-        \mathbf{K}_{T}\bar{\mathbf{x}}_{T} + \mathbf{k}_{T}
+        \bar{\mathbf{x}}_{T-1} \\
+        \mathbf{K}_{T-1}\bar{\mathbf{x}}_{T-1} + \mathbf{k}_{T-1}
     \end{bmatrix}^{\top}
-    \mathbf{C}_{T} 
+    \mathbf{C}_{T-1} 
     \begin{bmatrix}
-        \bar{\mathbf{x}}_{T} \\
-        \mathbf{K}_{T}\bar{\mathbf{x}}_{T} + \mathbf{k}_{T}
+        \bar{\mathbf{x}}_{T-1} \\
+        \mathbf{K}_{T-1}\bar{\mathbf{x}}_{T-1} + \mathbf{k}_{T-1}
     \end{bmatrix}
     + 
     \begin{bmatrix}
-        \bar{\mathbf{x}}_{T} \\
-        \mathbf{K}_{T}\bar{\mathbf{x}}_{T} + \mathbf{k}_{T}
+        \bar{\mathbf{x}}_{T-1} \\
+        \mathbf{K}_{T-1}\bar{\mathbf{x}}_{T-1} + \mathbf{k}_{T-1}
     \end{bmatrix}^{\top}
-    \mathbf{c}_{T} \\
-    &= \text{ constante} + 
-    \frac{1}{2}\bar{\mathbf{x}}_{T} \mathbf{C}_{\mathbf{x}\mathbf{x}_{T}}
-    \bar{\mathbf{x}}_T  
-    + \frac{1}{2}\bar{\mathbf{x}}_{T}^{\top}
-    \mathbf{C}_{\mathbf{x}\mathbf{u}_{T}}
-    \mathbf{K}_{T}
-    \bar{\mathbf{x}}_{T} 
+    \mathbf{c}_{T-1} \\
+    &= \text{ C} + 
+    \frac{1}{2}\bar{\mathbf{x}}_{T-1} \mathbf{C}_{\mathbf{x}\mathbf{x}_{T-1}}
+    \bar{\mathbf{x}}_{T-1}  
+    + \frac{1}{2}\bar{\mathbf{x}}_{T-1}^{\top}
+    \mathbf{C}_{\mathbf{x}\mathbf{u}_{T-1}}
+    \mathbf{K}_{T-1}
+    \bar{\mathbf{x}}_{T-1} 
      +
     \frac{1}{2}
-    \bar{\mathbf{x}}_{T}^{\top}
-    \mathbf{K}_{T}^{\top}
-    \mathbf{C}_{\mathbf{u}\mathbf{x}_{T}} 
-    \bar{\mathbf{x}}_{T} 
-    + \frac{1}{2}
-    \bar{\mathbf{x}}_{T}^{\top}
-    \mathbf{K}_{T}^{\top}
-    \mathbf{C}_{\mathbf{u}\mathbf{u}_{T}}\mathbf{K}_{T}
-    \bar{\mathbf{x}}_{T} \\ 
-    & + 
-    \bar{\mathbf{x}}_{T}^{\top}
-    \mathbf{K}_{T}^{\top} 
-    \mathbf{C}_{\mathbf{u}\mathbf{u}_{T}}
-    \mathbf{k}_{T} 
-    + 
-    \frac{1}{2} 
-    \bar{\mathbf{x}}_{T}^{\top}
-    \mathbf{C}_{\mathbf{x}\mathbf{u}_{T}}\mathbf{k}_{T} 
-    + \bar{\mathbf{x}}_{T}^{\top}
-    \mathbf{c}_{\mathbf{x}_{T}} + 
-    \bar{\mathbf{x}}^{\top}_{T}
-    \mathbf{K}_{T}^{\top}
-    \mathbf{c}_{\mathbf{u}_{T}} \\
-    &= \text{ constante} + \frac{1}{2}\bar{\mathbf{x}}_{T}^{\top} \mathbf{V}_{T}\bar{\mathbf{x}}_{T} + \bar{\mathbf{x}}_{T}^{\top} \mathbf{v}_{T},
-    \label{eq:ilqr_VT}
-\end{align}
-dónde,
-\begin{align*}
-    \mathbf{V}_{T} &= \mathbf{C}_{\mathbf{x}\mathbf{x}_T} 
-    + \mathbf{C}_{\mathbf{xu}_T} 
-    \mathbf{K}_{T}^{\top} 
-    \mathbf{C}_{\mathbf{ux}_T}
-    + \mathbf{K}_{T}^{\top}\mathbf{C}_{\mathbf{uu}_T}
-    \mathbf{K}_T \\
-    \mathbf{v}_{T} &= \mathbf{c}_{\mathbf{x}_T} 
-    + \mathbf{C}_{\mathbf{xu}_T}\mathbf{k}_T 
-    + \mathbf{K}_{T}^{\top} \mathbf{C}_{\mathbf{u}_{T}} 
-    + \mathbf{K}_{T}^{\top} \mathbf{C}_{\mathbf{uu}_T}\mathbf{k}_T.
-\end{align*}
-
-Una vez resuelta la ecuación de Bellman para el paso $T$, se puede resolver dicha ecuación para el paso $T-1$,
-\begin{align} \label{eq:Q_T_1}
-    Q(\mathbf{x}_{T-1}, \mathbf{u}_{T-1})
-    &= \text{ constante} 
-    +\frac{1}{2}
-    \begin{bmatrix}
-        \bar{\mathbf{x}}_{T-1} \\
-        \bar{\mathbf{u}}_{T-1}
-    \end{bmatrix}^{\top}
-    \mathbf{C}_{T-1}
-    \begin{bmatrix}
-        \bar{\mathbf{x}}_{T-1} \\
-        \bar{\mathbf{u}}_{T-1}
-    \end{bmatrix}
-    + 
-    \begin{bmatrix}
-        \bar{\mathbf{x}}_{T-1} \\
-        \bar{\mathbf{u}}_{T-1}
-    \end{bmatrix}^{\top}
-    \mathbf{c}_{T-1}
-    +
-    V(\mathbf{x}_T),
-\end{align}
-dónde la función $V(\mathbf{x}_T)$ esta dada por la expresión \ref{eq:ilqr_VT}. Sustituyendo $\bar{\mathbf{x}}_T$ por el lado derecho de la expresión \ref{eq:taylor_control_system} para $t=T-1$, se obtiene que, 
-\begin{align*}
-    V(\mathbf{x}_{T}) &= \text{ constante} 
-    + \frac{1}{2}
-    \begin{bmatrix}
-        \bar{\mathbf{x}}_{T-1}\\
-        \bar{\mathbf{u}}_{T-1}
-    \end{bmatrix}^{\top}
-    \mathbf{F}_{T-1}^{\top} \mathbf{V}_{T}
-    \mathbf{F}_{T-1}
-    \begin{bmatrix}
-        \bar{\mathbf{x}}_{T-1}\\
-        \bar{\mathbf{u}}_{T-1}
-    \end{bmatrix}
-    + 
-    \begin{bmatrix}
-        \bar{\mathbf{x}}_{T-1}\\
-        \bar{\mathbf{u}}_{T-1}
-    \end{bmatrix}^{\top}
-    \mathbf{F}_{T-1}^{\top} 
-    \mathbf{v}_T.
-\end{align*}
-Esta modificación, permite reordenar la expresión \ref{eq:Q_T_1} de siguiente forma,
-\begin{align*}
-    Q(\mathbf{x}_{T-1}, \mathbf{u}_{T-1}) &= 
-    \text{ constante} 
-    + \frac{1}{2} 
-    \begin{bmatrix}
-        \bar{\mathbf{x}}_{T-1} \\
-        \bar{\mathbf{u}}_{T-1}
-    \end{bmatrix}^{\top}
-    \mathbf{Q}_{T-1} 
-    \begin{bmatrix}
-        \bar{\mathbf{x}}_{T-1} \\
-        \bar{\mathbf{u}}_{T-1}
-    \end{bmatrix}
-    +
-    \begin{bmatrix}
-        \bar{\mathbf{x}}_{T-1} \\
-        \bar{\mathbf{u}}_{T-1}
-    \end{bmatrix}^{\top}
-    \mathbf{q}_{T-1},
-\end{align*}
-dónde,
-\begin{align*}
-    \mathbf{Q}_{T-1} &= \mathbf{C}_{T-1} 
-    + \mathbf{F}_{T-1}^{\top}\mathbf{V}_{T}
-    \mathbf{F}_{T-1} \\
-    \mathbf{q}_{T-1} &= \mathbf{c}_{T-1} 
-    + \mathbf{F}_{T-1}^{\top}\mathbf{v}_T.
-\end{align*}
-
-Estos cambios permiten obtener la ley de control óptima para el paso $t=T_1$ por medio de solución de la ecuación $\nabla_{\mathbf{u}}Q(\mathbf{x}_{T-1}, \mathbf{u}_{T-1})= \mathbf{0}$, como se muestra a continuación,
-\begin{align*}
-    \bm{0} &= \mathbf{Q}_{\mathbf{ux}_{T-1}}
-    \bar{\mathbf{x}}_{T-1} + \mathbf{Q}_{\mathbf{uu}_{T-1}} \bar{\mathbf{u}}_{T-1}
-    + \mathbf{q}_{\mathbf{u}_{T-1}} \\
-    \iff \bar{\mathbf{u}}_{T-1} &= 
-    -\textbf{Q}_{\mathbf{u} \mathbf{u}_{T-1}}^{-1}\mathbf{Q}_{\mathbf{u}\mathbf{x}_{T-1}} \bar{\mathbf{x}}_{T-1}+ \mathbf{Q}_{\mathbf{u} \mathbf{u}_{T-1}}^{-1}\mathbf{q}_{\mathbf{u}_{T-1}}  \\
-    \iff \mathbf{u}_{T-1} &= \hat{\mathbf{u}}_{T-1}
-    + \mathbf{K}_{T-1} (\mathbf{x}_{T-1}-\hat{\mathbf{x}}_{T-1})+ \mathbf{k}_{T-1},
-\end{align*}
-dónde,
-    $$\mathbf{K}_{T-1} = -\textbf{Q}_{\mathbf{u} \mathbf{u}_{T-1}}^{-1}\mathbf{Q}_{\mathbf{u}\mathbf{x}_{T-1}}, \quad \mathbf{k}_{T-1}= -\mathbf{Q}_{\mathbf{u} \mathbf{u}_{T-1}}^{-1}\mathbf{q}_{\mathbf{u}_{T-1}}.$$
-Este cálculo permite, a su vez definir la función de valor óptima para el paso $t=T-1$ de la forma, 
-\begin{align*}
-    V(\mathbf{x}_{T-1}) = \text{ constante} 
-    + \frac{1}{2}\bar{\mathbf{x}}_{T-1}^{\top}
-    \mathbf{V}_{T-1}
-    \bar{\mathbf{x}}_{T-1}
+    \bar{\mathbf{x}}_{T-1}^{\top}
+    \mathbf{K}_{T-1}^{\top}
+    \mathbf{C}_{\mathbf{u}\mathbf{x}_{T-1}} 
+    \bar{\mathbf{x}}_{T-1} \\
+    & + \frac{1}{2}
+    \bar{\mathbf{x}}_{T-1}^{\top}
+    \mathbf{K}_{T-1}^{\top}
+    \mathbf{C}_{\mathbf{u}\mathbf{u}_{T-1}}\mathbf{K}_{T-1}
+    \bar{\mathbf{x}}_{T-1} 
     + 
     \bar{\mathbf{x}}_{T-1}^{\top}
-    \mathbf{v}_{T-1},
-\end{align*}
-dónde,
-\begin{align*}
-    \mathbf{V}_{T-1} &= \mathbf{Q}_{\mathbf{xx}_{T-1}}
-    + \mathbf{Q}_{\mathbf{xu}_{T-1}}\mathbf{K}_{T-1}
-    + \mathbf{K}_{T-1}^{\top}\mathbf{Q}_{\mathbf{ux}_{T}}
-    + \mathbf{K}_{T-1}^{\top}\mathbf{C}_{\mathbf{uu}_{T-1}}\mathbf{K}_{T-1} \\
-    \mathbf{v}_{T} &= \mathbf{q}_{\mathbf{x}_{T-1}}
-    + \mathbf{C}_{\mathbf{xu}_{T-1}}\mathbf{k}_{T-1}
-    +\mathbf{K}_{T-1}^{\top}\mathbf{C}_{\mathbf{u}_{T-1}}
-    + \mathbf{K}_{T-1}^{\top}\mathbf{C}_{\mathbf{uu}_{T-1}}\mathbf{k}_{T-1}.
-\end{align*}
+    \mathbf{K}_{T-1}^{\top} 
+    \mathbf{C}_{\mathbf{u}\mathbf{u}_{T-1}}
+    \mathbf{k}_{T-1} 
+    + 
+    \frac{1}{2} 
+    \bar{\mathbf{x}}_{T-1}^{\top}
+    \mathbf{C}_{\mathbf{x}\mathbf{u}_{T-1}}\mathbf{k}_{T-1} \\
+    &+ \bar{\mathbf{x}}_{T-1}^{\top}
+    \mathbf{c}_{\mathbf{x}_{T-1}} + 
+    \bar{\mathbf{x}}^{\top}_{T-1}
+    \mathbf{K}_{T-1}^{\top}
+    \mathbf{c}_{\mathbf{u}_{T-1}} \\
+    &= \text{ C} + \frac{1}{2}\bar{\mathbf{x}}_{T-1}^{\top} \mathbf{V}_{T-1}\bar{\mathbf{x}}_{T-1} + \bar{\mathbf{x}}_{T-1}^{\top} \mathbf{v}_{T-1},
+    \end{aligned}
+    \label{eq:ilqr_VT}
+\end{equation}
+donde,
+\begin{align}
+    \mathbf{V}_{T-1} &= \mathbf{C}_{\mathbf{x}\mathbf{x}_{T-1}} 
+    + \mathbf{C}_{\mathbf{xu}_{T-1}} 
+    \mathbf{K}_{T-1}^{\top} 
+    \mathbf{C}_{\mathbf{ux}_{T-1}}
+    + \mathbf{K}_{T-1}^{\top}\mathbf{C}_{\mathbf{uu}_{T-1}}
+    \mathbf{K}_{T-1}, \\
+    \mathbf{v}_{T-1} &= \mathbf{c}_{\mathbf{x}_{T-1}} 
+    + \mathbf{C}_{\mathbf{xu}_{T-1}}\mathbf{k}_{T-1} 
+    + \mathbf{K}_{T-1}^{\top} \mathbf{C}_{\mathbf{u}_{T-1}} 
+    + \mathbf{K}_{T-1}^{\top} \mathbf{C}_{\mathbf{uu}_{T-1}}\mathbf{k}_{T-1}.
+\end{align}
 
-A partir de los cálculos anteriores se puede obtener inductivamente la ley de control óptimo para cualquier paso de tiempo $t<T$ como, 
+Una vez resuelta la ecuación de Bellman para el paso $T-1$, se puede resolver dicha ecuación para el paso $T-2$,
+\begin{align} \label{eq:Q_T_1}
+    Q(\mathbf{x}_{T-2}, \mathbf{u}_{T-2})
+    &= \text{ C} 
+    +\frac{1}{2}
+    \begin{bmatrix}
+        \bar{\mathbf{x}}_{T-2} \\
+        \bar{\mathbf{u}}_{T-2}
+    \end{bmatrix}^{\top}
+    \mathbf{C}_{T-2}
+    \begin{bmatrix}
+        \bar{\mathbf{x}}_{T-2} \\
+        \bar{\mathbf{u}}_{T-2}
+    \end{bmatrix}
+    + 
+    \begin{bmatrix}
+        \bar{\mathbf{x}}_{T-2} \\
+        \bar{\mathbf{u}}_{T-2}
+    \end{bmatrix}^{\top}
+    \mathbf{c}_{T-2}
+    +
+    V(\mathbf{x}_{T-1}),
+\end{align}
+donde la función $V(\mathbf{x}_{T-1})$ está dada por la \eqreftext{eq:ilqr_VT}. Sustituyendo $\bar{\mathbf{x}}_{T-1}$ por el lado derecho de la \eqreftext{eq:taylor_control_system} para $t=T-2$, se obtiene que, 
+\begin{align}
+    V(\mathbf{x}_{T-1}) &= \text{ C} 
+    + \frac{1}{2}
+    \begin{bmatrix}
+        \bar{\mathbf{x}}_{T-2}\\
+        \bar{\mathbf{u}}_{T-2}
+    \end{bmatrix}^{\top}
+    \mathbf{F}_{T-2}^{\top} \mathbf{V}_{T-1}
+    \mathbf{F}_{T-2}
+    \begin{bmatrix}
+        \bar{\mathbf{x}}_{T-2}\\
+        \bar{\mathbf{u}}_{T-2}
+    \end{bmatrix}
+    + 
+    \begin{bmatrix}
+        \bar{\mathbf{x}}_{T-2}\\
+        \bar{\mathbf{u}}_{T-2}
+    \end{bmatrix}^{\top}
+    \mathbf{F}_{T-2}^{\top} 
+    \mathbf{v}_{T-1}.
+\end{align}
+Esta modificación, permite reordenar la \eqreftext{eq:Q_T_1} de la siguiente forma,
+\begin{align}
+    Q(\mathbf{x}_{T-2}, \mathbf{u}_{T-2}) &= 
+    \text{ C} 
+    + \frac{1}{2} 
+    \begin{bmatrix}
+        \bar{\mathbf{x}}_{T-2} \\
+        \bar{\mathbf{u}}_{T-2}
+    \end{bmatrix}^{\top}
+    \mathbf{Q}_{T-2} 
+    \begin{bmatrix}
+        \bar{\mathbf{x}}_{T-2} \\
+        \bar{\mathbf{u}}_{T-2}
+    \end{bmatrix}
+    +
+    \begin{bmatrix}
+        \bar{\mathbf{x}}_{T-2} \\
+        \bar{\mathbf{u}}_{T-2}
+    \end{bmatrix}^{\top}
+    \mathbf{q}_{T-2},
+\end{align}
+donde,
+\begin{align}
+    \mathbf{Q}_{T-2} &= \mathbf{C}_{T-2} 
+    + \mathbf{F}_{T-2}^{\top}\mathbf{V}_{T-1}
+    \mathbf{F}_{T-2}, \\
+    \mathbf{q}_{T-2} &= \mathbf{c}_{T-2} 
+    + \mathbf{F}_{T-2}^{\top}\mathbf{v}_{T-1}.
+\end{align}
+
+Estos cambios permiten obtener la ley de control óptima para el paso $t=T-2$ por medio de solución de la ecuación $\nabla_{\mathbf{u}}Q(\mathbf{x}_{T-2}, \mathbf{u}_{T-2})= \mathbf{0}$, como se muestra a continuación,
+\begin{equation}
+    \begin{aligned}
+    \bm{0} &= \mathbf{Q}_{\mathbf{ux}_{T-2}}
+    \bar{\mathbf{x}}_{T-2} + \mathbf{Q}_{\mathbf{uu}_{T-2}} \bar{\mathbf{u}}_{T-2}
+    + \mathbf{q}_{\mathbf{u}_{T-2}} \\
+    \iff \bar{\mathbf{u}}_{T-2} &= 
+    -\textbf{Q}_{\mathbf{u} \mathbf{u}_{T-2}}^{-1}\mathbf{Q}_{\mathbf{u}\mathbf{x}_{T-2}} \bar{\mathbf{x}}_{T-2}+ \mathbf{Q}_{\mathbf{u} \mathbf{u}_{T-2}}^{-1}\mathbf{q}_{\mathbf{u}_{T-2}}  \\
+    \iff \mathbf{u}_{T-2} &= \hat{\mathbf{u}}_{T-2}
+    + \mathbf{K}_{T-2} (\mathbf{x}_{T-2}-\hat{\mathbf{x}}_{T-2})+ \mathbf{k}_{T-2},
+    \end{aligned}
+\end{equation}
+donde,
+\begin{align}
+    \mathbf{K}_{T-2} = -\textbf{Q}_{\mathbf{u} \mathbf{u}_{T-2}}^{-1}\mathbf{Q}_{\mathbf{u}\mathbf{x}_{T-2}}, \quad \mathbf{k}_{T-2}= -\mathbf{Q}_{\mathbf{u} \mathbf{u}_{T-2}}^{-1}\mathbf{q}_{\mathbf{u}_{T-2}}.
+\end{align}
+Este cálculo permite, a su vez definir la función de valor óptima para el paso $t=T-2$ de la forma, 
+\begin{align}
+    V(\mathbf{x}_{T-2}) = \text{ C} 
+    + \frac{1}{2}\bar{\mathbf{x}}_{T-2}^{\top}
+    \mathbf{V}_{T-2}
+    \bar{\mathbf{x}}_{T-2}
+    + 
+    \bar{\mathbf{x}}_{T-2}^{\top}
+    \mathbf{v}_{T-2},
+\end{align}
+donde,
+\begin{align}
+    \mathbf{V}_{T-2} &= \mathbf{Q}_{\mathbf{xx}_{T-2}}
+    + \mathbf{Q}_{\mathbf{xu}_{T-2}}\mathbf{K}_{T-2}
+    + \mathbf{K}_{T-2}^{\top}\mathbf{Q}_{\mathbf{ux}_{T-1}}
+    + \mathbf{K}_{T-2}^{\top}\mathbf{C}_{\mathbf{uu}_{T-2}}\mathbf{K}_{T-2}, \\
+    \mathbf{v}_{T-1} &= \mathbf{q}_{\mathbf{x}_{T-2}}
+    + \mathbf{C}_{\mathbf{xu}_{T-2}}\mathbf{k}_{T-2}
+    +\mathbf{K}_{T-2}^{\top}\mathbf{C}_{\mathbf{u}_{T-2}}
+    + \mathbf{K}_{T-2}^{\top}\mathbf{C}_{\mathbf{uu}_{T-2}}\mathbf{k}_{T-2}.
+\end{align}
+
+A partir de los cálculos anteriores se puede obtener inductivamente la ley de control óptimo para cualquier paso de tiempo $t<T-1$ como, 
 \begin{align} \label{eq:control_law}
     \mu(\mathbf{x}_t) := \mathbf{u}_t = \hat{\mathbf{u}}_t + \mathbf{K}_t(\hat{\mathbf{x}}_t-\mathbf{x}_t) + \mathbf{k}_t,
 \end{align}
-dónde,
-\begin{align*}
+donde,
+\begin{align}
 \mathbf{K}_{t} = -\mathbf{Q}_{\mathbf{uu}_t}^{-1}\mathbf{Q}_{\mathbf{ux}_t}, \quad \mathbf{k}_{t} = \mathbf{Q}_{\mathbf{uu}_t}^{-1} \mathbf{q}_{\mathbf{u}_t}.
-\end{align*}
+\end{align}
+Aquí, $\mathbf{K}_{t}$ corresponde a la ganancia de realimentación al tiempo $t$ y $\mathbf{k}_{t}$ al término aditivo de la ley de control al tiempo $t$.
 Así mismo, se puede definir la función de valor óptima, dada por la siguiente expresión,
-\begin{align*}
-    V(\mathbf{x}_{t}) = \text{ constante} 
+\begin{align}
+    V(\mathbf{x}_{t}) = \text{ C} 
     + \frac{1}{2}\bar{\mathbf{x}}_{t}^{\top}
     \mathbf{V}_{t}
     \bar{\mathbf{x}}_{t}
     + 
     \bar{\mathbf{x}}_{t}^{\top}
     \mathbf{v}_{t},
-\end{align*}
-dónde,
-\begin{align*}
+\end{align}
+donde,
+\begin{align}
     \mathbf{V}_{t} &= \mathbf{Q}_{\mathbf{xx}_{t}}
     + \mathbf{Q}_{\mathbf{xu}_{t}}\mathbf{K}_{t}
     + \mathbf{K}_{t}^{\top}\mathbf{Q}_{\mathbf{ux}_t}
-    + \mathbf{K}_{t}^{\top}\mathbf{C}_{\mathbf{uu}_t}\mathbf{K}_{t} \\
+    + \mathbf{K}_{t}^{\top}\mathbf{C}_{\mathbf{uu}_t}\mathbf{K}_{t}, \\
     \mathbf{v}_{t} &= \mathbf{q}_{\mathbf{x}_{t}}
     + \mathbf{C}_{\mathbf{xu}_{t}}\mathbf{k}_{t}
     +\mathbf{K}_{t}^{\top}\mathbf{C}_{\mathbf{u}_{t}}
     + \mathbf{K}_{t}^{\top}\mathbf{C}_{\mathbf{uu}_{t}}\mathbf{k}_{t}.
-\end{align*}
+\end{align}
 \subsubsection{\textit{Forward pass}}
-Una vez calculada la ley de control óptimo \ref{eq:control_law}, se puede obtener una nueva trayectoria factible $\hat{\bm\tau}$ de la siguiente manera,
+Una vez calculada la ley de control óptimo en la \eqreftext{eq:control_law}, se puede obtener una nueva trayectoria factible $\hat{\bm\tau}$ de la siguiente manera,
 \begin{align}
-    \hat{\mathbf{x}}_0 &= \mathbf{x}_0 \\
-    \hat{\mathbf{u}}_t &= \mu(\mathbf{x}_t), \quad \hat{\mathbf{x}}_{t+1} =f(\hat{\mathbf{x}}_t, \hat{\mathbf{u}}_t)\quad\forall t \in \{0, \cdots T\} .
+    \hat{\mathbf{x}}_0 &= \mathbf{x}_0, \\
+    \hat{\mathbf{u}}_t &= \mu(\mathbf{x}_t), \quad \hat{\mathbf{x}}_{t+1} =f(\hat{\mathbf{x}}_t, \hat{\mathbf{u}}_t)\quad\forall t \in \{0, \cdots T-1\} .
 \end{align}
 
 \subsubsection{Búsqueda de Línea}
-A diferencia de los sistemas cuadráticos lineales para los sistemas no lineales no se puede obtener la solución exacta  \ref{eq:control_law} después de una sola iteración. Además para este último tipo de sistemas, cuando la nueva trayectoria se aleja demasiado de la región de validez del modelo, el costo puede no disminuir y esto puede ocasionar una divergencia \cite{Tassa2012}. En \cite{Tassa2012} se propone incorporar un parámetro de búsqueda de linea $\alpha \in (0, 1]$ de la siguiente manera, 
+A diferencia de los sistemas cuadráticos lineales para los sistemas no lineales no se puede obtener la solución exacta de la \eqreftext{eq:control_law} después de una sola iteración. Además para este último tipo de sistemas, cuando la nueva trayectoria se aleja demasiado de la región de validez del modelo, el costo puede no disminuir y esto puede ocasionar una divergencia \cite{Tassa2012}. En \cite{Tassa2012} se propone incorporar un parámetro de búsqueda en línea $\alpha \in \bm{\alpha}$, con el conjunto de candidatos dado por, 
+\begin{align}
+\bm{\alpha} = \left\{\left(\frac{1}{2}\right)^i\right\}_{i=0}^{7}.
+\end{align}
+Con ello, la ley de control se actualiza de la siguiente forma,
 \begin{align} \label{eq:control_law_alpha}
     \mu(\mathbf{x}_t) := \mathbf{u}_t = \hat{\mathbf{u}}_t + \mathbf{K}_t(\hat{\mathbf{x}}_t-\mathbf{x}_t) + \alpha\mathbf{k}_t,
 \end{align}
-Entonces se realizan varias iteraciones del método de \acrshort{ilqr}, en cada iteración se incrementa el valor de $\alpha$. Este proceso se detiene cuando se cumple la siguiente condición \cite{ilqr2019}, 
+Entonces se realizan varias iteraciones del método de \acrshort{ilqr}, incrementando progresivamente el valor de $\alpha$ en cada iteración dentro del conjunto $\bm{\alpha}$. Este proceso se detiene cuando se cumple la siguiente condición \cite{ilqr2019}, 
 \begin{align}
 \label{eq:cost_thershold}
     \frac{|c(\bm\tau)-c\left(\hat{\bm\tau}\right)|}{c\left(\hat{\bm\tau}\right)} < \epsilon_{tol},
 \end{align}
-dónde $c(\hat{\bm\tau})$, $c(\bm\tau)$ representan el costo resultante de la optimización en la iteración más reciente y el costo de la iteración anterior, respectivamente. En este caso $\epsilon_{tol}\in\mathbb{R}^{+}$ es un umbral determinado de convergencia.
+donde $c(\hat{\bm\tau})$, $c(\bm\tau)$ representan el costo resultante de la optimización en la iteración más reciente y el costo de la iteración anterior, respectivamente. En este caso $\epsilon_{tol}\in\mathbb{R}^{+}$ es un umbral determinado de convergencia.
 
 \subsubsection{Regularización} 
 En general el hessiano $\mathbf{C}_t$ no es una matriz positiva definida en cada paso de tiempo $t$, pues el costo $c(\mathbf{x}_t, \mathbf{u}_t)$ no necesariamente es una función convexa globalmente. Para atender esta situación se propuso en \cite{ilqr2019} el siguiente esquema de regularización, 
-\begin{align*}
+\begin{align}
     \tilde{\mathbf{Q}}_{\mathbf{uu}_t} &= \mathbf{C}_{\mathbf{uu}_t} + \mathbf{F}_{\mathbf{u}_t}^{\top}(\mathbf{V}_t + \lambda \mathbf{I}_{n_x})
-    \mathbf{F}_{\mathbf{u}_t} \\
+    \mathbf{F}_{\mathbf{u}_t}, \\
     \tilde{\mathbf{Q}}_{\mathbf{ux}_t} &= 
     \mathbf{C}_{\mathbf{ux}_t} + \mathbf{F}_{\mathbf{u}_t}^{\top}(\mathbf{V}_t + \lambda \mathbf{I}_{n_x})
-    \mathbf{F}_{\mathbf{x}_t} \\
-    \mathbf{K}_{t} &= -\tilde{\mathbf{Q}}_{\mathbf{uu}_t}^{-1}\tilde{\mathbf{Q}}_{\mathbf{ux}_t} \\
-    \mathbf{k}_{t} &= \tilde{\mathbf{Q}}_{\mathbf{uu}_t}^{-1} \tilde{\mathbf{q}}_{\mathbf{u}_t}.
-\end{align*}
-Este esquema es una versión de primer orden basado en el que fue propuesto en \cite{Tassa2012}. 
+    \mathbf{F}_{\mathbf{x}_t}, \\
+    \mathbf{K}_{t} &= -\tilde{\mathbf{Q}}_{\mathbf{uu}_t}^{-1}\tilde{\mathbf{Q}}_{\mathbf{ux}_t}, \\
+    \mathbf{k}_{t} &= \tilde{\mathbf{Q}}_{\mathbf{uu}_t}^{-1} \tilde{\mathbf{q}}_{\mathbf{u}_t}, 
+\end{align}
+donde $\lambda$ es un parámetro de regularización. Este esquema es una versión de primer orden basado en el que fue propuesto en \cite{Tassa2012}. 
 
-La actualización del parámetro $\lambda$ es de vital importancia debido a las siguientes tres circunstancias. La primera circunstancia se da si se esta cerca del mínimo, en este caso se desea que el valor $\lambda$ se acerque los más rápido posible a $0$. En el caso en que el la matriz $\tilde{\mathbf{Q}}_{uu}$ no sea positiva definida, se desea que el valor de $\lambda$ incremente rápidamente. Finalmente, si se requiere algún valor $\lambda > 0$, se desea ajustarlo con precisión para que esté lo más cerca posible del valor mínimo, pero no más pequeño. Para lidiar adecuadamente con estos casos, se usa el siguiente régimen de actualización de $\lambda$. \cite{Tassa2012}
+La actualización del parámetro $\lambda$ es de vital importancia debido a las siguientes tres circunstancias. La primera circunstancia se da si se está cerca del mínimo, en este caso se desea que el valor $\lambda$ se acerque los más rápido posible a $0$. En el caso en que el la matriz $\tilde{\mathbf{Q}}_{uu}$ no sea positiva definida, se desea que el valor de $\lambda$ incremente rápidamente. Finalmente, si se requiere algún valor $\lambda > 0$, se desea ajustarlo con precisión para que esté lo más cerca posible del valor mínimo, pero no más pequeño. Para lidiar adecuadamente con estos casos, se usa el siguiente régimen de actualización de $\lambda$. \cite{Tassa2012}
 \begin{enumerate}
     \item Para incrementar $\lambda$,
     \begin{align}
-        \Delta^{(k +1)} = \max(\Delta_0, \Delta^{(k)}\cdot \Delta), \qquad \lambda^{(k+1)} = \max(\lambda_{\min}, \mu^{(k)}\cdot\Delta^{(k+1)}).
+        \Delta^{(k +1)} = \max(\Delta_0, \Delta^{(k)}\cdot \Delta_0), \qquad \lambda^{(k+1)} = \max(\lambda_{\min}, \mu^{(k)}\cdot\Delta^{(k+1)}).
         \label{eq:lamb_increase}
     \end{align}
     \item Para disminuir $\lambda$,
@@ -594,75 +641,79 @@ La actualización del parámetro $\lambda$ es de vital importancia debido a las 
     \label{eq:lamb_decrease}
     \end{align}
 \end{enumerate}
-Dónde $\lambda_{\min}$ es un valor mínimo del parámetro de regularización y $\Delta$ representa el factor de cambio de regularización. 
+Donde $\Delta^{k}$ representa el $k$-ésimo incremento del factor de ajuste de regularización y $\Delta_{0}$ su valor inicial. Asimismo, $\lambda_{\min}$ y $\lambda_{\max}$ corresponden a los valores mínimo y máximo del parámetro de regularización, mientras que $\lambda_0$ es su valor inicial. En este trabajo se emplean los valores $\Delta_{0}=2$, $\lambda_0=20$, $\lambda_{\min}=10^{-3}$ y $\lambda_{\max}=10^4$, tomados de \cite{Tassa2012}.
 
-Este método es una aproximación al método de Newton para optimizar la expresión \ref{eq:OC_objective}, ya que \acrshort{ilqr} sigue la misma idea de aproximar localmente funciones no lineales a partir de su expansión en serie de Taylor \cite{levine2017}.
-\begin{algorithm}
+Este método es una aproximación al método de Newton para optimizar la \eqreftext{eq:OC_objective}, ya que \acrshort{ilqr} sigue la misma idea de aproximar localmente funciones no lineales a partir de su expansión en serie de Taylor \cite{levine2017}.
+
+El procedimiento principal de \acrshort{ilqr} se resume en el algoritmo \ref{alg:ilqr}, el cual emplea el método de búsqueda de línea descrito en el algoritmo \ref{alg:line_search}.
+
+\begin{algorithm}[H]
 \caption{Regularización y Búsqueda de línea \acrshort{ilqr}}
+\label{alg:line_search}
    \KwData{sistema dinámico: $f:\mathbb{R}^{n_x} \times \mathbb{R}^{n_u}\rightarrow\mathbb{R}^{n_x}$, \\
-   costo $c$: $\mathbb{R}^{n_x} \times \mathbb{R}^{n_u}\rightarrow\mathbb{R}^{+}$,\\
-   \\ trayectoria nominal: $\hat{\mathbf{x}}$, $\hat{\mathbf{u}}$, \\
-   trayectoria inicial: $\mathbf{x}, \mathbf{u}$, \\ 
-   parámetros de control: $\mathbf{K}_t$, $\mathbf{k}_t$ $\forall t \in \{1, \cdots, T\}$, \\
-   vector de términos de regularización: $\bm\alpha$, \\
-    condiciones de frontera para el término de regularización: $\lambda_0$, $\lambda_{\min}$, $\lambda_{\max} \in \mathbb{R}^{+}$\\
-    factor de regularización: $\Delta_{0}\in \mathbb{R}^{+}$,\\
-    umbral de convergencia: $\epsilon_{tol} \in \mathbb{R}^{+}$.
-   }
-   \KwResult{Parámetro de búsqueda de línea: $\alpha^{*}\in \bm{\alpha}$,\\
-    parámetro de regularización: $\lambda \in \mathbb{R}^{+}$ 
-   }
-\For{$\alpha \in \bm{\alpha}$}{
+   costo: $c: \mathbb{R}^{n_x} \times \mathbb{R}^{n_u}\rightarrow\mathbb{R}^{+}$,\\
+   horizonte: $T\in\mathbb{N}$,\\
+   trayectoria nominal: $\left\{\hat{\mathbf{x}}_t\right\}_{t=0}^{T}\subset\mathbb{R}^{n_x}$, $\left\{\hat{\mathbf{u}}_t\right\}_{t=0}^{T-1}\subset\mathbb{R}^{n_u}$, \\
+   trayectoria inicial: $\left\{\mathbf{x}_t\right\}_{t=0}^{T}\subset\mathbb{R}^{n_x}$, $\left\{\mathbf{u}_t\right\}_{t=0}^{T-1}\subset\mathbb{R}^{n_u}$, \\ 
+   ganancias de control: $\mathbf{K}_t\in\mathbb{R}^{n_u\times n_x}$, $\mathbf{k}_t\in\mathbb{R}^{n_u}$, $\forall t \in \{0, \cdots, T-1\}$, \\
+   candidatos de búsqueda de línea: $\bm\alpha\subset(0, 1]$, \\
+   regularización: $\lambda_0,\lambda_{\min},\lambda_{\max}\in\mathbb{R}^{+}$, $\Delta_{0}\in\mathbb{R}^{+}$,\\
+   umbral de convergencia: $\epsilon_{tol} \in \mathbb{R}^{+}$.}
+   \KwResult{parámetro de búsqueda de línea: $\alpha^{*}\in \bm{\alpha}$,\\
+   parámetro de regularización: $\lambda \in \mathbb{R}^{+}$.}
+\For{cada $\alpha \in \bm{\alpha}$}{
 \SetNoFillComment
 \begin{align*}
     \mathbf{u}_t = \hat{\mathbf{u}}_t + \alpha \mathbf{k}_t + \mathbf{K}_{t}\left(\mathbf{x}_t - \hat{\mathbf{x}}_t\right), \quad
-    \mathbf{x}_{t+1} = f(\mathbf{x}_t, \mathbf{u}_t), \quad \forall t \in \{1, \cdots, T\}
+    \mathbf{x}_{t+1} = f(\mathbf{x}_t, \mathbf{u}_t), \quad \forall t \in \{0, \cdots, T-1\}
     \end{align*}
         Calcular $c(\hat{\bm\tau})$ y $c(\bm{\tau})$.\\
     \If{$c(\bm\tau) < c(\bm{\hat\tau})$}{
-    \If{la desigualdad \ref{eq:cost_thershold} con el umbral $\epsilon_{tol}$ es válida}{
+    \If{la desigualdad en la \eqreftext{eq:cost_thershold} con el umbral $\epsilon_{tol}$ es válida}{
     \textbf{converge}
     }
     Actualizar la trayectoria nominal,
 \begin{align*}
-    \hat{\mathbf{x}}_t = \mathbf{x}_t, \quad \hat{\mathbf{u}}_t = \mathbf{u}_t \quad \forall t \in \{1, \cdots, T\}  
+    \hat{\mathbf{x}}_t = \mathbf{x}_t, \quad \hat{\mathbf{u}}_t = \mathbf{u}_t \quad \forall t \in \{0, \cdots, T-1\}  
 \end{align*}
     \begin{align*}
         c(\bm{\hat\tau}) = c(\bm{\tau})
     \end{align*}
-    Reducir el término de regularización $\lambda$ con la expresión \ref{eq:lamb_decrease} (usar los valores $\lambda_0$, $\lambda_{\min}$, $\lambda_{\max}$ y $\Delta_0$).\\
+    Reducir el término de regularización $\lambda$ con la \eqreftext{eq:lamb_decrease} (usar los valores $\lambda_0$, $\lambda_{\min}$, $\lambda_{\max}$ y $\Delta_0$).\\
     \begin{align*}
         \alpha^{*} = \alpha 
     \end{align*}
     \textbf{termina}
 }
-Incrementar el término de regularización  $\lambda$ con la expresión \ref{eq:lamb_increase} (usar los valores $\lambda_0$, $\lambda_{\min}$, $\lambda_{\max}$ y $\Delta_0$).
+Incrementar el término de regularización  $\lambda$ con la \eqreftext{eq:lamb_increase} (usar los valores $\lambda_0$, $\lambda_{\min}$, $\lambda_{\max}$ y $\Delta_0$).
 }
-\label{alg:line_search}
 \end{algorithm}
 
-\begin{algorithm}
+\begin{algorithm}[H]
 \SetNoFillComment
     \caption{\acrfull{ilqr}\cite{levine2017}}
+    \label{alg:ilqr}
    \KwData{sistema dinámico: $f:\mathbb{R}^{n_x} \times \mathbb{R}^{n_u}\rightarrow\mathbb{R}^{n_x}$, \\
-   costo $c$: $\mathbb{R}^{n_x} \times \mathbb{R}^{n_u}\rightarrow\mathbb{R}^{+}$, trayectoria nominal: $\hat{\mathbf{x}}$, $\hat{\mathbf{u}}$, trayectoria inicial: $\mathbf{x}, \mathbf{u}$.}
-\KwResult{Parámetros de control: $\mathbf{K}_t$, $\mathbf{k}_t$ $\forall t \in \{1, \cdots, T\}$,\\ 
+   costo $c$: $\mathbb{R}^{n_x} \times \mathbb{R}^{n_u}\rightarrow\mathbb{R}^{+}$, \\
+   trayectoria nominal: $\left\{\hat{\mathbf{x}}_t\right\}_{t=0}^{T}\subset\mathbb{R}^{n_x}$, $\left\{\hat{\mathbf{u}}_t\right\}_{t=0}^{T-1}\subset\mathbb{R}^{n_u}$, \\
+   trayectoria inicial: $\left\{\mathbf{x}_t\right\}_{t=0}^{T}\subset\mathbb{R}^{n_x}$, $\left\{\mathbf{u}_t\right\}_{t=0}^{T-1}\subset\mathbb{R}^{n_u}$.}
+\KwResult{Parámetros de control: $\mathbf{K}_t$, $\mathbf{k}_t$ $\forall t \in \{0, \cdots, T-1\}$,\\ 
 término de regularización: $\alpha\in \mathbb{R}^{+}$,\\
-nueva trayectoria nominal: $\hat{\mathbf{x}}, \hat{\mathbf{u}}$.
+nueva trayectoria nominal: $\left\{\hat{\mathbf{x}}_t\right\}_{t=0}^{T+1}\subset\mathbb{R}^{n_x}$, $\left\{\hat{\mathbf{u}}_t\right\}_{t=0}^{T}\subset\mathbb{R}^{n_u}$.
 }
 \While{no haya convergencia}{
     \begin{align*}
         \mathbf{F}_t = \nabla_{\mathbf{x}_t, \mathbf{u}_t}f\left(\hat{\mathbf{x}}_t,
                 \hat{\mathbf{u}}_t\right),
         \quad \mathbf{c}_t = \nabla_{\mathbf{x}_t, \mathbf{u}_t}c\left(\hat{\mathbf{x}}_t, \hat{\mathbf{u}}_t\right), \quad 
-        \mathbf{C_t} = \nabla^2_{\mathbf{x}_t, \mathbf{u}_t} c\left(\hat{\mathbf{x}}_t, \hat{\mathbf{u}}_t\right)\qquad \forall t \in \{1, \cdots, T\}
+        \mathbf{C_t} = \nabla^2_{\mathbf{x}_t, \mathbf{u}_t} c\left(\hat{\mathbf{x}}_t, \hat{\mathbf{u}}_t\right)\qquad \forall t \in \{0, \cdots, T-1\}
     \end{align*} \\
     Actualizar el sistema de coordenadas relativo a la trayectoria nominal.
     \begin{align*}
         \bar{\mathbf{x}}_{t} =  \mathbf{x}_{t} - \hat{\mathbf{x}}_t, \quad
-                \bar{\mathbf{u}}_{t} =  \mathbf{u}_{t} - \hat{\mathbf{u}}_t \quad \forall t \in \{1, \cdots, T\}
+                \bar{\mathbf{u}}_{t} =  \mathbf{u}_{t} - \hat{\mathbf{u}}_t \quad \forall t \in \{0, \cdots, T-1\}
     \end{align*}
-    \For{$t \in \{T, T-1, \cdots, 1\}$ \tcc{\textit{Backward recursion}}}{
+    \For{$t \in \{T-1, T-2, \cdots, 0\}$ \tcc{\textit{Backward recursion}}}{
     \begin{align*}
         \mathbf{Q}_{t} &= \mathbf{C}_{t} + \mathbf{F}_t^{\top} \mathbf{V}_{t+1} \mathbf{F}_t \\
         \mathbf{q}_t &= \mathbf{c}_t + \mathbf{F}_t^{\top} \mathbf{v}_{t+1} \\
@@ -695,7 +746,7 @@ nueva trayectoria nominal: $\hat{\mathbf{x}}, \hat{\mathbf{u}}$.
 Encontrar los parámetros $\alpha$, $\lambda$ con el algoritmo \ref{alg:line_search} y verificar convergencia.
 \begin{align*}
 \mathbf{u}_t = \hat{\mathbf{u}}_t + \alpha \mathbf{k}_t + \mathbf{K}_{t}\left(\mathbf{x}_t - \hat{\mathbf{x}}_t\right), \quad
-    \mathbf{x}_{t+1} = f(\mathbf{x}_t, \mathbf{u}_t), \quad \forall t \in \{1, \cdots, T\}
+    \mathbf{x}_{t+1} = f(\mathbf{x}_t, \mathbf{u}_t), \quad \forall t \in \{0, \cdots, T-1\}
 \end{align*}
 \If{\textbf{converge} o se excede el número máximo de iteraciones}{
 \textbf{termina}
@@ -703,44 +754,41 @@ Encontrar los parámetros $\alpha$, $\lambda$ con el algoritmo \ref{alg:line_sea
 }
 Actualizar la trayectoria nominal,
 \begin{align*}
-    \hat{\mathbf{x}}_t = \mathbf{x}_t, \quad \hat{\mathbf{u}}_t = \mathbf{u}_t \quad \forall t \in \{1, \cdots, T\}  
+    \hat{\mathbf{x}}_t = \mathbf{x}_t, \quad \hat{\mathbf{u}}_t = \mathbf{u}_t \quad \forall t \in \{0, \cdots, T-1\}  
 \end{align*}
-\label{alg:ilqr}
 \end{algorithm}
-
-
-
-
 \section{Cuadricóptero como sistema de control}
 \label{sec:quadcoper_control_system}
 Esta sección se deriva de la explicación, los resultados obtenidos y los ejercicios realizados en \cite{capella2020clase}. 
 
-En este trabajo el modelo matemático de un cuadricóptero se representa como un sistema de control. Para ello se retoma la discusión del modelo en la sección \ref{sec:quads_model}. En particular, la variable de estado $\mathbf{x} \in \mathbb{R}^{12}$ esta compuesta por la posición del sistema referencia inercial y las velocidades del sistema de referencia local,
+En este trabajo el modelo matemático de un cuadricóptero se representa como un sistema de control. Para ello se retoma la discusión del modelo en la sección \ref{sec:quads_model}. En particular, la variable de estado $\mathbf{x} \in \mathbb{R}^{12}$ está compuesta por la posición del sistema de referencia inercial y las velocidades del sistema de referencia local,
 \begin{align}
 \label{eq:quad_position}
 \mathbf{x} = [u, v, w, p, q, r, \varphi, \theta, \psi, x, y, z]^{\top}.
 \end{align}
 Mientras que la variable de control $\mathbf{u} \in \mathbb{R}^{4}$ estará compuesta por las velocidades angulares de cada rotor del cuadricóptero,
-$$\mathbf{u} = [\omega_1, \omega_2, \omega_3, \omega_4]^{\top}.$$
+\begin{align}
+    \mathbf{u} = [\omega_1, \omega_2, \omega_3, \omega_4]^{\top}.
+\end{align}
 
-Se empleará el modelo matemático del cuadricóptero como un sistema de control continúo. Concretamente, el lado derecho del sistema de ecuaciones dado por las  \crefrange{eq:u}{eq:z}, representa el campo vectorial $f$.
+Se empleará el modelo matemático del cuadricóptero como un sistema de control continuo. Concretamente, el lado derecho del sistema de ecuaciones dado por las  \crefrange{eq:u}{eq:z}, representa el campo vectorial $f$.
 
 \subsection{Linealización de dinámica de vuelo de cuadricóptero}
-Para obtener una representación de la forma \ref{eq:taylor_linear_control_system} de las ecuaciones de movimiento del cuadricóptero, se selecciona un punto fijo. En este caso se toma $\mathbf{x}^{*} = 
+Para obtener una representación de la forma en la \eqreftext{eq:taylor_linear_control_system} de las ecuaciones de movimiento del cuadricóptero, se selecciona un punto fijo. En este caso se toma $\mathbf{x}^{*} = 
 \mathbf{0} \in \mathbb{R}^{12}$. Esta posición representa al cuerpo del cuadricóptero alineado sobre los ejes, con velocidad lineal y angular cero. 
 
 Ahora es necesario determinar el valor de $\mathbf{u}^{*}$ que propicia que la pareja ($\mathbf{x}^{*}, \mathbf{u}^{*}$) sea punto fijo del sistema. Al evaluar el sistema en $\mathbf{x}^{*} = 
-\mathbf{0}$, las \crefrange{eq:u}{eq:v} y las \crefrange{eq:p}{eq:z} se anulan. Mientras que de la evaluación de la expresión \ref{eq:w} se obtiene, 
-\begin{align*}
+\mathbf{0}$, las \crefrange{eq:u}{eq:v} y las \crefrange{eq:p}{eq:z} se anulan. Mientras que de la evaluación en la \eqreftext{eq:w} se obtiene, 
+\begin{align}
     \dot{w}^{*} & = g - \frac{k}{m}\sum_{i=1}^{4}\omega_i^{2}.
-\end{align*}
-Se observa que para encontrar el punto fijo, sólo es necesario encontrar los valores $\omega_i$ tales que resuelvan la ecuación $\dot{w}^{*}=0$. Una solución particular esta dada por la siguiente expresión, 
-\begin{align*}
+\end{align}
+Se observa que para encontrar el punto fijo, sólo es necesario encontrar los valores $\omega_i$ tales que resuelvan la ecuación $\dot{w}^{*}=0$. Una solución particular está dada por la siguiente expresión, 
+\begin{align}
     \mathbf{u}^{*} &= \left[\omega_0, \omega_0, \omega_0, \omega_0\right]^{\top},\\
     \omega_0 &= \sqrt{\frac{g\cdot m}{4 \cdot k}}.
-\end{align*}
+\end{align}
 
-Una vez seleccionado punto fijo del sistema, se determinan los valores de las matrices $\mathbf{A}$ y $\mathbf{B}$. Para empezar se calculan los jacobianos $\nabla_{\mathbf{x}}f$ $\nabla_{\mathbf{u}}f$, cuyas expresiones están dadas por las siguientes matrices respectivamente,
+Una vez seleccionado el punto fijo del sistema, se determinan los valores de las matrices $\mathbf{A}$ y $\mathbf{B}$. Para empezar se calculan los jacobianos $\nabla_{\mathbf{x}}f$ $\nabla_{\mathbf{u}}f$, cuyas expresiones están dadas por las siguientes matrices respectivamente,
 \begin{align}\label{eq:jac_fx}
 \begin{pmatrix}
   \begin{matrix}
@@ -817,8 +865,8 @@ Una vez seleccionado punto fijo del sistema, se determinan los valores de las ma
     \end{pmatrix}.
     \label{eq:jac_fu}
 \end{align}
-Posteriormente, se evalúan en $(\mathbf{0}, \mathbf{u}^{*})$ las funciones \ref{eq:jac_fx} y \ref{eq:jac_fu} para obtener las matrices $\mathbf{A}$ y $\mathbf{B}$, correspondientemente.
-En particular, la matriz $\mathbf{B}$ se obtiene al sustituir los valores $\omega_1$, $\omega_2$, $\omega_3$ y $\omega_4$ por el valor de $\omega_0$ en la expresión \ref{eq:jac_fu}. Mientras que la matriz $\mathbf{A}$ es de la siguiente forma,
+Posteriormente, las matrices de las ecuaciones \ref{eq:jac_fx} y \ref{eq:jac_fu} se evalúan en $(\mathbf{0}, \mathbf{u}^{*})$ para obtener las matrices $\mathbf{A}$ y $\mathbf{B}$, correspondientemente.
+En particular, la matriz $\mathbf{B}$ se obtiene al sustituir los valores $\omega_1$, $\omega_2$, $\omega_3$ y $\omega_4$ por el valor de $\omega_0$ en la \eqreftext{eq:jac_fu}. Mientras que la matriz $\mathbf{A}$ es de la siguiente forma,
 \begin{align} \label{eq:A}
     \mathbf{A} = 
     \begin{pmatrix}
@@ -850,13 +898,19 @@ En particular, la matriz $\mathbf{B}$ se obtiene al sustituir los valores $\omeg
 
 \subsection{Aplicación del teorema de asignación de polos}
 
-En principio el sistema dinámico del cuadricóptero no es controlable ya que, 
-$rango(R(\mathbf{A}, \mathbf{B})) < 12$. Sin embargo, si únicamente se considera el subsistema asociado a las variables de estado del vector $\mathbf{y}$,
-que esta descrito por la siguiente expresión \footnote{La separación del sistema entre la parte controlable y la no controlable se fundamenta en el lema 2.14 presentado en \cite{Gruene2021}.},
-\begin{align*}
+El sistema dinámico \textbf{linealizado} del cuadricóptero no es completamente controlable, ya que su matriz de controlabilidad satisface,
+\begin{align}
+    rango\left(R(\mathbf{A},\mathbf{B})\right)<12.
+\end{align}
+No obstante, al excluir las variables de estado $x$, $y$, $u$ y $v$, se obtiene el subsistema asociado al vector,
+\begin{align}
+    \mathbf{y} = (\varphi, \theta, \psi, z, p, q, r, w)^{\top},
+\end{align}
+que está descrito por la siguiente ecuación\footnote{La separación del sistema en una parte controlable y otra no controlable se fundamenta en el Lema 2.14 presentado en \cite{Gruene2021}.},
+\begin{align}
     \dot{\mathbf{y}} = \mathbf{\tilde{A}}\mathbf{y} + \mathbf{\tilde{B}}\mathbf{u},
-\end{align*}
-dónde $\mathbf{\tilde{A}}\in \mathbb{R}^{8\times 8}$ y $\mathbf{\tilde{B}}\in \mathbb{R}^{8\times 4}$ se expresan como se muestra a continuación,
+\end{align}
+donde $\mathbf{\tilde{A}}\in \mathbb{R}^{8\times 8}$ y $\mathbf{\tilde{B}}\in \mathbb{R}^{8\times 4}$ tienen la siguiente forma,
 \begin{align}
 \mathbf{\tilde{A}} =
     \begin{bmatrix}
@@ -873,20 +927,23 @@ dónde $\mathbf{\tilde{A}}\in \mathbb{R}^{8\times 8}$ y $\mathbf{\tilde{B}}\in \
 \end{bmatrix}.
 \label{eq:tilde_AB}
 \end{align}
-En este caso la matriz de controlabilidad se define por la siguiente expresión,
-\begin{align*}
+Para este subsistema, la matriz de controlabilidad está dada por la siguiente ecuación, 
+\begin{equation}
+\begin{aligned}
     R\left(\tilde{\mathbf{B}}, \tilde{\mathbf{A}}\right) &= [\tilde{\mathbf{B}}, \tilde{\mathbf{A}}\tilde{\mathbf{B}}]\\
     &= \begin{bmatrix}
         \mathbf{0} & \mathbf{B}_{3:6} \\
         \mathbf{B}_{3:6} & \mathbf{0}
         \end{bmatrix}.
-\end{align*}
-En efecto la pareja de matrices dadas en las ecuación \ref{eq:tilde_AB} es controlable ya que,
-\begin{align*}
+\end{aligned}
+\end{equation}
+Por tanto, la pareja $(\mathbf{\tilde{A}},\mathbf{\tilde{B}})$ es controlable, ya que,
+\begin{align}
     rango \left(R\left(\mathbf{\tilde{A}}, \mathbf{\tilde{B}}\right) \right)= 8.
-\end{align*}
-Es posible desacoplar las matrices $\mathbf{\tilde{A}}$ y $\mathbf{\tilde{B}}$ de las expresiones en \ref{eq:tilde_AB}, como se observa en las siguientes sistemas de ecuaciones diferenciales, 
-\begin{align*}
+\end{align}
+
+Es posible reorganizar las matrices $\mathbf{\tilde{A}}$ y $\mathbf{\tilde{B}}$ de tal forma que la representación matricial del sistema quede separada en cuatro subsistemas de segundo orden (asociados a $z$, $\psi$, $\theta$ y $\varphi$). Esto permite analizar y diseñar una estrategia de control para cada canal de manera independiente, aunque todos compartan el mismo vector de entrada $\mathbf{u}$. La descomposición de la \eqreftext{eq:tilde_AB} puede escribirse mediante los siguientes sistemas de ecuaciones diferenciales, 
+\begin{align}
     \begin{bmatrix}
         \dot{z} \\
         \dot{w}
@@ -961,11 +1018,10 @@ Es posible desacoplar las matrices $\mathbf{\tilde{A}}$ y $\mathbf{\tilde{B}}$ d
     0 & 0 & 0 & 0 \\
     0 & -1 &0 & 1
 \end{bmatrix}}_{\mathbf{B}^{(\varphi)}} \mathbf{u}.
-\end{align*}
-Esta forma de expresar la linealización del sistema  dinámico resulta muy conveniente, puesto que permite diseñar estrategias de control de manera independiente para las variables de estado $z, \psi, \theta$ y $\varphi$. 
+\end{align}
 
  Sean $\mathbf{K}^{(z)}, \mathbf{K}^{(\psi)}, \mathbf{K}^{(\theta)}$ y $\mathbf{K}^{(\varphi)}  \in \mathbb{R}^{4 \times 2}$ la matrices asociadas a las estrategias de control sobre $z$, \textit{yaw}, \textit{pitch} y \textit{roll}, respectivamente. Entonces sus respectivos sistemas de circuito cerrado se describen de la siguiente manera,
-\begin{align*}
+\begin{align}
     \mathbf{A}^{(z)} + \mathbf{B}^{(z)}\mathbf{K}^{(z)} &= 
     \begin{bmatrix}
         0 & 1 \\
@@ -1011,12 +1067,12 @@ Esta forma de expresar la linealización del sistema  dinámico resulta muy conv
         \underbrace{-\mathbf{K}^{(\varphi)}_{ 2,1}+ \mathbf{K}^{(\varphi)}_{ 4,1}}_{g_{\varphi 1}} & 
         \underbrace{-\mathbf{K}^{(\varphi)}_{2,2} + \mathbf{K}^{(\varphi)}_{ 4,2}}_{g_{\varphi 2}}
     \end{bmatrix}.
-\end{align*}
+\end{align}
 
 Para determinar el valor de las matrices de control, es necesario encontrar las soluciones a la ecuación del polinomio característico asociado a las matrices descritas anteriormente. En particular, se denotara por $\chi_{z}(\lambda)$ al polinomio característico asociado a la matriz $\mathbf{A}^{(z)}+\mathbf{B}^{(z)}\mathbf{K}^{(z)}$, es decir, 
 $$\chi_z(\lambda) := \text{det}(\mathbf{A}^{(z)}+\mathbf{B}^{(z)}\mathbf{K}^{(z)} - \lambda \mathbf{I}_2).$$
 Análogamente se nombran los polinomios característicos para las variables $\psi, \theta$ y $\phi$, cuyas expresiones se muestran a continuación,  
-\begin{align*}
+\begin{align}
 \chi_z(\lambda) &= 
 \begin{vmatrix}
     -\lambda & 1 \\
@@ -1041,41 +1097,43 @@ Análogamente se nombran los polinomios característicos para las variables $\ps
     -\lambda & 1 \\
     \tilde{g}_{\varphi 1} & \tilde{g}_{\varphi 2} -\lambda
 \end{vmatrix} = \lambda^2 - \tilde{g}_{\varphi 2}\lambda - \tilde{g}_{\varphi 1},
-\end{align*}
-dónde, 
-\begin{align} \label{eq:g_tilde}
-    \tilde{g}_{\psi i} = \frac{2\ell b}{Izz}\omega_0 g_{\psi i} \quad \forall i \in \{1, 2, 3, 4\}
 \end{align}
-De manera semejante a la expresión \ref{eq:g_tilde}, se definen las variables $\tilde{g}_{ij}$  $\forall (i, j) \in \{z, \theta, \phi\}\times\{1, 2\}$. 
+donde, 
+\begin{align} \label{eq:g_tilde}
+    \tilde{g}_{\psi i} = \frac{2\ell b}{Izz}\omega_0 g_{\psi i} \quad \forall i \in \{1, 2, 3, 4\}.
+\end{align}
+De manera semejante a la \eqreftext{eq:g_tilde}, se definen las variables $\tilde{g}_{ij}$  $\forall (i, j) \in \{z, \theta, \phi\}\times\{1, 2\}$. 
 
 Resolviendo la ecuación asociada al polinomio característico $\chi_{z}(\lambda)$ se obtiene que, 
-\begin{align*}
+\begin{align}
 0 & = \lambda^2 + \tilde{g}_{z 2} \lambda + \tilde{g}_{z 1}, \\
 \lambda &= \frac{- \tilde{g}_{z 2} \pm \sqrt{\tilde{g}_{z 2}^2 - 4\tilde{g}_{z 1} }}{2}.
-\end{align*}
-Se busca que los valores propios sean negativos para encontrar puntos estables del sistema. Se requiere que $\tilde{g}_{z2}$ sea positivo y que el discriminante de la ecuación anterior sea nulo, entonces,  \begin{align*}
+\end{align}
+Se busca que los valores propios sean negativos para encontrar puntos estables del sistema. Se requiere que $\tilde{g}_{z2}$ sea positivo y que el discriminante de la ecuación anterior sea nulo, entonces,  \begin{align}
     0 = \tilde{g}_{z 2}^2 - 4\tilde{g}_{z 1} \quad\text{si y sólo si }\quad \tilde{g}_{z 2} = 2\sqrt{\tilde{g}_{z1}}.
-\end{align*}
-Si se selecciona $\tilde{g}_{z2} = 1$, entonces, 
-$$g_{z2} = \left( \frac{2k}{m}\omega_0\right)^{-1},$$
-\begin{align*}
+\end{align}
+Nótese que los valores de $\tilde{g}$ no son únicos, y pueden fijarse de manera arbitraria, siempre que satisfagan las condiciones anteriores. Si se selecciona $\tilde{g}_{z2} = 1$, entonces, 
+\begin{align}
+    g_{z2} = \left( \frac{2k}{m}\omega_0\right)^{-1},
+\end{align}
+\begin{align}
     1 = \sum_{i=4}^{4}\mathbf{K}_{i, 1}, \quad 4= \sum_{i=4}^{4}\mathbf{K}_{i, 2}.
-\end{align*}
+\end{align}
 De la misma forma se busca que el discriminante asociado al polinomio característico  $\chi_{\psi}$ sea nulo, siendo así, 
-\begin{align*}
-    (\tilde{g}_{\psi 3} - \tilde{g}_{\psi4})^2 &= 4(\tilde{g}_{\psi 1} - \tilde{g}_{\psi 2}) \quad\text{e.g. }\quad \tilde{g}_{\psi 1} = 1, \quad\tilde{g}_{\psi 2} = 0, \quad\tilde{g}_{\psi 3}=2 \text{ y } \quad \tilde{g}_{\psi 4} = 0.
-\end{align*}
+\begin{align}
+    (\tilde{g}_{\psi 3} - \tilde{g}_{\psi4})^2 &= 4(\tilde{g}_{\psi 1} - \tilde{g}_{\psi 2}) \quad\text{por ejemplo, }\quad \tilde{g}_{\psi 1} = 1, \quad\tilde{g}_{\psi 2} = 0, \quad\tilde{g}_{\psi 3}=2 \text{ y } \quad \tilde{g}_{\psi 4} = 0.
+\end{align}
 En el caso de los polinomios característicos $\chi_{\theta}$ y $\chi_{\rho}$ se establece $\tilde{g}_{\theta 2}, \tilde{g}_{\varphi 2} < 0$. También para estos casos se establece el discriminante igual a cero por consiguiente,
-\begin{align*}
+\begin{align}
     \tilde{g}_{\theta 2}^2 = -4\tilde{g}_{\theta 1}\quad\text{si}\quad \tilde{g}_{\theta 1}= \frac{1}{4}\quad\text{entonces}\quad\tilde{g}_{\theta 2} = -1.
-\end{align*}
+\end{align}
 Análogamente, 
-\begin{align*}
+\begin{align}
     \text{si}\quad \tilde{g}_{\varphi 1} = \frac{1}{4}\quad\text{entonces}\quad \tilde{g}_{\varphi 2} = -1.
-\end{align*}
+\end{align}
 
-Una conjunto matrices de control que cumplen las condiciones expuestas anteriormente son,
-\begin{align*}
+Un conjunto matrices de control que cumplen las condiciones expuestas anteriormente son,
+\begin{align}
     \mathbf{K}^{(z)} &= \frac{m}{2k \omega_0}
     \begin{bmatrix}
         \frac{1}{4}& \frac{1}{4}& \frac{1}{4}& \frac{1}{4} \\
@@ -1096,22 +1154,22 @@ Una conjunto matrices de control que cumplen las condiciones expuestas anteriorm
         0 & 1 & 0 & \frac{3}{4} \\
         0 & \frac{1}{2} & 0 & -\frac{1}{2}
     \end{bmatrix}^{\top}.
-\end{align*}
+\end{align}
 
 Con las matrices de control definidas, la estrategia de control lineal por retroalimentación se resume en el algoritmo \ref{alg:Control_retro}.
 
 \begin{algorithm}[H]
-    \label{alg:Control_retro}
     \caption{Control por retroalimentación de estados para sistema dinámico de cuadricóptero}
-   \KwData{estado inicial: $\mathbf{x}_0$}
-    \For{$t \in \{0, 1, \cdots, T-1, T\}$}{
+    \label{alg:Control_retro}
+   \KwData{estado inicial del cuadricóptero: $\mathbf{x}_0\in\mathbb{R}^{12}$}
+   \For{$t \in \{0, 1, \cdots, T-1\}$}{
         \begin{align*}
-       \mathbf{u}^{(z)}_{t} &= \mathbf{K}^{(z)}\left[\mathbf{x}_t^{(z)}, \mathbf{x}_t^{(w)}\right]^{\top} \\
+       \mathbf{u}^{(z)}_{t} &= \mathbf{K}^{(z)}\left[\mathbf{x}_t^{(z)}\ \mathbf{x}_t^{(w)}\right]^{\top} \\
        \mathbf{u}^{(\psi)}_{t} &=
- \mathbf{K}^{(\psi)}\left[\mathbf{x}^{(\psi)}_t, \mathbf{x}^{(r)}_t\right]^{\top} \\
-       \mathbf{u}^{(\theta)}_{t} &= \mathbf{K}^{(\theta)}\left[\mathbf{x}^{(\theta)}_t, \mathbf{x}^{(q)}_t\right]^{\top} \\
+ \mathbf{K}^{(\psi)}\left[\mathbf{x}^{(\psi)}_t\ \mathbf{x}^{(r)}_t\right]^{\top} \\
+       \mathbf{u}^{(\theta)}_{t} &= \mathbf{K}^{(\theta)}\left[\mathbf{x}^{(\theta)}_t\ \mathbf{x}^{(q)}_t\right]^{\top} \\
        \mathbf{u}^{(\varphi)}_{t} &=
-\mathbf{K}^{(\varphi)}\left[\mathbf{x}^{(\varphi)}_t, \mathbf{x}^{(p)}_t\right]^{\top} \\
+\mathbf{K}^{(\varphi)}\left[\mathbf{x}^{(\varphi)}_t\ \mathbf{x}^{(p)}_t\right]^{\top} \\
     \mathbf{u}_{t} &= \mathbf{u}_{t}^{(z)} + 
     \mathbf{u}_{t}^{(\psi)} + \mathbf{u}_{t}^{(\theta)} + \mathbf{u}_{t}^{(\varphi)} + \mathbf{u}^{*} \\
     \mathbf{x}_{t+1} &= f(\mathbf{x_t}, \mathbf{u}_t)
@@ -1119,4 +1177,4 @@ Con las matrices de control definidas, la estrategia de control lineal por retro
 }
 \end{algorithm}
 
-
+El algoritmo \ref{alg:Control_retro} define una ley de control explícita que estabiliza de manera desacoplada las variables $z, \psi, \theta, \varphi$ y sus respectivas velocidades en el sistema local de la dinámica de vuelo. En términos prácticos, su ejecución produce una secuencia de estados y controles factible para el sistema dinámico del cuadricóptero. Esta característica es relevante para los capítulos posteriores, ya que dicha secuencia puede utilizarse como trayectoria nominal inicial $(\hat{\mathbf{x}}_t,\hat{\mathbf{u}}_t)$ en el algoritmo \ref{alg:ilqr}. De este modo, la estrategia por retroalimentación lineal constituye una primera solución de control, sino también un punto de partida para métodos iterativos de optimización de trayectorias.

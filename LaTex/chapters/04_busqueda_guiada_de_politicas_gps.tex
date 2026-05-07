@@ -1,38 +1,40 @@
-\chapter{Búsqueda guiada de políticas (GPS)}
+\chapter{Búsqueda guiada de políticas}
 \label{chapter:model_based}
 
-Los métodos de \textbf{búsqueda guiada de políticas} o por su nombre en inglés \textbf{\acrfull{gps}} se han convertido en una herramienta importante en el área de aprendizaje por refuerzo. Estos métodos son una clase de algoritmos de búsqueda de política \footnote{Los \textbf{métodos de búsqueda de política} conforman un subcampo de \acrshort{rl} que se enfoca en encontrar la configuración adecuada de una política parametrizada dada. Estos métodos pueden ser utilizados para aprender políticas a partir de muestras de trayectorias, convirtiéndolos en un enfoque general del aprendizaje de robots. \cite{PetersNeumann2015}} que utilizan métodos de optimización de trayectorias para generar datos de entrenamiento \cite{Du_2021}. Estos datos de entrenamiento son trayectorias utilizadas para guiar el aprendizaje de políticas parametrizadas, como redes neuronales artificiales. Los métodos \acrshort{gps} combinan la teoría de optimización convexa y aprendizaje profundo, esto ha permitido conseguir magníficos resultados en complejas tareas de control como el aprendizaje de robots. 
+Los métodos de \textbf{búsqueda guiada de políticas} o por su nombre en inglés \textbf{\acrfull{gps}} se han convertido en una herramienta importante en el área de aprendizaje por refuerzo. Estos métodos son una clase de algoritmos de búsqueda de política\footnote{Los \textbf{métodos de búsqueda de política} conforman un subcampo de \acrshort{rl} que se enfoca en encontrar la configuración adecuada de una política parametrizada dada. Estos métodos pueden ser utilizados para aprender políticas a partir de muestras de trayectorias, convirtiéndolos en un enfoque general del aprendizaje de robots. \cite{PetersNeumann2015}} que utilizan métodos de optimización de trayectorias para generar datos de entrenamiento \cite{Du_2021}. Estos datos de entrenamiento son trayectorias utilizadas para guiar el aprendizaje de políticas parametrizadas, como redes neuronales artificiales. Los métodos \acrshort{gps} combinan la teoría de optimización convexa y aprendizaje profundo, esto ha permitido conseguir magníficos resultados en complejas tareas de control como el aprendizaje de robots. 
 % Policy search methods are a subfield of reinforcement learning that focus on finding good parameters for a given policy parametrization
 
-En este capítulo se hará un descripción detallada del método, la cual esta ampliamente basada en lo expuesto en \cite{Schneider2018} y \cite{Deep_Visuomotor_Policies}.
+En este capítulo se hará una descripción detallada del método, la cual está ampliamente basada en lo expuesto en \cite{Schneider2018} y \cite{Deep_Visuomotor_Policies}.
 
 \section{Definición del problema}
 
-En la búsqueda de políticas el objetivo es aprender una política $\pi_{\bm\theta}(\mathbf{u}_t| \mathbf{x}_t)$ que permita a un agente elegir acciones $\mathbf{u}_t$ en respuesta a estados $\mathbf{x}_t$ para controlar un sistema dinámico, como un cuadricóptero \cite{Deep_Visuomotor_Policies}. En este caso $\bm{\theta}$ denota los parámetros de la política que deben ser optimizados para la tarea, que en este caso representa a los pesos de una red neuronal artificial o mejor conocida como \acrfull{ann}. Una descripción más detallada de este tipo de modelos se encuentra en el apéndice \ref{sec:DL}. 
+En la búsqueda de políticas el objetivo es aprender una política $\pi_{\bm\theta}(\mathbf{u}_t| \mathbf{x}_t)$ que permita a un agente elegir acciones $\mathbf{u}_t$ en respuesta a estados $\mathbf{x}_t$ para controlar un sistema dinámico, como un cuadricóptero \cite{Deep_Visuomotor_Policies}. En este contexto $\bm{\theta}\in\Theta$ representa los parámetros de la política que deben optimizarse para la tarea, en particular, estos corresponden a los pesos de una \acrshort{ann}. La definición del dominio y una descripción de su parametrización se presentan en \ref{def:ANN}.
 
 Con el fin de obtener una política, el algoritmo \acrshort{gps} plantea el siguiente problema de optimización, 
  \begin{align}
     \min_{p, \bm\theta} \sum_{i=1}^{N}\mathbb{E}_{\bm\tau \sim p_{i}}\left[c(\bm\tau)\right] \quad \text{sujeto a} \quad p_{i}(\mathbf{u}_t|\mathbf{x}_t) = \pi_{\bm\theta}(\mathbf{u}_t|\mathbf{x}_t),
     \label{eq:gps_objective}
 \end{align}
-dónde $c(\bm\tau)$ representa el costo acumulado a lo largo de una trayectoria $\bm\tau$, que se conforma por una secuencia temporal de parejas $(\mathbf{x}_t, \mathbf{u}_t)$. Este costo acumulado también se puede representar de la siguiente manera, 
+donde $c(\bm\tau)$ denota el costo acumulado asociado a una trayectoria 
+$\bm\tau$, la cual consiste en una secuencia temporal de pares 
+estado–acción $(\mathbf{x}_t, \mathbf{u}_t)$. Este costo se define como la siguiente ecuación,
 \begin{align}
-    c(\bm\tau) = \sum_{t=1}^{T}c(\mathbf{x}_t, \mathbf{u}_t)
-    \label{eq:traj_cost}.
+    c(\bm\tau) = \sum_{t=0}^{T} c(\mathbf{x}_t, \mathbf{u}_t),
+    \label{eq:traj_cost}
 \end{align}
-Cada trayectoria $\bm\tau$ esta dada por una distribución de probabilidad como se muestra en la siguiente igualdad,
+Cada trayectoria $\bm\tau$ está dada por una distribución de probabilidad como se muestra en la siguiente igualdad,
 \begin{align}
-    p_{i}(\bm\tau) = p_{i}(\mathbf{x}_1)\prod_{t=1}^{T-1}p(\mathbf{x}_{t+1}|\mathbf{u}_t, \mathbf{x}_t)p_{i}(\mathbf{u}_t|\mathbf{x}_t),
+    p_{i}(\bm\tau) = p_{i}(\mathbf{x}_1)\prod_{t=0}^{T-1}p(\mathbf{x}_{t+1}|\mathbf{u}_t, \mathbf{x}_t)p_{i}(\mathbf{u}_t|\mathbf{x}_t),
     \label{eq:tray_dist}
 \end{align}
-dónde $p(\mathbf{x}_{t+1}|\mathbf{u}_t, \mathbf{x}_t)$ se refiere a la distribución del sistema dinámico discutida en la sección \ref{MPD}. Mientras que $p_i(\mathbf{x}_1)$ es la distribución inicial de estados y  $p_i(\mathbf{u}_t|\mathbf{x}_t)$ representa el $i$-esímo controlador local variable en el tiempo. 
+donde $p(\mathbf{x}_{t+1}|\mathbf{u}_t, \mathbf{x}_t)$ se refiere a la distribución del sistema dinámico discutida en la sección \ref{MPD}. Mientras que $p_i(\mathbf{x}_1)$ es la distribución inicial de estados y  $p_i(\mathbf{u}_t|\mathbf{x}_t)$ representa el $i$-ésimo controlador local variable en el tiempo. 
 
 \section{Optimización}
-La expresión \ref{eq:gps_objective} es un problema dual, que se ha resuelto optimizando el langrangiano asociado a dicha expresión por medio del método descenso de gradiente dual  (\textit{dual gradient descent}). Este método consiste en alternar la optimización del lagrangiano con respecto a las variables primarias $p_i(\bm\tau)$ y $\bm\theta$ y la actualización de los multiplicadores de Lagrange usando el gradiente del lagrangiano evaluado en las nuevas variables primarias. \cite{2014-mfcgps} 
+Para resolver el problema con restricción planetado en la ecuación \eqreftext{eq:gps_objective}, se aplica la dualización lagrangiana\footnote{La \textbf{dualización lagrangiana} consiste en extender el lagrangiano del problema primal (original) e incorporar las restricciones mediante multiplicadores de Lagrange. Posteriormente, se minimiza respecto a las variables primales para obtener la función dual, la cual se maximiza con respecto a las variables duales.\cite{boyd2004convex}}, construyendo el lagrangiano asociado e incorporando las restricciones mediante multiplicadores de Lagrange. A partir de esto, se obtiene el problema dual, el cual se optimiza mediante el método descenso por el gradiente dual (\textit{dual gradient descent}). Este método consiste en alternar la optimización del lagrangiano con respecto a las variables primales $p_i(\bm\tau)$ y $\bm\theta$, y la actualización de los multiplicadores de Lagrange usando el gradiente del lagrangiano evaluado en las nuevas variables primales. \cite{2014-mfcgps}
 
-El algoritmo \acrshort{gps} divide la resolución del problema \ref{eq:gps_objective} en un paso para cada variable primaria. El primero paso se refiere a la obtención de los distintos $N$ controladores locales $p_i$. Esto se logra por medio de la minimización del valor esperado del costo $c$ de las trayectorias $\{\bm\tau_i\}_{i}$ resultantes de cada estado inicial. A este paso se le denota como \textbf{optimización de trayectorias locales}. Es importante notar que cada controlador es entrenado únicamente en un estado inicial específico y que es probable que no tenga éxito en estados fuera de la distribución. En la práctica estos controladores no son suficientes para resolver una tarea en general. Sin embargo, se utilizan para generar datos de entrenamiento para un algoritmo de aprendizaje supervisado (para más detalles consultar \ref{sec:supervised_learning}), que conforma el segundo componte de \acrshort{gps}. Este componente consiste en entrenar una política global independiente del tiempo $\pi_{\mathbf{\bm\theta}}$, que se asemeje al comportamiento de todos los $N$ controladores locales. A este componente del algoritmo se le conoce como  \textbf{optimización de la política global}.  \cite{Schneider2018}
+El algoritmo \acrshort{gps} divide la resolución del problema en la \eqreftext{eq:gps_objective} en un paso para cada variable primal. El primero paso se refiere a la obtención de los distintos $N$ controladores locales $p_i$. Esto se logra por medio de la minimización del valor esperado del costo $c$ de las trayectorias $\{\bm\tau_i\}_{i}$ resultantes de cada estado inicial. A este paso se le denota como \textbf{optimización de trayectorias locales}. Es importante notar que cada controlador es entrenado únicamente en un estado inicial específico y que es probable que no tenga éxito en estados fuera de la distribución. En la práctica estos controladores no son suficientes para resolver una tarea en general. Sin embargo, se utilizan para generar datos de entrenamiento para un algoritmo de aprendizaje supervisado (para más detalles consultar \ref{sec:supervised_learning}), que conforma el segundo componte de \acrshort{gps}. Este componente consiste en entrenar una política global independiente del tiempo $\pi_{\mathbf{\bm\theta}}$, que se asemeje al comportamiento de todos los $N$ controladores locales. A este componente del algoritmo se le conoce como  \textbf{optimización de la política global}.  \cite{Schneider2018}
 
-Al igual que lo realizado en \cite{Deep_Visuomotor_Policies}\cite{Schneider2018}, este trabajo utilizará una versión modificada del método del descenso de gradiente dual conocido como  \acrfull{badmm} \cite{wang2014bregman} para optimizar los controladores locales y la política global.
+Al igual que lo realizado en \cite{Deep_Visuomotor_Policies}\cite{Schneider2018}, este trabajo utilizará una versión modificada del método del descenso por el gradiente dual conocido como  \acrfull{badmm} \cite{wang2014bregman} para optimizar los controladores locales y la política global.
 
 \subsection{\acrshort{badmm}}
 El método de \acrshort{badmm} es utilizado para resolver problemas duales de la siguiente forma,
@@ -40,109 +42,123 @@ El método de \acrshort{badmm} es utilizado para resolver problemas duales de la
     \min_{\mathbf{v} \in \mathcal{V}, \mathbf{z} \in \mathcal{Z}} f(\mathbf{v})+ g(\mathbf{z}) \quad \text{sujeto a} \quad \mathbf{A} \mathbf{v} + \mathbf{B} \mathbf{z} = \mathbf{c}.
     \label{badmm_problem}
 \end{align}
-Por hipótesis se establece que $f$ y $g$ son funciones convexas, $\mathbf{A}\in \mathbb{R}^{m \times n_{v}}$, $\mathbf{B} \in \mathbb{R}^{m \times n_{z}}$, $\mathbf{c}\in \mathbb{R}^{m \times} 1$. En este caso $\mathbf{v}\in \mathcal{V}\subset\mathbb{R}^{n_v \times 1}$ y $\mathbf{z} \in \mathcal{Z}\subset\mathbb{R}^{n_z \times 1}$ representan las variables primarias, dónde $\mathcal{V}$, $\mathcal{Z}$ son conjuntos convexos. El lagrangiano asociado al problema \ref{badmm_problem} es el siguiente,
+Bajo la suposición de que $f$ y $g$ son funciones convexas, $\mathbf{A}\in \mathbb{R}^{m \times n_{v}}$, $\mathbf{B} \in \mathbb{R}^{m \times n_{z}}$, $\mathbf{c}\in \mathbb{R}^{m \times 1}$. En este caso $\mathbf{v}\in \mathcal{V}\subset\mathbb{R}^{n_v \times 1}$ y $\mathbf{z} \in \mathcal{Z}\subset\mathbb{R}^{n_z \times 1}$ representan las variables primales, donde $\mathcal{V}$, $\mathcal{Z}$ son conjuntos convexos. El lagrangiano asociado al problema \ref{badmm_problem} es el siguiente,
 \begin{align}
     \mathcal{L}(\mathbf{v}, \mathbf{z}, \lambda) = 
     f(\mathbf{v}) + g(\mathbf{z}) + \langle\bm\lambda, \mathbf{A v} + \mathbf{B z} -\mathbf{c}\rangle + \nu B_{\chi}(\mathbf{c} - \mathbf{Av}, \mathbf{B z}), 
     \label{BADMM_lagrangian}
 \end{align}
-dónde los términos $\bm\lambda \in \mathbb{R}^{m}$ y $\nu \in \mathbb{R}$ que representan el multiplicador de Lagrange y un factor de penalización, respectivamente. \cite{wang2014bregman}
+donde los términos $\bm\lambda \in \mathbb{R}^{m}$ y $\nu \in \mathbb{R}$ que representan el multiplicador de Lagrange y un factor de penalización, respectivamente. \cite{wang2014bregman}
 
 En lugar de utilizar una distancia euclidiana, como otros métodos que emplean regularización, este método utiliza la divergencia de Bregman, cuya notación es $B_{\chi}$. El uso de esta divergencia permite explotar la estructura del problema y ofrece una convergencia más rápida que otros métodos como \acrfull{admm}. \cite{wang2014bregman} 
 
 \begin{definition}
-    Sea $\chi: \Omega \rightarrow \mathbb{R}$ una función continuamente diferenciable y estrictamente convexa y definida en el conjunto convexo $\Omega$. La divergencia de Bregman asociada a $\chi$ de los elementos $p, q \in \Omega$ esta dado por la siguiente expresión,
+    Sea $\chi: \Omega \rightarrow \mathbb{R}$ una función continuamente diferenciable y estrictamente convexa y definida en el conjunto convexo $\Omega$. La divergencia de Bregman asociada a $\chi$ de los elementos $p, q \in \Omega$ está dado por la siguiente expresión,
     $$B_{\chi}(p, q) := \chi(p)-\chi(q)-\left(\nabla \chi(q), p-q\right).$$
 \end{definition}
-Este método establece las siguientes reglas de actualización para las variables primarias y el multiplicador de Lagrange, 
-\begin{align*}
+Este método establece las siguientes reglas de actualización para las variables primales y el multiplicador de Lagrange, 
+\begin{align}
     \mathbf{v}^{(k+1)} &= \argmin_{\mathbf{v}\in \mathcal{V}} \left(f(\mathbf{v}) + \left\langle \bm\lambda^{(k)}, \mathbf{Av}+\mathbf{B}\mathbf{z}^{(k)}-\mathbf{c}\right\rangle + \nu B_{\chi}\left(\mathbf{c}-\mathbf{Av}, \mathbf{B}\mathbf{z}^{(k)}\right)\right), \\
     \mathbf{z}^{(k+1)} &= \argmin_{\mathbf{z} \in \mathcal{Z}} \left(g(\mathbf{z}) + \left\langle\bm\lambda^{(k)}, \mathbf{A}\mathbf{v}^{(k+1)} + \mathbf{Bz-c}\right\rangle + \nu B_{\chi} \left(\mathbf{Bz}, \mathbf{c}-\mathbf{Av}^{(k+1)}\right)\right), \\
     \bm\lambda^{(k+1)} &= \bm\lambda^{(k)} + \alpha_{\bm\lambda}\cdot\nu \left(\mathbf{Av}^{(k+1)}  + \mathbf{Bz}^{(k+1)}-\mathbf{c}\right), 
-    \label{BADMM_update}
-\end{align*}
-dónde $\alpha_{\bm\lambda} \in \mathbb{R}$ representa la tasa de actualización del multiplicador de Lagrange. \cite{wang2014bregman}
+\end{align}
+donde $\alpha_{\bm\lambda} \in \mathbb{R}$ representa la tasa de actualización del multiplicador de Lagrange. \cite{wang2014bregman}
 
 \subsection{\acrshort{badmm} para \acrshort{gps}}
 
 
-Para utilizar el método \acrshort{badmm} en la resolución del problema \ref{eq:gps_objective} es necesario modificar la restricción entre la política y los controles locales de la siguiente manera,
-$$  p_i(\mathbf{u}_t|\mathbf{x}_t)p_i(\mathbf{x}_t)= \pi_{\bm\theta}(\mathbf{u}_t|\mathbf{x}_t)p_i(\mathbf{x}_t) \quad 
-    \forall i \in \mathcal{I}, t \in \mathcal{T}, \mathbf{u}_t\in \mathbb{R}^{n_u}, \mathbf{x}_t \in \mathbb{R}^{n_x} 
-$$
-Ahora será necesario definir los espacios $\mathcal{V}$ y $\mathcal{Z}$. En primer lugar, el conjunto $\mathcal{V}$ representa el espacio de las posibles funciones de densidad conjunta de estados y acciones asociada a la política $\pi(\mathbf{u}|\mathbf{x})$. Por otra parte, el conjunto $\mathcal{Z}$ esta dado por el espacio de las funciones de densidad de los posibles controles locales. Estos conjuntos se expresan de la siguiente manera \cite{Schneider2018},
-\begin{align*}
+Para utilizar el método \acrshort{badmm} en la resolución del problema en la \eqreftext{eq:gps_objective} es necesario modificar la restricción entre la política y los controles locales de la siguiente manera,
+\begin{align}
+p_i(\mathbf{u}_t|\mathbf{x}_t)p_i(\mathbf{x}_t)= \pi_{\bm\theta}(\mathbf{u}_t|\mathbf{x}_t)p_i(\mathbf{x}_t) \qquad 
+    \forall i \in \mathcal{I}, t \in \mathcal{T}, \mathbf{u}_t\in \mathbb{R}^{n_u}, \mathbf{x}_t \in \mathbb{R}^{n_x}, 
+\end{align}
+donde $\mathcal{I}=\{1, \cdots, N\}$ y $\mathcal{T}=\{0, \cdots, T-1\}$
+Ahora será necesario definir los espacios $\mathcal{V}$ y $\mathcal{Z}$. En primer lugar, el conjunto $\mathcal{V}$ representa el espacio de las posibles funciones de densidad conjunta de estados y acciones asociada a la política $\pi(\mathbf{u}|\mathbf{x})$. Por otra parte, el conjunto $\mathcal{Z}$ está dado por el espacio de las funciones de densidad de los posibles controles locales. Estos conjuntos se expresan de la siguiente manera \cite{Schneider2018},
+\begin{equation}
+\begin{aligned}
      \mathcal{V}&=\Bigg\{ f:\mathcal{I}\times\mathcal{T}\times\mathbb{R}^{n_x}\times\mathbb{R}^{n_u}\rightarrow\mathbb{R}\Big| \left( \forall i \in \mathcal{I},\forall t \in \mathcal{T}, \forall \mathbf{u}_t\in \mathbb{R}^{n_u}, \forall\mathbf{x}_t\in \mathbb{R}^{n_x}:f_i(\mathbf{x}_t, \mathbf{u}_t)\geq 0 \right)   \\ 
-    \cap & \left(\int f_i(\mathbf{x}_t, \mathbf{u}_t)d\mathbf{u}d\mathbf{x} =1\right)\Bigg\}.
-\end{align*}
+    \cap & \left(\int f_i(\mathbf{x}_t, \mathbf{u}_t)d\mathbf{u}d\mathbf{x} =1\right)\Bigg\},
+\end{aligned}
+\end{equation}
+análogamente, se define el conjunto $\mathcal{Z}$.
 
-Para poder interpretar el problema de búsqueda de políticas \ref{eq:gps_objective} de la forma \ref{badmm_problem} es necesario 
+Para poder interpretar el problema de búsqueda de políticas en la \eqreftext{eq:gps_objective} de la forma \ref{badmm_problem} es necesario 
 cambiar los operadores lineales asociados a las matrices $\mathbf{A}$ y $\mathbf{B}$ por funciones lineales en una dimensión \cite{Schneider2018}. Estos cambios se expresan de la siguiente forma, 
-\begin{align*}
+\begin{align}
 \mathbf{A}\mathbf{v} \rightarrow a(\mathbf{v}):= -\mathbf{v}, \qquad
 \mathbf{B}\mathbf{z} \rightarrow b(\mathbf{z}):= \mathbf{z}.
-\end{align*}
+\end{align}
+Esta sustitución se justifica porque, en \acrshort{gps}, las variables primales son funciones de densidad. En consecuencia, la forma matricial $\mathbf{A}\mathbf{v}+\mathbf{B}\mathbf{z}=\mathbf{c}$ debe reinterpretarse en un espacio funcional mediante operadores lineales que actúan punto a punto y preservan la restricción entre política global y controladores locales.
+
 Estas modificaciones implican que $\mathbf{c}$ debe ser 0. Adicionalmente, se requiere que las funciones $\mathbf{v}$ y $\mathbf{z}$ sean definidas como se muestra debajo,
-\begin{align*}
+\begin{align}
     \mathbf{v}_i(\mathbf{x}_t, \mathbf{u}_t) := \pi_{\bm\theta}(\mathbf{u}_t|\mathbf{x}_t) p_{i}(\mathbf{x}_t), \qquad
     \mathbf{z}_i(\mathbf{x}_t, \mathbf{u}_t) := p_i(\mathbf{u}_t|\mathbf{x}_t) p_{i}(\mathbf{x}_t).
-\end{align*}
-
-Para el método \acrshort{gps} la función $f$ deberá ser idénticamente cero. Esto se debe a que la función objetivo de la expresión \ref{eq:gps_objective} sólo depende del control local, es decir, la variable $\mathbf{z}$, y no de la política $\pi_{\bm\theta}$, representada por $\mathbf{v}$. Por otro lado, la función $g$ es \cite{Schneider2018}, 
-\begin{align}
-    g(\mathbf{z}) &:= \sum_{i=1}^{N}\sum_{t=1}^{T} \mathbb{E}_{\mathbf{z}_{i}(\mathbf{x_t}, \mathbf{u}_t)}[c(\mathbf{x}_t, \mathbf{u}_t)] \\
-    &= \sum_{i=1}^{N}\sum_{t=1}^{T}\mathbb{E}_{p_i(\mathbf{u_t}|\mathbf{x}_t)p_{i}(\mathbf{x}_t)}[c(\mathbf{x}_t, \mathbf{u}_t)]\\
-    &=  \sum_{i=1}^{N}\mathbb{E}_{p_i(\bm\tau)}[c(\bm\tau)].
 \end{align}
 
+Para el método \acrshort{gps} la función $f$ deberá ser idénticamente cero. Esto se debe a que la función objetivo de la \eqreftext{eq:gps_objective} sólo depende del control local, es decir, la variable $\mathbf{z}$, y no de la política $\pi_{\bm\theta}$, representada por $\mathbf{v}$. Por otro lado, la función $g$ es \cite{Schneider2018}, 
+\begin{equation}
+\begin{aligned}
+    g(\mathbf{z}) &:= \sum_{i=1}^{N}\sum_{t=0}^{T-1} \mathbb{E}_{\mathbf{z}_{i}(\mathbf{x_t}, \mathbf{u}_t)}[c(\mathbf{x}_t, \mathbf{u}_t)] \\
+    &= \sum_{i=1}^{N}\sum_{t=0}^{T-1}\mathbb{E}_{p_i(\mathbf{u_t}|\mathbf{x}_t)p_{i}(\mathbf{x}_t)}[c(\mathbf{x}_t, \mathbf{u}_t)]\\
+    &=  \sum_{i=1}^{N}\mathbb{E}_{p_i(\bm\tau)}[c(\bm\tau)].
+\end{aligned}
+\end{equation}
+
 A partir de los cambios anteriores, se pueden expresar las reglas de actualización de la siguiente forma, 
-\begin{align*}
-    \mathbf{v}^{(k+1)} &= \argmin_{\mathbf{v}}\left( \left\langle \bm\lambda^{(k)}, \mathbf{v}-\mathbf{z}^{(k)}\right\rangle + \nu B_{\chi}\left(\mathbf{v}, \mathbf{z}^{(k)}\right)\right) \\
-    \mathbf{z}^{(k+1)} &= \argmin_{\mathbf{z}}\left( \sum_{i=1}^{N}\sum_{t=1}^{T}\mathbb{E}_{\mathbf{z}_{i}(\mathbf{x}_t), \mathbf{u}_t}[c(\mathbf{x}_t, \mathbf{u}_t)] + \left\langle \lambda^{(k)}, \mathbf{v}^{(k+1)}-\mathbf{z}\right\rangle + \nu B_{\chi}\left(\mathbf{v}^{(k+1)}, \mathbf{z}\right)\right) \\
+\begin{align}
+    \mathbf{v}^{(k+1)} &= \argmin_{\mathbf{v}}\left( \left\langle \bm\lambda^{(k)}, \mathbf{v}-\mathbf{z}^{(k)}\right\rangle + \nu B_{\chi}\left(\mathbf{v}, \mathbf{z}^{(k)}\right)\right), \\
+    \mathbf{z}^{(k+1)} &= \argmin_{\mathbf{z}}\left( \sum_{i=1}^{N}\sum_{t=0}^{T-1}\mathbb{E}_{\mathbf{z}_{i}(\mathbf{x}_t), \mathbf{u}_t}[c(\mathbf{x}_t, \mathbf{u}_t)] + \left\langle \lambda^{(k)}, \mathbf{v}^{(k+1)}-\mathbf{z}\right\rangle + \nu B_{\chi}\left(\mathbf{v}^{(k+1)}, \mathbf{z}\right)\right), \\
     \bm \lambda^{(k+1)} &= \bm \lambda^{(k)} + \alpha_{\bm\lambda} \cdot \nu \left(\mathbf{v}^{(k+1)}-\mathbf{z}^{(k+1)}\right).
-\end{align*}
+\end{align}
 
 En este caso el producto escalar $\langle \cdot, \cdot \rangle: \mathcal{V}\times\mathcal{V} \rightarrow \mathbb{R}$ se define de acuerdo a la siguiente expresión,
 \begin{align}
-    \langle\mathbf{v}, \mathbf{z}\rangle := \sum_{i=1}^{N}\sum_{t=1}^{T}\int_{\mathcal{X}\times \mathcal{U}}\mathbf{v}_i(\mathbf{x}_t, \mathbf{u}_t) \cdot\mathbf{z}_i(\mathbf{x}_t, \mathbf{u}_t)d\mathbf{x}d\mathbf{u}. 
+    \langle\mathbf{v}, \mathbf{z}\rangle := \sum_{i=1}^{N}\sum_{t=0}^{T-1}\int_{\mathcal{X}\times \mathcal{U}}\mathbf{v}_i(\mathbf{x}_t, \mathbf{u}_t) \cdot\mathbf{z}_i(\mathbf{x}_t, \mathbf{u}_t)d\mathbf{x}d\mathbf{u}. 
     \label{fun_prod}
 \end{align}
 
 Debe hacerse una observación importante sobre el multiplicador de Lagrange. En este caso es necesario que  $\lambda$ sea un elemento del espacio $\mathcal{V}$ para poder hacer uso del producto escalar. La función $\lambda:\mathcal{I}\times\mathcal{T}\times\mathcal{X}\times\mathcal{U} \rightarrow \mathbb{R}$ se define arbitrariamente en \cite{Deep_Visuomotor_Policies} como, 
-$$\lambda_{i}(\mathbf{x}_t, \mathbf{u}_t) = \bm{\lambda}_{t}^{\top} \mathbf{u}_t,$$
-dónde $\bm\lambda_{t} \in \mathbb{R}^{n_u}$ representa el multiplicador de Lagrange independiente del índice $i$. A pesar de que esta simplificación es bastante drástica, en la práctica esto ha hecho al método más estable \cite{Deep_Visuomotor_Policies}.
+\begin{equation}
+    \lambda_{i}(\mathbf{x}_t, \mathbf{u}_t) = \bm{\lambda}_{t}^{\top} \mathbf{u}_t,
+\end{equation}
+donde $\bm\lambda_{t} \in \mathbb{R}^{n_u}$ representa el multiplicador de Lagrange independiente del índice $i$. A pesar de que esta simplificación es bastante drástica, en la práctica esto ha hecho al método más estable \cite{Deep_Visuomotor_Policies}.
 
 Utilizando la definición \ref{fun_prod}, se observa que el producto escalar en la regla de actualización se puede expresar de la siguiente manera,
-\begin{align*}
-    \left\langle\bm\lambda^{\top}_t\mathbf{u}_t, \mathbf{v}-\mathbf{z}\right\rangle &= \sum_{i=1}^{N}\sum_{t=1}^{T}\int_{\mathcal{X}\times\mathcal{U}}\bm\lambda_{t}^{\top}\mathbf{u}_t \left(\mathbf{v}_{i}(\mathbf{x}_t, \mathbf{u}_t)-\mathbf{z}_{i}(\mathbf{x}_t, \mathbf{u}_t)\right)d\mathbf{x}d\mathbf{u} \\
-    &= \sum_{i=1}^{N}\sum_{t=1}^{T}\mathbb{E}_{\mathbf{v}_i(\mathbf{x}_t, \mathbf{u}_t)}\left[\bm\lambda_{t}^{\top}\mathbf{u}_t\right] - \mathbb{E}_{\mathbf{z}_i(\mathbf{x}_t, \mathbf{u}_t)}\left[\bm\lambda_{t}^{\top}\mathbf{u}_t\right].
-\end{align*}
-Ahora es necesario definir la divergencia de Bregman $B_{\chi}$. Ya que se esta trabajando con 
-distribuciones de probabilidad de trayectorias, resulta conveniente utilizar la divergencia de \acrfull{kl}. La divergencia \acrshort{kl} es una instancia de la divergencia de Bregman, donde $\chi$ esta dada por la entropía diferencial. En este caso particular $B_{\chi}$ se representa como, 
-\begin{align*}
-    B_{\chi}(\mathbf{v}, \mathbf{z}) &:=\sum_{i=1}^{N}\sum_{t=1}^{T} \phi_{t}^{\bm\theta}\left(\bm\theta, p_{i}\right), \\
+\begin{equation}
+\begin{aligned}
+    \left\langle\bm\lambda^{\top}_t\mathbf{u}_t, \mathbf{v}-\mathbf{z}\right\rangle &= \sum_{i=1}^{N}\sum_{t=0}^{T-1}\int_{\mathcal{X}\times\mathcal{U}}\bm\lambda_{t}^{\top}\mathbf{u}_t \left(\mathbf{v}_{i}(\mathbf{x}_t, \mathbf{u}_t)-\mathbf{z}_{i}(\mathbf{x}_t, \mathbf{u}_t)\right)d\mathbf{x}d\mathbf{u} \\
+    &= \sum_{i=1}^{N}\sum_{t=0}^{T-1}\mathbb{E}_{\mathbf{v}_i(\mathbf{x}_t, \mathbf{u}_t)}\left[\bm\lambda_{t}^{\top}\mathbf{u}_t\right] - \mathbb{E}_{\mathbf{z}_i(\mathbf{x}_t, \mathbf{u}_t)}\left[\bm\lambda_{t}^{\top}\mathbf{u}_t\right].
+\end{aligned}
+\end{equation}
+Ahora es necesario definir la divergencia de Bregman $B_{\chi}$. Ya que se está trabajando con 
+distribuciones de probabilidad de trayectorias, resulta conveniente utilizar la divergencia de \acrfull{kl}. La divergencia \acrshort{kl} es una instancia de la divergencia de Bregman, donde $\chi$ está dada por la entropía diferencial. En este caso particular $B_{\chi}$ se representa como, 
+\begin{align}
+    B_{\chi}(\mathbf{v}, \mathbf{z}) &:=\sum_{i=1}^{N}\sum_{t=0}^{T-1} \phi_{t}^{\bm\theta}\left(\bm\theta, p_{i}\right), \\
     B_{\chi}(\mathbf{z}, \mathbf{v})  &:=  
-    \sum_{i=1}^{N}\sum_{t=1}^{T} \phi_{t}^{p}\left(p_{i}, \bm\theta\right), 
-\end{align*}
-dónde $\phi_t^{\bm\theta}$ y $\phi_{t}^{p}$ son los valores esperados de la divergencia \acrshort{kl} al tiempo $t$ bajo la distribución local de estados. Esto se representa en las siguientes definiciones, 
-\begin{align*}
+    \sum_{i=1}^{N}\sum_{t=0}^{T-1} \phi_{t}^{p}\left(p_{i}, \bm\theta\right), 
+\end{align}
+donde $\phi_t^{\bm\theta}$ y $\phi_{t}^{p}$ son los valores esperados de la divergencia \acrshort{kl} al tiempo $t$ bajo la distribución local de estados. Esto se representa en las siguientes definiciones, 
+\begin{align}
     \phi_t^{\bm\theta}\left(\bm\theta, p_i\right) &:= 
     \mathbb{E}_{p_i(\mathbf{x}_t)}\left[ D_{\text{KL}}\left(\pi_{\bm\theta}(\mathbf{u}_t|\mathbf{x}_t)|| p_i(\mathbf{u}_t|\mathbf{x}_t)\right)\right], \\
     \phi_t^{p}\left(p_i, \bm\theta\right) &:= 
     \mathbb{E}_{p_i(\mathbf{x}_t)}\left[ D_{\text{KL}}\left(
     p_i(\mathbf{u}_t|\mathbf{x}_t)|| \pi_{\bm\theta}(\mathbf{u}_t|\mathbf{x}_t)\right)\right].
-\end{align*}
+\end{align}
 
-En este caso se sustituye la penalización $\nu$ por una multiplicador dependiente del tiempo $\nu_t$. Este cambio permitirá penalizar más a la divergencia en un paso específico de la trayectoria que en otros. Esto se hace con el fin de forzar la igualdad entre los controles locales y la política global de manera particular en cada paso de tiempo. \cite{Deep_Visuomotor_Policies}
+En este caso se sustituye la penalización $\nu$ por un multiplicador dependiente del tiempo $\nu_t$. Este cambio permitirá penalizar más a la divergencia en un paso específico de la trayectoria que en otros. Esto se hace con el fin de forzar la igualdad entre los controles locales y la política global de manera particular en cada paso de tiempo. \cite{Deep_Visuomotor_Policies}
 
-A pesar de que las consideraciones anteriores han simplificado el problema, aun queda pendiente representar el conjunto infinito de restricciones $p_i(\mathbf{u}_t|x_t)p_i(\mathbf{x}_t)=\pi_{\bm\theta}(\mathbf{u}_t|\mathbf{x}_t)p_i(\mathbf{x}_t)$ para la actualización de $\bm\lambda$ \cite{Deep_Visuomotor_Policies}. Una forma de aproximar esta restricción, se realiza al sustituirla igualdad  con una versión que este en términos de los valores esperados de los rasgos \cite{peters2010}. Cuando estos rasgos están compuestos por funciones de variables aleatorias, esto puede ser visto como una restricción sobre los momentos de una distribución \cite{Deep_Visuomotor_Policies}. Concretamente la restricción propuesta en \cite{Deep_Visuomotor_Policies} es la siguiente, 
-$$\mathbb{E}_{\pi_{\bm\theta}(\mathbf{u}_t|\mathbf{x}_t) p_i(\mathbf{x}_t)}[\mathbf{u}_t] = \mathbb{E}_{p_i(\mathbf{x}_t, \mathbf{u}_t)}[\mathbf{u}_t].$$
-
-Tomando en cuenta los cambios anteriores, eliminando los términos independientes de las variable de actualización y sustituyendo las funciones $\mathbf{v}_i$ y $\mathbf{z}_i$ por los valores $\bm\theta$ y $p_i$, respectivamente, se pueden expresar las reglas de actualización de la siguiente manera, 
+A pesar de que las consideraciones anteriores han simplificado el problema, aún queda pendiente representar el conjunto infinito de restricciones $p_i(\mathbf{u}_t|x_t)p_i(\mathbf{x}_t)=\pi_{\bm\theta}(\mathbf{u}_t|\mathbf{x}_t)p_i(\mathbf{x}_t)$ para la actualización de $\bm\lambda$ \cite{Deep_Visuomotor_Policies}. Una forma de aproximar esta restricción, se realiza al sustituirla igualdad  con una versión que esté en términos de los valores esperados de los rasgos \cite{peters2010}. Cuando estos rasgos están compuestos por funciones de variables aleatorias, esto puede ser visto como una restricción sobre los momentos de una distribución \cite{Deep_Visuomotor_Policies}. Concretamente la restricción propuesta en \cite{Deep_Visuomotor_Policies} es la siguiente, 
 \begin{align}
-    \bm\theta^{(k+1)} &= \argmin_{\bm\theta \in \Theta} \left(\sum_{i=1}^{N}\sum_{t=1}^{T}\mathbb{E}_{\pi_{\bm\theta}(\mathbf{u}_t|\mathbf{x}_t)p_i(\mathbf{x}_t)} \left[\bm\lambda_{t}^{\top(k)}\mathbf{u}_t\right] + \nu_t\phi_{t}^{\bm\theta}\left(\bm\theta, p_i^{(k)}\right)\right) \label{eq:GPS_theta}\\
-    p^{(k+1)} &= \argmin_{p}\left(\sum_{i=1}^{N}\sum_{t=1}^{T} \mathbb{E}_{p_i(\mathbf{x}_t, \mathbf{u}_t)}\left[c(\mathbf{x}_t, \mathbf{x}_t) - \bm\lambda_t^{\top(k)}\mathbf{u}_t\right] + \nu_t \phi_t^{p}\left(p_i, \bm\theta^{(k+1)}\right)\right) 
-    \label{eq:GPS_p}\\
+    \mathbb{E}_{\pi_{\bm\theta}(\mathbf{u}_t|\mathbf{x}_t) p_i(\mathbf{x}_t)}[\mathbf{u}_t] = \mathbb{E}_{p_i(\mathbf{x}_t, \mathbf{u}_t)}[\mathbf{u}_t].
+\end{align}
+
+Con las transformaciones anteriores, las reglas de actualización se escriben en términos de $\bm\theta$, $p_i$ y $\bm\lambda$. En cada subproblema se eliminan los términos que no dependen de la variable que se actualiza, ya que actúan como constantes aditivas y no modifican el argumento que minimiza (ni el gradiente respecto a dicha variable). Intuitivamente, esto permite conservar el mismo óptimo y enfocarse sólo en los términos que sí influyen en la dirección de actualización. Además, se sustituyen las funciones $\mathbf{v}_i$ y $\mathbf{z}_i$ por sus parametrizaciones en $\bm\theta$ y $p_i$, respectivamente. Así, se obtienen las siguientes reglas de actualización,
+\begin{align}
+    \bm\theta^{(k+1)} &= \argmin_{\bm\theta \in \Theta} \left(\sum_{i=1}^{N}\sum_{t=0}^{T-1}\mathbb{E}_{\pi_{\bm\theta}(\mathbf{u}_t|\mathbf{x}_t)p_i(\mathbf{x}_t)} \left[\bm\lambda_{t}^{\top(k)}\mathbf{u}_t\right] + \nu_t\phi_{t}^{\bm\theta}\left(\bm\theta, p_i^{(k)}\right)\right) \label{eq:GPS_theta},\\
+    p^{(k+1)} &= \argmin_{p}\left(\sum_{i=1}^{N}\sum_{t=0}^{T-1} \mathbb{E}_{p_i(\mathbf{x}_t, \mathbf{u}_t)}\left[c(\mathbf{x}_t, \mathbf{u}_t) - \bm\lambda_t^{\top(k)}\mathbf{u}_t\right] + \nu_t \phi_t^{p}\left(p_i, \bm\theta^{(k+1)}\right)\right) 
+    \label{eq:GPS_p},\\
     \bm{\lambda}_t^{(k+1)} &= \bm{\lambda}_t^{(k)} + \alpha_{\bm\lambda} \cdot \nu_t \left(\mathbb{E}_{\pi_{\bm\theta}(\mathbf{u}_t|\mathbf{x}_t) p_i(\mathbf{x}_t)}[\mathbf{u}_t] - \mathbb{E}_{p_i(\mathbf{x}_t, \mathbf{u}_t)}[\mathbf{u}_t]\right) \qquad \forall i \in \mathcal{I}, t \in \mathcal{T}. 
     \label{eq:GPS_lambda}
 \end{align}
@@ -152,140 +168,148 @@ En las siguientes subsecciones se explicará detalladamente el proceso de optimi
 \section{Optimización de trayectorias locales}
 En esta sección se revisará como utilizar el método \acrshort{ilqr} (discutido en la sección \ref{sub_sec:iLQR}) para optimizar las trayectorias generadas por los controles lineales locales. Cabe aclarar que la optimización de cada controlador $p_i$, será independiente del resto de los controladores. Por lo que en esta sección se limitará a explicar el proceso de optimización para un sólo control $p_i(\bm\tau)$. 
 
-Para la optimización de uno de los controladores $p_i$ se toma uno de los $N$ sumandos de la expresión \ref{eq:GPS_p}, como se muestra a continuación, 
+Para la optimización de uno de los controladores $p_i$ se toma uno de los $N$ sumandos de la \eqreftext{eq:GPS_p}, como se muestra a continuación, 
 \begin{align}
-    \mathcal{L}_{p_i}(p_i, \bm\theta) &= \sum_{t=1}^{T}\mathbb{E}_{p_i(\mathbf{x}_t, \mathbf{u}_t)}\left[c(\mathbf{x}_t, \mathbf{u}_t)-\bm{\lambda}_t^{\top}\mathbf{u}_t
-    \right] + \nu_t \phi_{t}^{p}(p_i, \bm\theta)
+    \mathcal{L}_{p_i}(p_i, \bm\theta) &= \sum_{t=0}^{T-1}\mathbb{E}_{p_i(\mathbf{x}_t, \mathbf{u}_t)}\left[c(\mathbf{x}_t, \mathbf{u}_t)-\bm{\lambda}_t^{\top}\mathbf{u}_t
+    \right] + \nu_t \phi_{t}^{p}(p_i, \bm\theta).
     \label{eq:local_opt}
 \end{align}
-Para poder optimizar la expresión \ref{eq:local_opt} usando el método de \acrshort{ilqr}, se hace la siguiente modificación sobre el termino de la divergencia \acrshort{kl}, 
-\begin{align*}
+Para poder optimizar la \eqreftext{eq:local_opt} usando el método de \acrshort{ilqr}, se hace la siguiente modificación sobre el término de la divergencia \acrshort{kl}, 
+\begin{equation}
+    \begin{aligned}
     \phi_{t}^{p}(p_i, \bm\theta) &= \mathbb{E}_{p_i(\mathbf{x}_t)} \left[D_{\text{KL}}(p_i(\mathbf{u}_t|\mathbf{x}_t)|| \pi_{\bm\theta}(\mathbf{u}_{t}| \mathbf{x}_t))\right] \\
     &= \mathbb{E}_{p_i(\mathbf{x}_t)}\left[\int_{\mathcal{U}}p_i(\mathbf{u}_t|\mathbf{x}_t) \log \frac{p_i(\mathbf{u}_t | \mathbf{x}_t)}{\pi_{\bm\theta}(\mathbf{u}_t|\mathbf{x}_t)}d\mathbf{u}\right]\\
     &= \int_{\mathcal{X}}\int_{\mathcal{U}}p_i(\mathbf{x}_t)p_i(\mathbf{u}_t|\mathbf{x}_t) \log \frac{p_i(\mathbf{u}_t | \mathbf{x}_t)}{\pi_{\bm\theta}(\mathbf{u}_t|\mathbf{x}_t)}d\mathbf{u}d\mathbf{x}\\ 
     &= \mathbb{E}_{p_i(\mathbf{x}_t, \mathbf{u}_t)}\left[\log p_i(\mathbf{u}_t|\mathbf{x}_t) - \log \pi_{\bm\theta}(\mathbf{u}_t|\mathbf{x}_t)\right].\\
-\end{align*}
+    \end{aligned}
+\end{equation}
 En consecuencia, el lagrangiano se puede expresar como,
-\begin{align*}
-    \mathcal{L}_{p_i}(p_i, \bm\theta) &= \sum_{t=1}^{T}\mathbb{E}_{p_i(\mathbf{x}_t, \mathbf{u}_t)}\left[c(\mathbf{x}_t, \mathbf{u}_t)-\bm{\lambda}_t^{\top}\mathbf{u}_t-\nu_t \log \pi_{\bm\theta}(\mathbf{x}_t|\mathbf{u}_t)
+\begin{align}
+    \mathcal{L}_{p_i}(p_i, \bm\theta) &= \sum_{t=0}^{T-1}\mathbb{E}_{p_i(\mathbf{x}_t, \mathbf{u}_t)}\left[c(\mathbf{x}_t, \mathbf{u}_t)-\bm{\lambda}_t^{\top}\mathbf{u}_t-\nu_t \log \pi_{\bm\theta}(\mathbf{x}_t|\mathbf{u}_t)
     \right] + \nu_t \mathbb{E}_{p_i(\mathbf{x}_t, \mathbf{u}_t)}[\log p_i(\mathbf{u}_t|\mathbf{x}_t)].
-\end{align*}
+\end{align}
 Convenientemente, la expresión anterior permite redefinir el costo de la pareja estado-acción dando lugar a, 
-\begin{align*}
+\begin{align}
     \tilde{c}(\mathbf{x}_t, \mathbf{u}_t):=  c(\mathbf{x}_t, \mathbf{u}_t)-\bm{\lambda}_t^{\top}\mathbf{u}_t-\nu_t \log \pi_{\bm\theta}(\mathbf{x}_t|\mathbf{u}_t).
-\end{align*}
+\end{align}
 A partir de estos cambios se puede expresar el lagrangiano como \cite{Schneider2018}, 
-\begin{align*}
-     \mathcal{L}_{p_i}(p_i, \bm\theta) &= \sum_{t=1}^{T}\mathbb{E}_{p_i(\mathbf{x}_t, \mathbf{u}_t)}[\tilde{c}(\mathbf{x}_t, \mathbf{u}_t)] + \nu_{t} \mathbb{E}_{p_i(\mathbf{x}_t, \mathbf{u}_t)}[\log p_i(\mathbf{u}_t |\mathbf{x}_t)].
-\end{align*}
+\begin{align}
+     \mathcal{L}_{p_i}(p_i, \bm\theta) &= \sum_{t=0}^{T-1}\mathbb{E}_{p_i(\mathbf{x}_t, \mathbf{u}_t)}[\tilde{c}(\mathbf{x}_t, \mathbf{u}_t)] + \nu_{t} \mathbb{E}_{p_i(\mathbf{x}_t, \mathbf{u}_t)}[\log p_i(\mathbf{u}_t |\mathbf{x}_t)].
+\end{align}
 
 Ahora considérese el siguiente problema con restricción para optimizar el control $p_i$,
 \begin{align}\label{local_traj_opt}
     \min_{p_i \in \mathcal{N}(\bm\tau)}\mathcal{L}_{p_i}(p_i, \bm\theta) \quad \text{sujeto a}\quad D_{\text{KL}}(p_i(\bm\tau)||\hat{p}_i(\bm\tau))\leq \epsilon, 
 \end{align}
-dónde $\hat{p}_i(\bm \tau)$ representa la distribución de la trayectoria $\bm\tau$ en la iteración anterior, cuya expresión es análoga a la ecuación \ref{eq:tray_dist}. Esta nueva restricción tiene la intención de limitar los cambios de la distribución de la trayectoria en cada iteración. Esto se hace asumiendo que las las probabilidades de transición $p(\mathbf{x}_{t+1}|\mathbf{u}_t, \mathbf{x}_t)$ son desconocidas y que el método sólo tiene acceso a una estimación de dichas probabilidades a través de un método de inferencia \cite{levine2017}. Esta restricción permite darle más estabilidad a la optimización de trayectorias.
+donde $\epsilon$ es el umbral de divergencia \acrshort{kl} permitido, mientras que $\hat{p}_i(\bm \tau)$ representa la distribución de la trayectoria $\bm\tau$ en la iteración anterior, cuya expresión es análoga a la \eqreftext{eq:tray_dist}. Esta nueva restricción tiene la intención de limitar los cambios de la distribución de la trayectoria en cada iteración. Esto se hace asumiendo que las las probabilidades de transición $p(\mathbf{x}_{t+1}|\mathbf{u}_t, \mathbf{x}_t)$ son desconocidas y que el método sólo tiene acceso a una estimación de dichas probabilidades a través de un método de inferencia \cite{levine2017}. Esta restricción permite darle más estabilidad a la optimización de trayectorias.
 
-A pesar de que en este trabajo por hipótesis si son conocidas las probabilidades de transición, se decidió  preservar esta restricción sobre la distribución de trayectorias. Esto se debe a que esta restricción permite obtener trayectorias más estables y consistentes a la largo de la optimización.
+A pesar de que en este trabajo, por hipótesis, sí son conocidas las probabilidades de transición, se decidió preservar esta restricción sobre la distribución de trayectorias. Esto se debe a que esta restricción permite obtener trayectorias más estables y consistentes a la largo de la optimización.
 
 El problema \ref{local_traj_opt} permite definir el siguiente lagrangiano aumentado, 
 \begin{align}
-    \mathcal{L}_{p_i}(p_i, \eta) = \left(\sum_{t=1}^{T}\mathbb{E}_{p_i(\mathbf{x}_t, \mathbf{u}_t)}[\tilde{c}(\mathbf{x}_t, \mathbf{u}_t)] + \nu_{t}\mathbb{E}_{p_i(\mathbf{x}_t, \mathbf{u}_t)}[\log p_i(\mathbf{u}_t |\mathbf{x}_t)] \right) + \eta  \left(D_{\text{KL}}(p_i(\bm\tau)||\hat{p}_i(\bm\tau))-\epsilon \right),
-    \label{local_traj_opt_aug}
+    \mathcal{L}_{p_i}(p_i, \eta) = \left(\sum_{t=0}^{T-1}\mathbb{E}_{p_i(\mathbf{x}_t, \mathbf{u}_t)}[\tilde{c}(\mathbf{x}_t, \mathbf{u}_t)] + \nu_{t}\mathbb{E}_{p_i(\mathbf{x}_t, \mathbf{u}_t)}[\log p_i(\mathbf{u}_t |\mathbf{x}_t)] \right) + \eta  \left(D_{\text{KL}}(p_i(\bm\tau)||\hat{p}_i(\bm\tau))-\epsilon \right),
+    \label{eq:local_traj_opt_aug}
 \end{align}
-dónde $\eta \in \mathbb{R}^{+}$ representa el mutiplicador de Lagrange asociado a la nueva restricción sobre la distribución de las trayectorias. La expresión \ref{local_traj_opt_aug} depende de dos variables para su optimización ($p_i, \eta$), por lo que requiere usar el método de doble descenso de gradiente.  En este caso la variable primaria corresponde al controlador $p_i$ y la variable dual esta dada por el multiplicador $\eta$.
+donde $\eta \in \mathbb{R}^{+}$ representa al mutiplicador de Lagrange asociado a la nueva restricción sobre la distribución de las trayectorias. La \eqreftext{eq:local_traj_opt_aug} depende de dos variables para su optimización ($p_i, \eta$), por lo que requiere usar el método de descenso por el gradiente dual. En este caso la variable primal corresponde al controlador $p_i$ y la variable dual esta dada por el multiplicador $\eta$.
 
-\subsection{Optimización de la variable primaria}
-Con el fin de usar el lagrangiano \ref{local_traj_opt_aug} para el método \acrshort{ilqr}, expresamos el coeficiente de $\eta$ en términos de cada pareja $(\mathbf{x}_t, \mathbf{u}_t)$. Para ello se realizan las siguientes modificaciones, 
-\begin{align*}
-    D_{\text{KL}}(p_i(\bm \tau)||\hat p_{i}(\bm\tau)) &= \mathbb{E}_{p_{i}(\mathbf{\tau})}[\log p_{i}(\bm\tau) - \log \hat{p}_i(\bm \tau)] \\
-    &= \sum_{t=1}^{T} \mathbb{E}_{p(\mathbf{x}_t, \mathbf{u}_t)}[\log p_{i}(\mathbf{u}_t |\mathbf{x}_t) - \log \hat{p}_i(\mathbf{u}_t | \mathbf{x}_t)].
-\end{align*}
-A partir de estos cambios \ref{local_traj_opt_aug} se puede expresar de la siguiente manera, 
-\begin{align*}
+\subsection{Optimización de la variable primal}
+Con el fin de usar el lagrangiano \eqreftext{eq:local_traj_opt_aug} para el método \acrshort{ilqr}, expresamos el coeficiente de $\eta$ en términos de cada pareja $(\mathbf{x}_t, \mathbf{u}_t)$. Para ello se realizan las siguientes modificaciones, 
+\begin{equation}
+    \begin{aligned}
+        D_{\text{KL}}(p_i(\bm \tau)||\hat p_{i}(\bm\tau)) &= \mathbb{E}_{p_{i}(\mathbf{\tau})}[\log p_{i}(\bm\tau) - \log \hat{p}_i(\bm \tau)] \\
+        &= \sum_{t=0}^{T-1} \mathbb{E}_{p(\mathbf{x}_t, \mathbf{u}_t)}[\log p_{i}(\mathbf{u}_t |\mathbf{x}_t) - \log \hat{p}_i(\mathbf{u}_t | \mathbf{x}_t)].
+    \end{aligned}
+\end{equation}
+A partir de estos cambios la \eqreftext{eq:local_traj_opt_aug} se puede expresar de la siguiente manera, 
+\begin{equation}
     \mathcal{L}_{p_i}(p_i, \eta) = \left(\sum_{t=1}^{T}\mathbb{E}_{p_i(\mathbf{x}_t, \mathbf{u}_t)}\left[\tilde{c}(\mathbf{x}_t, \mathbf{u}_t) - \eta \log\hat{p}_i(\mathbf{u}_t|\mathbf{x})\right]+ (\nu_t + \eta)\mathbb{E}_{p_i(\mathbf{x}_t, \mathbf{u}_t)}[\log p_i(\mathbf{u}_t | \mathbf{x}_t)]\right) - \eta \epsilon.
-\end{align*}
+\end{equation}
 Dividiendo cada sumando de la expresión anterior entre $(\eta + \nu_t)$, se obtiene lo siguiente, 
 \begin{align}
     \mathcal{L}_{p_i}(p_i, \eta) &= \left(\sum_{t=1}^{T} \mathbb{E}_{p_i(\mathbf{x}_t, \mathbf{u}_t)}\left[\ell(\mathbf{x}_t, \mathbf{u}_t)\right] + \mathbb{E}_{p_i(\mathbf{x}_t, \mathbf{u}_t)}[\log p_i(\mathbf{u}_t | \mathbf{x}_t)] \right)  - \epsilon, \label{eq:lagrange_p_eta}\\
-    \text{dónde } & \quad \ell(\mathbf{x}_t, \mathbf{u}_t) =\frac{1}{\eta + \nu_t}\tilde{c}(\mathbf{x}_t, \mathbf{u}_t) - \frac{\eta}{\eta + \nu_t}\log\hat{p}_i(\mathbf{u}_t|\mathbf{x}_t).
+    \text{donde } & \quad \ell(\mathbf{x}_t, \mathbf{u}_t) =\frac{1}{\eta + \nu_t}\tilde{c}(\mathbf{x}_t, \mathbf{u}_t) - \frac{\eta}{\eta + \nu_t}\log\hat{p}_i(\mathbf{u}_t|\mathbf{x}_t).
     \label{eq:cost_eta}
     \end{align}
-Al igual que en la expresión \ref{eq:traj_cost} el costo $\ell$ se puede representar en función de una trayectoria $\bm\tau$. Este cambio permite escribir el problema de optimización de la variable primaria $p_i$ en términos de $\bm\tau$, como se muestra en la siguiente expresión, 
+Al igual que en la \eqreftext{eq:traj_cost} el costo $\ell$ se puede representar en función de una trayectoria $\bm\tau$. Este cambio permite escribir el problema de optimización de la variable primal $p_i$ en términos de $\bm\tau$, como se muestra en la siguiente expresión, 
 \begin{align}
     \min_{p_i(\bm\tau)\in \mathcal{N}(\bm\tau)}
     \mathbb{E}_{p_i(\bm \tau)}[\ell(\bm \tau)] - \mathcal{H}(p_i(\bm\tau)) - \epsilon,
     \label{eq:traj_opt}
 \end{align}
-dónde $\mathcal{H}(p_i(\bm\tau)) =-\mathbb{E}_{p_i(\bm\tau)}[\log p_i(\bm\tau)]$ representa la entropía diferencial de la trayectoria.
+donde $\mathcal{H}(p_i(\bm\tau)) =-\mathbb{E}_{p_i(\bm\tau)}[\log p_i(\bm\tau)]$ representa la entropía diferencial de la trayectoria.
 
-El problema de optimización establecido en la expresión \ref{eq:traj_opt} puede ser resuelto por el método de \acrshort{ilqr} como se mostró en \cite{2014-mfcgps}. En este caso la solución será, 
+El problema de optimización establecido en la \eqreftext{eq:traj_opt} puede ser resuelto por el método de \acrshort{ilqr} como se mostró en \cite{2014-mfcgps}. En este caso la solución será, 
 \begin{align}
 p_i(\mathbf{u}_t|\mathbf{x}_t) = \mathcal{N}\left( \mu_{ti}(\mathbf{x}_t), \mathbf{\Sigma}_{it}\right), \label{linear_gaussian}
 \end{align}
-\begin{align*}
-\text{dónde} \quad 
+\begin{align}
+\text{donde} \quad 
 \mu_{ti}(\mathbf{x}_t) = \hat{\mathbf{u}}_{it} + \alpha \mathbf{k}_{it} +  \mathbf{K}_{it} \left(\mathbf{x}_{t} - \hat{\mathbf{x}}_{it}\right), \quad
 \mathbf{\Sigma}_{it} = \mathbf{Q}_{\mathbf{u, u}_{it}}^{-1}.
-\end{align*}
-La solución \ref{linear_gaussian} es un controlador lineal gaussiano variable en el tiempo.
+\end{align}
+Aquí, $\mathbf{K}_{it}$ y $\mathbf{k}_{it}$ corresponden a las ganancias de control del controlador lineal local en el tiempo $t$ para el controlador $i$, donde $\mathbf{K}_{it}$ es la ganancia de realimentación y $\mathbf{k}_{it}$ es el término aditivo (ver sección \ref{sub_sec:iLQR}). La solución \ref{linear_gaussian} es un controlador lineal gaussiano variable en el tiempo.
 \subsection{Optimización del multiplicador de Lagrange}
-Después de haber obtenido los parámetros óptimos del controlador $p_i$, se actualizará el multiplicador de Lagrange $\eta$. Si se sigue el método clásico de descenso de gradiente dual, la regla de optimización es \cite{michaelrzhang-gps}, 
+Después de haber obtenido los parámetros óptimos del controlador $p_i$, se actualizará el multiplicador de Lagrange $\eta$. Si se sigue el método clásico de descenso por el gradiente dual, la regla de optimización es \cite{michaelrzhang-gps}, 
 \begin{align}
     \eta^{(k+1)} &= \eta^{(k)} + \alpha_{\eta}\frac{d\mathcal{L}_{p_i}}{d\eta},
     \label{eq:DGD_2}
 \end{align}
-dónde $\alpha_{\eta}\in \mathbb{R}$ representa una tasa de actualización. Encontrar el punto fijo de la expresión \ref{eq:DGD_2} es análogo a resolver la siguiente ecuación, 
+donde $\alpha_{\eta}\in \mathbb{R}$ representa una tasa de actualización. Encontrar el punto fijo de la \eqreftext{eq:DGD_2} es análogo\footnote{La analogía proviene de que, en un punto fijo de la \eqreftext{eq:DGD_2}, se cumple $\eta^{(k+1)}=\eta^{(k)}$. Esto implica que $\frac{d\mathcal{L}_{p_i}}{d\eta}=0$. En esta formulación, esa condición equivale a pedir que $D_{\text{KL}}(p_i(\bm\tau)||\hat{p}_i(\bm\tau)) - \epsilon = 0$.} a resolver la siguiente ecuación, 
 \begin{align}
     D_{\text{KL}}(p_i(\bm\tau)||\hat{p}_i(\bm\tau)) - \epsilon = 0, 
     \label{eq:brent_eq}
 \end{align}
 tomando como variable independiente a $\eta$. Para resolver esta ecuación se utiliza el método de Brent, también conocido como método de Wijngaarden-Deker-Brent \cite{Brent1973}. Este método es un algoritmo de búsqueda de raíces que combina búsqueda de raíces por intervalos, bisección e interpolación cuadrática inversa \cite{MathWorldBrentsMethod}. 
 
-Se hace una búsqueda del valor $\eta$, modificando dicho valor sobre la expresión \ref{eq:cost_eta}. Posteriormente, se encuentra la solución $p_i$ y se busca el valor que acerqué a cero en la expresión \ref{eq:brent_eq}. Se ha observado que este método requiere menos iteraciones en el espacio $\log$, es decir, se trata al dual como la función $\rho = \log \eta$. Esta condición tiene el efecto de forzar que $\eta$ siempre sea positiva. Además se puede incrementar $\eta$, de tal forma que permita que la matriz $\mathbf{Q}_{\mathbf{u}, \mathbf{u}_{it}^{-1}}$ se positiva definida en cada paso. \cite{2014-mfcgps}
+Se hace una búsqueda del valor $\eta$, modificando dicho valor sobre la \eqreftext{eq:cost_eta}. Posteriormente, se encuentra la solución $p_i$ y se busca el valor que acerque a cero al lado izquierdo de la \eqreftext{eq:brent_eq}. Se ha observado que este método requiere menos iteraciones en el espacio $\log$, es decir, se trata al dual como la función $\rho = \log \eta$. Esta condición tiene el efecto de forzar que $\eta$ siempre sea positiva. Además se puede incrementar $\eta$, de tal forma que permita que la matriz $\mathbf{Q}_{\mathbf{u}, \mathbf{u}_{it}^{-1}}$ sea positiva definida en cada paso. \cite{2014-mfcgps}
 
 
 \section{Optimización de la política global}
 El objetivo de la optimización de la política global es ajustar $\pi_{\bm\theta}$ de tal forma que la divergencia \acrshort{kl} entre $\pi_{\bm\theta}$ y los controladores $p_i$ y el valor esperado del término lagrangiano $\mathbf{\lambda}_t^{\top}\mathbf{u}_t$ sea el mínimo \cite{Schneider2018}, 
-\begin{align*}
-    \mathcal{L}_{\bm\theta}(\bm\theta, p) &= \sum_{i=1}^{N}\sum_{t=1}^{T}\mathbb{E}_{p_i(\mathbf{x}_t)\pi_{\bm\theta}(\mathbf{u}_t|\mathbf{x}_t)}[\bm{\lambda}_t^{\top}\mathbf{u}_t]  + \nu_t \phi_{t}^{\bm\theta}(\bm\theta, p_i).
-\end{align*}
+\begin{align}
+    \mathcal{L}_{\bm\theta}(\bm\theta, p) &= \sum_{i=1}^{N}\sum_{t=0}^{T-1}\mathbb{E}_{p_i(\mathbf{x}_t)\pi_{\bm\theta}(\mathbf{u}_t|\mathbf{x}_t)}[\bm{\lambda}_t^{\top}\mathbf{u}_t]  + \nu_t \phi_{t}^{\bm\theta}(\bm\theta, p_i).
+\end{align}
 Al igual que los controladores $p_i$ la política global $\pi_{\bm\theta}$ es una distribución normal multivariada. En particular, tiene la siguiente forma,
-\begin{align*}
-    \pi_{\theta}(\mathbf{u}_t|\mathbf{x}_t) &= \mathcal{N}(\mu^{\pi}(\mathbf{x}_t; \bm\theta), \bm\Sigma^{\pi}(\mathbf{x}_t)),  
-\end{align*}
-donde $\mu^{\pi}(\cdot; \bm\theta)$ representa una de control global y esta dada por una \acrshort{ann} completamente conectada y $\bm\Sigma^{\pi}$ representa la matriz de covarianzas.   
+\begin{align}
+    \pi_{\bm{\theta}}(\mathbf{u}_t|\mathbf{x}_t) &= \mathcal{N}(\mu^{\pi}(\mathbf{x}_t; \bm\theta), \bm\Sigma^{\pi}(\mathbf{x}_t)),  
+\end{align}
+donde $\mu^{\pi}(\cdot; \bm\theta)$ corresponde a la ley de control de la política global y se modela mediante una \acrshort{ann} completamente conectada —con el estado como entrada y la acción como salida— mientras que $\bm\Sigma^{\pi}$ denota la matriz de covarianzas.
 
-Ya que la política y los controladores locales son distribuciones normales multivariadas, la expresión $\phi_t^{\bm\theta}$ se puede simplificar. De acuerdo al resultado \ref{KL_normal} y eliminando los términos independientes a la política global
- la función $\phi_{t}^{\bm\theta}$ se expresa como,
-\begin{align*}
+Ya que la política y los controladores locales son distribuciones normales multivariadas, la expresión $\phi_t^{\bm\theta}$ se puede simplificar. De acuerdo con la expresión de la divergencia \acrshort{kl} para distribuciones normales multivariadas del apéndice \ref{KL_normal} y tras eliminar los términos independientes de la política global, la función $\phi_{t}^{\bm\theta}$ se expresa como la ecuación siguiente, 
+ \begin{equation}
+\begin{aligned}
     \phi_t^{\bm{\theta}}(\bm{\theta}, p_i) &= 
     \mathbb{E}_{p_i(\mathbf{x}_t)} \left[ D_{\text{KL}} \left( \pi_{\bm{\theta}}(\mathbf{u}_t|\mathbf{x}_t) \| p_i(\mathbf{u}_t|\mathbf{x}_t) \right) \right] \\
     &= \mathbb{E}_{p_i(\mathbf{x}_t)} \Bigg[ \frac{1}{2} \bigg( \text{tr} \left( \bm{\Sigma}_{ti}^{-1} \bm{\Sigma}^{\pi}(\mathbf{x}_t) \right) - \log \left| \bm{\Sigma}^{\pi}(\mathbf{x}_t) \right| \\
     &\quad + \left( \bm{\mu}^{\pi}(\mathbf{x}_t; \bm{\theta}) - \bm{\mu}_{ti}(\mathbf{x}_t) \right)^{\top} \bm{\Sigma}_{ti}^{-1} \left( \bm{\mu}^{\pi}(\mathbf{x}_t; \bm{\theta}) - \bm{\mu}_{ti}(\mathbf{x}_t) \right) \bigg) \Bigg].
-\end{align*}
+\end{aligned}
+\end{equation}
 Por otro lado, el término asociado al multiplicador de Lagrange $\bm\lambda_t$ es necesario transformarlo de la siguiente manera, 
-\begin{align*}
+\begin{equation}
+    \begin{aligned}
     \mathbb{E}_{p_i(\mathbf{x}_t)\pi_{\theta}(\mathbf{u}_t|\mathbf{x}_t)}\left[\bm\lambda_t^{\top}\mathbf{u}_tp_i(\mathbf{x}_t)\pi_{\bm\theta}(\mathbf{u}_t|\mathbf{x}_t)\right] & = \int_{\mathcal{X}}\int_{\mathcal{U}}\bm\lambda_t^{\top}\mathbf{u}_t d\mathbf{u}d\mathbf{x} \\
     &= \int_{\mathcal{X}} \bm\lambda_t^{\top}\mathbb{E}_{\pi_{\theta}(\mathbf{u}_t|\mathbf{x}_t)}\left[\mathbf{u}_t\right] p_i(\mathbf{x}_t)d\mathbf{x}\\
     &= \mathbb{E}_{p_i(\mathbf{x}_t)}\left[\bm\lambda_t^{\top}\mu^{\pi}(\mathbf{x}_t; \theta)\right].
-\end{align*}
+\end{aligned}
+\end{equation}
 
 Finalmente, las consideraciones anteriores, permiten representar al lagrangiano $\mathcal{L}_{\bm\theta}$ como la función objetivo de un problema de regresión, cuya expresión es,
 \begin{equation}
 \begin{split}
-    \mathcal{L}_{\bm{\theta}}(p, \bm{\theta}) &= \frac{1}{2N}\sum_{i=1}^{N}\sum_{t=1}^{T} \nu_t \mathbb{E}_{p_i(\mathbf{x}_t)} \Bigg[ \\ &\text{tr}\left( \mathbf{C}_{ti}^{-1}\bm{\Sigma}^{\pi}(\mathbf{x}_t)\right) - \log\left|\bm{\Sigma}^{\pi}(\mathbf{x}_t)\right|
+    \mathcal{L}_{\bm{\theta}}(p, \bm{\theta}) &= \frac{1}{2N}\sum_{i=1}^{N}\sum_{t=0}^{T-1} \nu_t \mathbb{E}_{p_i(\mathbf{x}_t)} \Bigg[ \\ &\text{tr}\left( \mathbf{C}_{ti}^{-1}\bm{\Sigma}^{\pi}(\mathbf{x}_t)\right) - \log\left|\bm{\Sigma}^{\pi}(\mathbf{x}_t)\right|
     + \left(\bm{\mu}^{\pi}(\mathbf{x}_t; \bm{\theta}) - \bm{\mu}_{ti}(\mathbf{x}_t) \right)^{\top} \bm{\Sigma}_{ti}^{-1} \left(\bm{\mu}^{\pi}(\mathbf{x}_t; \bm{\theta}) - \bm{\mu}_{ti}(\mathbf{x}_t) \right) \\
      & + \frac{2}{\nu_t} \bm{\lambda}_{t}^{\top}\bm{\mu}^{\pi}(\mathbf{x}_t; \bm{\theta})\\ \Bigg].
 \end{split}
 \label{eq:lagrange_policy}
 \end{equation}
 Para optimizar los argumentos de la política global se asumirá que $\mu^{\pi}$ y $\bm\Sigma^{\pi}$ son independientes entre si.
+
 \subsection{Optimización de la ley de control}
-Para optimizar \ref{eq:lagrange_policy} con respecto a la ley de control $\mu^{\pi}(\cdot; \bm\theta)$, se puede remover todos los términos independientes a dicha función, lo que establece la siguiente regla de actualización para el para el parámetro $\bm\theta$,
+Para optimizar la \eqreftext{eq:lagrange_policy} con respecto a la ley de control $\mu^{\pi}(\cdot; \bm\theta)$, se eliminan los términos independientes de dicha función. Con ello, se obtiene el problema de actualización del parámetro $\bm\theta$, cuyo mínimo se aproxima mediante el método de descenso por el gradiente –véase la sección \ref{sec:gradient_decent} del apéndice– lo que conduce a la siguiente regla de actualización de los parámetros de la \acrshort{ann},
 \begin{equation}
 \begin{split}
     \bm{\theta}^{(k+1)} = \arg \min_{\bm{\theta} \in \Theta} \Bigg\{
-    \frac{1}{2N} \sum_{i=1}^{N} \sum_{t=1}^{T} 
+    \frac{1}{2N} \sum_{i=1}^{N} \sum_{t=0}^{T-1} 
     \mathbb{E}_{p_i(\mathbf{x}_t)} &\Big[
     \\ \nu_t \left( \bm{\mu}^{\pi}(\mathbf{x}_t; \bm{\theta}) - \bm{\mu}_{ti}(\mathbf{x}_t) \right)^{\top} &\bm{\Sigma}_{ti}^{-1} \left( \bm{\mu}^{\pi}(\mathbf{x}_t; \bm{\theta}) - \bm{\mu}_{ti}(\mathbf{x}_t) \right)
      + 2 \bm{\lambda}_{t}^{\top} \bm{\mu}^{\pi}(\mathbf{x}_t; \bm{\theta})
@@ -296,23 +320,23 @@ Para optimizar \ref{eq:lagrange_policy} con respecto a la ley de control $\mu^{\
 
 \subsection{Optimización de la covarianza de la política}
 Para optimizar la covarianza de la política global se eliminarán los elementos que no dependen de $\bm\Sigma^{\pi}$. En consecuencia el objetivo de la optimización se convierte en,
-\begin{align*}
-    \bm\Sigma^{\pi (k+1)} &= \argmin_{\bm\Sigma^{\pi}} \left(\frac{1}{2N}\sum_{i=1}^{N}\sum_{t=1}^{T} \nu_t \mathbb{E}_{p_i(\mathbf{x}_t)}\left[ \text{tr}\left(\mathbf{C}_{ti}^{-1}\bm\Sigma^{\pi}(\mathbf{x}_t)\right) -\log\left| \bm\Sigma^{\pi}(\mathbf{x}_t)\right|
+\begin{align}
+    \bm\Sigma^{\pi (k+1)} &= \argmin_{\bm\Sigma^{\pi}} \left(\frac{1}{2N}\sum_{i=1}^{N}\sum_{t=0}^{T-1} \nu_t \mathbb{E}_{p_i(\mathbf{x}_t)}\left[ \text{tr}\left(\mathbf{C}_{ti}^{-1}\bm\Sigma^{\pi}(\mathbf{x}_t)\right) -\log\left| \bm\Sigma^{\pi}(\mathbf{x}_t)\right|
     \right]\right).
-\end{align*}
-Además, en este trabajo al igual que en \cite{Deep_Visuomotor_Policies } se asume que la matriz de covarianzas no depende de los estados, lo que simplifica el objetivo en la siguiente expresión, 
-\begin{align*}
-    \bm\Sigma^{\pi (k+1)} &= \argmin_{\bm\Sigma^{\pi}} \left(\frac{1}{2N}\sum_{i=1}^{N}\sum_{t=1}^{T} \nu_t \left[ \text{tr}\left(\mathbf{C}_{ti}^{-1}\bm\Sigma^{\pi}\right)-\log\left| \bm\Sigma^{\pi}\right|
+\end{align}
+Además, en este trabajo al igual que en \cite{Deep_Visuomotor_Policies} se asume que la matriz de covarianzas no depende de los estados, lo que simplifica el objetivo en la siguiente expresión, 
+\begin{align}
+    \bm\Sigma^{\pi (k+1)} &= \argmin_{\bm\Sigma^{\pi}} \left(\frac{1}{2N}\sum_{i=1}^{N}\sum_{t=0}^{T-1} \nu_t \left[ \text{tr}\left(\mathbf{C}_{ti}^{-1}\bm\Sigma^{\pi}\right)-\log\left| \bm\Sigma^{\pi}\right|
     \right]\right).
-\end{align*}
+\end{align}
 Sin más complicaciones, se puede obtener el argumento mínimo por medio de la derivada. Diferenciando e igualando a 0, se obtiene la siguiente ecuación, 
-\begin{align*}
-    0 &= \frac{1}{2N}\sum_{i=1}^{N}\sum_{t=1}^{T}
+\begin{align}
+    0 &= \frac{1}{2N}\sum_{i=1}^{N}\sum_{t=0}^{T-1}
     \nu_t\left(\mathbf{C}_{t,i}^{-1} - \left(\bm\Sigma^{\pi}\right)^{-1}\right),
-\end{align*}
+\end{align}
 cuya solución esta dada por, 
 \begin{align}
-    \bm\Sigma^{\pi} &= \left(\sum_{i=1}^{N}\sum_{t=1}^{T}\nu_t\right)
+    \bm\Sigma^{\pi} &= \left(\sum_{i=1}^{N}\sum_{t=0}^{T-1}\nu_t\right)
     \left(
     \sum_{i=1}^{N}\sum_{t=1}^{T} \nu_t \mathbf{C}_{t,i}^{-1}
     \right)^{-1}.
@@ -320,36 +344,45 @@ cuya solución esta dada por,
 \end{align}
 
 \section{Algoritmo}
-En esta sección se explicará el procedimiento detallado de como usar el método de búsqueda guiada de política. Antes de la optimización es necesario definir aleatoriamente los parámetros $\bm\theta$ de la ley de control $\mu^{\pi}$ y establecer una matriz $\bm\Sigma^{\pi}$ positiva definida inicial. Así como obtener $N$ trayectorias iniciales de estados y acciones $\hat{\bm\tau}_i$. Posteriormente, inicia el ciclo de entrenamiento.
+En esta sección se explicará el procedimiento detallado de cómo usar el método de búsqueda guiada de política. Antes de la optimización es necesario definir aleatoriamente los parámetros $\bm\theta$ de la ley de control $\mu^{\pi}$ y establecer una matriz $\bm\Sigma^{\pi}$ positiva definida inicial. Así como obtener $N$ trayectorias iniciales de estados y acciones $\hat{\bm\tau}_i$. Posteriormente, inicia el ciclo de entrenamiento.
 
-En primer lugar se obtienen los $N$ controladores lineales $p_i$ por medio del método \acrshort{ilqr}, utilizando la función de costos definida en la expresión \ref{eq:cost_eta}. Posteriormente, se incrementa el multiplicador de Lagrange $\eta$ resolviendo la ecuación \ref{eq:brent_eq} utilizando el método de Brent.
+En primer lugar se obtienen los $N$ controladores lineales $p_i$ por medio del método \acrshort{ilqr}, utilizando la función de costos definida en la \eqreftext{eq:cost_eta}. Posteriormente, se incrementa el multiplicador de Lagrange $\eta$ resolviendo la \eqreftext{eq:brent_eq} utilizando el método de Brent.
 
-Luego de esto, se procede a muestrear $M$ trayectorias $\bm\tau_{i}^{(j)}$ para cada controlador $p_{i}(\bm\tau)$. Estas trayectorias serán empleadas en la optimización de la política global. En el contexto de la optimización de $\mu^{\pi}(\cdot; \bm\theta)$, se calcula el lagrangiano de la regla de actualización en el paso $k+1$ \ref{eq:policy_theta} mediante la siguiente expresión, 
+Luego de esto, se muestrean $M$ trayectorias $\bm\tau_{i}^{(j)}$ para cada controlador $p_{i}(\bm\tau)$. Este muestreo es necesario para optimizar la política global, ya que permite aproximar los valores esperados de la \eqreftext{eq:policy_theta} mediante promedios muestrales de los valores observados en dichas trayectorias. En consecuencia, el lagrangiano de la regla de actualización en el paso $k+1$ se estima como sigue, 
 \begin{align}
-    \frac{1}{2NM} \sum_{i=1}^{N}\sum_{t=1}^{T}\sum_{j=1}^{M} 
+    \frac{1}{2NM} \sum_{i=1}^{N}\sum_{t=0}^{T-1}\sum_{j=1}^{M} 
     \nu_t \left(\mathbf{u}_t^{\pi (j)} - \mathbf{u}_{ti}^{(j)}\right)^{\top} \bm\Sigma_{ti}^{-1}  \left(\mathbf{u}_t^{\pi (j)} - \mathbf{u}_{ti}^{(j)}\right) + 2 \bm\lambda_t^{\top}\mathbf{u}_t^{\pi(j)},
     \label{eq:policy_theta_sim}
 \end{align}
-dónde, 
-\begin{align*}
-    \mathbf{u}_{t}^{\pi (j)} = \mu\left(\mathbf{x}_{ti}^{(j)}; \bm\theta^{(k)}\right),  \quad \bm\tau_{i}^{(j)} = \left\{\left(\mathbf{x}_{ti}^{(j)}, \mathbf{u}_{ti}^{(j)}\right): t\in \{1, \cdots, T\} \right\} \quad j \in \{1, \cdots, M\}.
-\end{align*}
-Mientras que la matrices $\bm\Sigma^{\pi}$ se actualiza por medio de la expresión \ref{eq:policy_sigma}.
+donde, 
+\begin{align}
+    \mathbf{u}_{t}^{\pi (j)} = \mu\left(\mathbf{x}_{ti}^{(j)}; \bm\theta^{(k)}\right),  \quad \bm\tau_{i}^{(j)} = \left\{\left(\mathbf{x}_{ti}^{(j)}, \mathbf{u}_{ti}^{(j)}\right): t\in \{0, \cdots, T-1\} \right\}, \quad j \in \{1, \cdots, M\}.
+\end{align}
+Mientras que la matriz $\bm\Sigma^{\pi}$ se actualiza por medio de la \eqreftext{eq:policy_sigma}. El algoritmo \ref{alg:gps} resume el método descrito en este capítulo~\ref{chapter:model_based}.
 
 \begin{algorithm}[H]
-    \caption{\textit{Guided Policy Search} (Zhang et al., \cite{zhang2016}) }
-   % \KwData{política: $\pi$}
-   \label{alg:gps}
-   \KwResult{Política parametrizada optimizada $\pi_{\bm\theta}$ y controladores locales $p_{i}$}
-    Inicializar aleatoriamente parámetros de política $\pi_{\bm\theta}$. \\
-    \For{cada iteración $k \in \{1, \cdots, K\}$}{
-        Optimizar las $N$ distribuciones de trayectoria 
-        $p_{i}(\bm\tau)$ para minimizar $\mathbb{E}_{p_i}[\ell(\bm\tau)]$ usando el algoritmo \acrshort{ilqr} \ref{alg:ilqr}. \\
-        Por cada controlador $p_i$ optimizar la expresión $\mathcal{L}_{p_i}(\cdot, \eta)$ \ref{local_traj_opt_aug} con respecto a la variable dual utilizando $\log(\eta)$ con el algoritmo de Brent \cite{Brent1973}. \\
-        Generar muestras de trayectorias $\bm\tau_i^{(j)} \sim p_i(\bm\tau)$ $\forall j \in \{1, \cdots, M\}$. \\
-        Ajustar la política no lineal $\pi_{\bm\theta}(\mathbf{u}_t|\mathbf{x}_t)$ para coincidir con las trayectorias $\left\{\bm\tau_i^{(j)}\right\}_{j=1}^{M}$ utilizando las expresiones 
-         \ref{eq:policy_theta} y \ref{eq:policy_sigma}. \\
-        Actualizar los multiplicadores de Lagrange $\nu_t$ para cada $t \in \{1, \cdots, T\}$. Para fomentar la coincidencia entre $p_i(\mathbf{u}_t|\mathbf{x}_t)$ y $\pi_{\bm\theta}(\mathbf{u}_t|\mathbf{x}_t)$.
-    }\end{algorithm}
-
-
+    \caption{\textit{Guided Policy Search} (Zhang et al., \cite{zhang2016})}
+    \label{alg:gps}
+    \KwData{$K,N,M,T \in \mathbb{N}$, $\alpha_{\bm\lambda} \in \mathbb{R}_{+}$.}
+    \KwResult{Política global $\pi_{\bm\theta}:\mathbb{R}^{n_x}\to\mathbb{R}^{n_u}$, covarianza $\bm\Sigma^{\pi} \in \mathbb{R}^{n_u\times n_u}$, controladores $p_i(\mathbf{u}_t|\mathbf{x}_t)$, $\forall i \in \{1,\cdots,N\}$.}
+    Inicializar aleatoriamente los parámetros de la política global $\bm\theta^{(0)} \in \Theta$.\\
+    Inicializar los multiplicadores $\{\bm\lambda_t^{(0)} \in \mathbb{R}^{n_u}\}_{t=1}^{T}$ y $\{\nu_t^{(0)} \in \mathbb{R}_{+}\}_{t=1}^{T}$.\\
+    \For{cada iteración $k \in \{0,\cdots,K-1\}$}{
+        Actualizar los controladores locales resolviendo
+        $$p_i^{(k+1)} = \argmin_{p_i \in \mathcal{P}}\,\mathbb{E}_{p_i}[\ell(\bm\tau)], \quad \forall i \in \{1,\cdots,N\},$$
+        usando \acrshort{ilqr} (algoritmo \ref{alg:ilqr}).\\
+        Actualizar la variable dual de cada controlador:
+        $$\log(\eta_i^{(k+1)}) = \argmin_{\log(\eta)\in\mathbb{R}}\,\mathcal{L}_{p_i}\left(p_i^{(k+1)},\eta\right),\quad \forall i,$$
+        según la \eqreftext{eq:local_traj_opt_aug}.\\
+        Generar muestras de trayectorias $\bm\tau_i^{(j,k+1)} \sim p_i^{(k+1)}(\bm\tau)$ para $j \in \{1,\cdots,M\}$ y $\bm\tau_i^{(j,k+1)} \in (\mathbb{R}^{n_x}\times\mathbb{R}^{n_u})^T$.\\
+        Actualizar los parámetros de la política global,
+        $$\bm\theta^{(k+1)} = \argmin_{\bm\theta \in \Theta}\,\mathcal{L}_{\bm\theta}\left(\{\bm\tau_i^{(j,k+1)}\},\bm\theta\right),$$
+        usando la \eqreftext{eq:policy_theta}.\\
+        Actualizar la covarianza de la política,
+        $$\bm\Sigma^{\pi (k+1)} = \left(\sum_{i=1}^{N}\sum_{t=1}^{T}\nu_t^{(k)}\right)\left(\sum_{i=1}^{N}\sum_{t=0}^{T-1}\nu_t^{(k)}\mathbf{C}_{t,i}^{-1}\right)^{-1},\quad \bm\Sigma^{\pi (k+1)} \in \mathbb{R}^{n_u\times n_u}.$$
+        Actualizar los multiplicadores de Lagrange,
+        $$\bm\lambda_t^{(k+1)} = \bm\lambda_t^{(k)} + \alpha_{\bm\lambda}\left(\frac{1}{NM}\sum_{i=1}^{N}\sum_{j=1}^{M}(\mathbf{u}_{ti}^{(j,k+1)}-\mathbf{u}_{t}^{\pi(j,k+1)})\right),\quad \bm\lambda_t^{(k+1)} \in \mathbb{R}^{n_u},\; \forall t.$$\\
+        Actualizar $\nu_t \in \mathbb{R}_{+}$ con base en la divergencia
+        $D_{\mathrm{KL}}\left(p_i^{(k+1)}(\mathbf{u}_t|\mathbf{x}_t)\Vert\pi_{\bm\theta^{(k+1)}}(\mathbf{u}_t|\mathbf{x}_t)\right)$ para cada $t \in \{1,\cdots,T\}$.\\
+    }
+\end{algorithm}

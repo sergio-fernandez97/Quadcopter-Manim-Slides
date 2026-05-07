@@ -1,0 +1,265 @@
+\documentclass[10pt, letterpaper]{article}
+
+% Packages:
+\usepackage[
+    ignoreheadfoot,
+    top=0.5 cm,
+    bottom=0.5 cm,
+    left=1.0 cm,
+    right=1.0 cm,
+    footskip=1.0 cm,
+]{geometry}
+\usepackage[explicit]{titlesec}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage[dvipsnames]{xcolor}
+\definecolor{primaryColor}{HTML}{5B97A4}
+\usepackage{enumitem}
+\usepackage{fontawesome5}
+\usepackage{amsmath}
+\usepackage[
+    pdftitle={Sergio Miguel Fernandez Martinez - CV},
+    pdfauthor={Sergio Miguel Fernandez Martinez},
+    pdfcreator={LaTeX},
+    colorlinks=true,
+    urlcolor=primaryColor
+]{hyperref}
+\usepackage[pscoord]{eso-pic}
+\usepackage{calc}
+\usepackage{bookmark}
+\usepackage{lastpage}
+\usepackage{changepage}
+\usepackage{paracol}
+\usepackage{ifthen}
+\usepackage{needspace}
+\usepackage{iftex}
+\usepackage{etoolbox}
+
+% Ensure generated PDF is machine-readable/ATS parsable:
+\ifPDFTeX
+    \input{glyphtounicode}
+    \pdfgentounicode=1
+    \usepackage[T1]{fontenc}
+    \usepackage[utf8]{inputenc}
+    \usepackage{lmodern}
+\fi
+
+\usepackage[default, type1]{sourcesanspro}
+
+% Some settings:
+\AtBeginEnvironment{adjustwidth}{\partopsep0pt}
+\pagestyle{empty}
+\setcounter{secnumdepth}{0}
+\setlength{\parindent}{0pt}
+\setlength{\topskip}{0pt}
+\setlength{\columnsep}{0.15cm}
+\makeatletter
+\let\ps@customFooterStyle\ps@plain
+\patchcmd{\ps@customFooterStyle}{\thepage}{
+    \color{gray}\textit{\small Sergio Miguel Fernandez Martinez - Page \thepage{} of \pageref*{LastPage}}
+}{}{}
+\makeatother
+% \pagestyle{customFooterStyle}
+
+\titleformat{\section}{
+    \needspace{4\baselineskip}
+    \Large\color{primaryColor}
+}{
+}{
+}{
+    \textbf{#1}\hspace{0.15cm}\titlerule[0.8pt]\hspace{-0.1cm}
+}[]
+
+\titlespacing{\section}{
+    -1pt
+}{
+    0.3 cm
+}{
+    0.2 cm
+}
+
+\newenvironment{highlights}{
+    \begin{itemize}[
+        topsep=0.10 cm,
+        parsep=0.10 cm,
+        partopsep=0pt,
+        itemsep=0pt,
+        leftmargin=0.4 cm + 10pt
+    ]
+}{
+    \end{itemize}
+}
+
+\newenvironment{onecolentry}{
+    \begin{adjustwidth}{
+        0.2 cm + 0.00001 cm
+    }{
+        0.2 cm + 0.00001 cm
+    }
+}{
+    \end{adjustwidth}
+}
+
+\newenvironment{header}{
+    \setlength{\topsep}{0pt}\par\kern\topsep\centering\color{primaryColor}\linespread{1.2}
+}{
+    \par\kern\topsep
+}
+
+\let\hrefWithoutArrow\href
+\renewcommand{\href}[2]{\hrefWithoutArrow{#1}{\ifthenelse{\equal{#2}{}}{ }{#2 }\raisebox{.15ex}{\footnotesize \faExternalLink*}}}
+
+\begin{document}
+
+\begin{header}
+    \fontsize{20 pt}{20 pt}
+    \textbf{Sergio Miguel Fernández Martínez}
+
+    \vspace{0.25 cm}
+
+    \normalsize
+    \mbox{{\footnotesize\faMapMarker*}\hspace*{0.13cm}Mexico City}
+    \hspace{0.20 cm}
+    \mbox{{\footnotesize Open to relocation}}
+    \hspace{0.20 cm}
+    \mbox{\hrefWithoutArrow{mailto:sfernandezm97@gmail.com}{{\footnotesize\faEnvelope[regular]}\hspace*{0.13cm}sfernandezm97@gmail.com}}
+    \hspace{0.20 cm}
+    \mbox{\hrefWithoutArrow{tel:+525540319972}{{\footnotesize\faPhone*}\hspace*{0.13cm}+52 55 40 31 99 72}}
+    \hspace{0.20 cm}
+    \mbox{\hrefWithoutArrow{https://www.linkedin.com/in/sergfer97/}{{\footnotesize\faLinkedinIn}\hspace*{0.13cm}linkedin.com/in/sergfer97}}
+    \hspace{0.20 cm}
+    \mbox{\hrefWithoutArrow{https://github.com/sergfer26}{{\footnotesize\faGithub}\hspace*{0.13cm}github.com/sergfer26}}
+\end{header}
+
+\vspace{0.3 cm}
+
+\begin{onecolentry}
+\textbf{Machine Learning Engineer} specializing in \textbf{Deep Reinforcement Learning} and AI-driven decision systems with a background in \textbf{Applied Mathematics}. Experience developing both \textbf{model-free} and \textbf{model-based} reinforcement learning policies, simulation environments, and production AI systems using \textbf{Python} and \textbf{PyTorch}. Strong foundations in \textbf{optimization}, \textbf{numerical methods}, and \textbf{dynamic systems}.
+\end{onecolentry}
+
+\section{Skills}
+
+\begin{onecolentry}
+\textbf{Reinforcement Learning}: Q-learning, DDPG, PPO, DQN, SAC, Guided Policy Search, policy optimization, reward shaping, simulation environments.
+\end{onecolentry}
+
+\vspace{0.05 cm}
+
+\begin{onecolentry}
+\textbf{Machine Learning \& Deep Learning}: neural networks, transformers, computer vision, supervised and unsupervised learning.
+\end{onecolentry}
+
+\vspace{0.05 cm}
+
+\begin{onecolentry}
+\textbf{Applied Mathematics}: optimization, stochastic simulation, numerical methods, dynamic systems, optimal control.
+\end{onecolentry}
+
+\vspace{0.05 cm}
+
+\begin{onecolentry}
+\textbf{Programming}: Python (PyTorch, NumPy, SciPy, Scikit-learn, Pandas), OpenAI Gym.
+\end{onecolentry}
+
+\vspace{0.05 cm}
+
+\begin{onecolentry}
+\textbf{AI Systems}: MLflow, Docker, FastAPI, Linux, GitHub Actions.
+\end{onecolentry}
+
+\vspace{0.05 cm}
+
+\begin{onecolentry}
+\textbf{Databases}: PostgreSQL, MongoDB, pgvector.
+\end{onecolentry}
+
+\section{Experience}
+\begin{onecolentry}
+\textbf{AI Engineer} \hfill \textit{Enroute Systems} \\
+\textit{Nov 2025 -- Present}
+\begin{highlights}
+    \item Trained software and QA teams to adopt \textbf{Codex} and \textbf{Claude Code}, covering \textbf{MCP servers} (Docker MCP Toolkit), agent skills, subagent orchestration, and \textbf{GitHub Actions CI/CD} integration.
+    \item Developed a machine learning system for automated troubleshooting classification using semantic \textbf{embeddings} and \textbf{recurrent neural networks}/\textbf{transformers} in \textbf{PyTorch}. Applied SMOTE-based data augmentation to improve class balance during training.
+    \item Led AI adoption and technical strategy across engineering teams.
+\end{highlights}
+\end{onecolentry}
+
+
+\begin{onecolentry}
+\textbf{Machine Learning Engineer, R \& D} \hfill \textit{Kosmos Soluciones Digitales} \\
+\textit{Sep 2023 -- Nov 2025}
+\begin{highlights}
+    \item Led the development of a modular \textbf{AI agent} platform using \textbf{LangGraph}, combining \textbf{LangChain/vLLM} workflows, persistent memory with LangMem + \textbf{pgvector}, \textbf{MLflow} monitoring, prompt-injection safeguards with LLM-Guard, and a Telegram interface with \textbf{RabbitMQ} and OCR document handling; deployed the service with \textbf{Docker}.
+    \item Designed and built an \textbf{AI-powered call center} pipeline using TTS, Whisper-based STT, and LLM prompt engineering with latency optimizations.
+    \item \textbf{Fine-tuned LLMs} for code generation using \textbf{QLoRA} and designed validation unit tests with \textbf{Python}.
+    \item Designed a \textbf{structured document classification system} using OCR bounding boxes and the \textbf{Hungarian algorithm} to improve text/QR assignment.
+    \item \textbf{Fine-tuned a YOLO} model for high-accuracy CAPTCHA solving.
+    \item Set up OCI cloud instances for training and deployed containerized RESTful APIs with \textbf{Docker Compose}.
+\end{highlights}
+\end{onecolentry}
+
+\vspace{0.15 cm}
+
+\begin{onecolentry}
+\textbf{Data Scientist} \hfill \textit{Micromedición SACMEX-UNAM} \\
+\textit{Sep 2021 -- Nov 2022}
+\begin{highlights}
+    \item Integrated databases, conducted exploratory data analysis, and applied classical regression, \textbf{Gaussian Process}, \textbf{Gaussian Mixture Models}, and \textbf{Bayesian regression} models to estimate per-capita water consumption in Mexico City.
+\end{highlights}
+\end{onecolentry}
+
+\vspace{0.15 cm}
+
+\begin{onecolentry}
+\textbf{Assistant Professor} \hfill \textit{Facultad de Ciencias, UNAM} \\
+\textit{Mar 2021 -- Feb 2022}
+\begin{highlights}
+    \item Taught and supported coursework in Programming, Numerical Analysis and Deep Learning, covering \textbf{convolutional}, recurrent, and \textbf{autoencoder} networks for image classification, semi-supervised clustering, and \textbf{Natural Language Processing} tasks.
+\end{highlights}
+\end{onecolentry}
+
+\section{Education}
+
+\begin{onecolentry}
+\textbf{Bachelor of Science in Applied Mathematics} \hfill \textit{Aug 2016 -- Jun 2020} \\
+\textit{Facultad de Ciencias, Universidad Nacional Autónoma de México (UNAM), Mexico City}
+\begin{highlights}
+    \item Bachelor's thesis on \textbf{quadcopter flight control} using both \textbf{model-free} and \textbf{model-based reinforcement learning}. Implemented \textbf{Deep Deterministic Policy Gradient (DDPG)}, \textbf{Guided Policy Search}, and \textbf{iLQR} to learn stabilization policies for nonlinear dynamical systems.
+\end{highlights}
+\end{onecolentry}
+
+\section{Projects}
+
+\begin{onecolentry}
+\textbf{Participant, 4th International Autonomous Greenhouse Challenge} \hfill \textit{Apr 2024 -- Jun 2024} \\
+\textit{Wageningen University \& Research}
+\begin{highlights}
+    \item Developed \textbf{deep reinforcement learning policies} to optimize greenhouse climate control for dwarf tomato production, modeling crop growth and environmental dynamics.
+    \item Applied \textbf{Computer Vision} techniques for pest detection.
+\end{highlights}
+\end{onecolentry}
+
+\vspace{0.15 cm}
+
+\begin{onecolentry}
+\textbf{Research Support in Mathematical Modeling and Simulation} \hfill \textit{Sep 2020 -- Feb 2021} \\
+\textit{Instituto de Matemáticas (IMATE) UNAM (Social service 2020-12/118-4154)}
+\begin{highlights}
+    \item Applied \textbf{reinforcement learning} and \textbf{mathematical modeling} to optimize cucumber production in a simulated greenhouse environment, including reward shaping and environment design based on statistical crop growth models.
+\end{highlights}
+\end{onecolentry}
+
+
+
+\section{Research Interests}
+
+\begin{onecolentry}
+Robotics \hspace{0.25cm} World Models \hspace{0.25cm} Physics-Informed Rewards \hspace{0.25cm} Physics-based Deep Learning \hspace{0.25cm} Vision-Language-Action Models \hspace{0.25cm} Model-based RL \hspace{0.25cm} Inverse RL \hspace{0.25cm} Reinforcement Learning from Human Feedback \hspace{0.25cm} Multi-Agent RL
+\end{onecolentry}
+
+\section{Languages}
+
+\begin{onecolentry}
+\textbf{Spanish:} Native \hspace{0.4cm} \textbf{English:} +B2 \hspace{0.4cm} \textbf{Russian:} B1 \end{onecolentry}
+
+\end{document}

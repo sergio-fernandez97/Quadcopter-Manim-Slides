@@ -14,539 +14,272 @@
 
 \expandafter\btxselectlanguage\expandafter {\btxfallbacklanguage}
 \bibitem {berkeley2017deeprl}
-\btxnamefont {\btxlastnamefont {Abbeel}, Pieter} \btxandlong {}\ \btxnamefont
-  {Sergey \btxlastnamefont {Levine}}\btxauthorcolon\ \btxtitlefont
-  {\btxifchangecase {Cs 294-112: Deep reinforcement learning}{CS 294-112: Deep
-  Reinforcement Learning}}.
+\btxnamefont {\btxlastnamefont {Abbeel}, Pieter} \btxandlong {}\ \btxnamefont {Sergey \btxlastnamefont {Levine}}\btxauthorcolon\ \btxtitlefont {\btxifchangecase {Cs 294-112: Deep reinforcement learning}{CS 294-112: Deep Reinforcement Learning}}.
 \newblock University of California, Berkeley, 2017.
-\newblock {\latintext
-  \btxurlfont{http://rail.eecs.berkeley.edu/deeprlcourse-fa17/index.html}},
-  Accessed: 25/11/22.
+\newblock {\latintext \btxurlfont{http://rail.eecs.berkeley.edu/deeprlcourse-fa17/index.html}}, Accessed: 25/11/22.
 
 \bibitem {ilqr2019}
-\btxnamefont {\btxlastnamefont {Al-Wohoush}, Anass} \btxandlong {}\
-  \btxnamefont {Adam \btxlastnamefont {Gleave}}\btxauthorcolon\ \btxtitlefont
-  {\btxifchangecase {Iterative linear quadratic regulator}{Iterative Linear
-  Quadratic Regulator}}.
+\btxnamefont {\btxlastnamefont {Al-Wohoush}, Anass} \btxandlong {}\ \btxnamefont {Adam \btxlastnamefont {Gleave}}\btxauthorcolon\ \btxtitlefont {\btxifchangecase {Iterative linear quadratic regulator}{Iterative Linear Quadratic Regulator}}.
 \newblock \url{https://github.com/anassinator/ilqr}, 2019.
 
 \bibitem {baeldung2023RL}
-\btxnamefont {\btxlastnamefont {Baeldung}, C.}\btxauthorcolon\ \btxjtitlefont
-  {\btxifchangecase {Reinforcement learning with neural network}{Reinforcement
-  Learning with Neural Network}}.
+\btxnamefont {\btxlastnamefont {Baeldung}, C.}\btxauthorcolon\ \btxjtitlefont {\btxifchangecase {Reinforcement learning with neural network}{Reinforcement Learning with Neural Network}}.
 \newblock 2023.
-\newblock {\latintext
-  \btxurlfont{https://www.baeldung.com/cs/reinforcement-learning-neural-network}}.
+\newblock {\latintext \btxurlfont{https://www.baeldung.com/cs/reinforcement-learning-neural-network}}.
 
 \bibitem {Bishop2006}
-\btxnamefont {\btxlastnamefont {Bishop}, Christopher\btxfnamespacelong
-  M.}\btxauthorcolon\ \btxtitlefont {Pattern Recognition and Machine Learning}.
+\btxnamefont {\btxlastnamefont {Bishop}, Christopher\btxfnamespacelong M.}\btxauthorcolon\ \btxtitlefont {Pattern Recognition and Machine Learning}.
 \newblock \btxpublisherfont {Springer}, 2006.
 
 \bibitem {Brent1973}
-\btxnamefont {\btxlastnamefont {Brent}, R.\btxfnamespacelong
-  P.}\btxauthorcolon\ \btxtitlefont {Algorithms for Minimization Without
-  Derivatives}.
+\btxnamefont {\btxlastnamefont {Brent}, R.\btxfnamespacelong P.}\btxauthorcolon\ \btxtitlefont {Algorithms for Minimization Without Derivatives}.
 \newblock \btxpublisherfont {Prentice-Hall}, Englewood Cliffs, NJ, 1973.
 
 \bibitem {Busoniu2018}
-\btxnamefont {\btxlastnamefont {Buşoniu}, L.}, \btxnamefont {T.
-  de~\btxlastnamefont {Bruin}}, \btxnamefont {D. \btxlastnamefont {Tolić}},
-  \btxnamefont {J. \btxlastnamefont {Kober}}\btxandcomma {} \btxandlong {}\
-  \btxnamefont {I. \btxlastnamefont {Palunko}}\btxauthorcolon\ \btxjtitlefont
-  {\btxifchangecase {Reinforcement learning for control: Performance,
-  stability, and deep approximators}{Reinforcement learning for control:
-  Performance, stability, and deep approximators}}.
+\btxnamefont {\btxlastnamefont {Buşoniu}, L.}, \btxnamefont {T. de~\btxlastnamefont {Bruin}}, \btxnamefont {D. \btxlastnamefont {Tolić}}, \btxnamefont {J. \btxlastnamefont {Kober}}\btxandcomma {} \btxandlong {}\ \btxnamefont {I. \btxlastnamefont {Palunko}}\btxauthorcolon\ \btxjtitlefont {\btxifchangecase {Reinforcement learning for control: Performance, stability, and deep approximators}{Reinforcement learning for control: Performance, stability, and deep approximators}}.
 \newblock \btxjournalfont {Annual Reviews in Control}, 46:8--28, 2018.
 
 \bibitem {capella2020clase}
-\btxnamefont {\btxlastnamefont {Capella~Kort}, Antonio}\btxauthorcolon\
-  \btxtitlefont {\btxifchangecase {Clase: Modelo matemático de un
-  cuadricóptero}{Clase: Modelo matemático de un cuadricóptero}}.
+\btxnamefont {\btxlastnamefont {Capella~Kort}, Antonio}\btxauthorcolon\ \btxtitlefont {\btxifchangecase {Clase: Modelo matemático de un cuadricóptero}{Clase: Modelo matemático de un cuadricóptero}}.
 \newblock Clase de licenciatura, Instituto de Matemáticas, UNAM, 2020.
 \newblock Asignatura: Proyectos II.
 
 \bibitem {mml-book2020}
-\btxnamefont {\btxlastnamefont {Deisenroth}, Marc\btxfnamespacelong P.},
-  \btxnamefont {A.\btxfnamespacelong Aldo \btxlastnamefont
-  {Faisal}}\btxandcomma {} \btxandlong {}\ \btxnamefont
-  {Cheng\btxfnamespacelong Soon \btxlastnamefont {Ong}}\btxauthorcolon\
-  \btxtitlefont {Mathematics for Machine Learning}.
+\btxnamefont {\btxlastnamefont {Deisenroth}, Marc\btxfnamespacelong P.}, \btxnamefont {A.\btxfnamespacelong Aldo \btxlastnamefont {Faisal}}\btxandcomma {} \btxandlong {}\ \btxnamefont {Cheng\btxfnamespacelong Soon \btxlastnamefont {Ong}}\btxauthorcolon\ \btxtitlefont {Mathematics for Machine Learning}.
 \newblock \btxpublisherfont {Cambridge University Press}, 2020.
-\newblock {\latintext
-  \btxurlfont{https://mml-book.github.io/book/mml-book.pdf}}.
+\newblock {\latintext \btxurlfont{https://mml-book.github.io/book/mml-book.pdf}}.
 
 \bibitem {Du_2021}
-\btxnamefont {\btxlastnamefont {Du}, Jinyu}, \btxnamefont {Jian
-  \btxlastnamefont {Fu}}\btxandcomma {} \btxandlong {}\ \btxnamefont {Cong
-  \btxlastnamefont {Li}}\btxauthorcolon\ \btxjtitlefont {\btxifchangecase
-  {Guided policy search methods: A review}{Guided Policy Search Methods: A
-  Review}}.
-\newblock \btxjournalfont {Journal of Physics: Conference Series},
-  1748(2):022039, \btxprintmonthyear{.}{jan}{2021}{long}.
-\newblock {\latintext
-  \btxurlfont{https://dx.doi.org/10.1088/1742-6596/1748/2/022039}}.
+\btxnamefont {\btxlastnamefont {Du}, Jinyu}, \btxnamefont {Jian \btxlastnamefont {Fu}}\btxandcomma {} \btxandlong {}\ \btxnamefont {Cong \btxlastnamefont {Li}}\btxauthorcolon\ \btxjtitlefont {\btxifchangecase {Guided policy search methods: A review}{Guided Policy Search Methods: A Review}}.
+\newblock \btxjournalfont {Journal of Physics: Conference Series}, 1748(2):022039, \btxprintmonthyear{.}{jan}{2021}{long}.
+\newblock {\latintext \btxurlfont{https://dx.doi.org/10.1088/1742-6596/1748/2/022039}}.
 
 \bibitem {fang-i2019}
-\btxnamefont {\btxlastnamefont {Fang-i},~Hsiao, Cheng\btxfnamespacelong
-  Min\btxfnamespacelong Chiang} \btxandlong {}\ \btxnamefont {Alvin
-  \btxlastnamefont {Hou}}\btxauthorcolon\ \btxjtitlefont {\btxifchangecase
-  {Reinforcement learning based quadcopter controller}{Reinforcement Learning
-  Based Quadcopter Controller}}.
+\btxnamefont {\btxlastnamefont {Fang-i},~Hsiao, Cheng\btxfnamespacelong Min\btxfnamespacelong Chiang} \btxandlong {}\ \btxnamefont {Alvin \btxlastnamefont {Hou}}\btxauthorcolon\ \btxjtitlefont {\btxifchangecase {Reinforcement learning based quadcopter controller}{Reinforcement Learning Based Quadcopter Controller}}.
 \newblock 2019.
 
 \bibitem {fossen_2013}
-\btxnamefont {\btxlastnamefont {Fossen}, Thor\btxfnamespacelong
-  I.}\btxauthorcolon\ \btxtitlefont {\btxifchangecase {Mathematical models for
-  control of aircraft and satellites}{Mathematical models for control of
-  aircraft and satellites}}, \btxprintmonthyear{.}{Apr}{2013}{long}.
-\newblock {\latintext
-  \btxurlfont{https://www.fossen.biz/TTK4190/Aircraft/Aircraft\%20Fossen\%202013.pdf}}.
+\btxnamefont {\btxlastnamefont {Fossen}, Thor\btxfnamespacelong I.}\btxauthorcolon\ \btxtitlefont {\btxifchangecase {Mathematical models for control of aircraft and satellites}{Mathematical models for control of aircraft and satellites}}, \btxprintmonthyear{.}{Apr}{2013}{long}.
+\newblock {\latintext \btxurlfont{https://www.fossen.biz/TTK4190/Aircraft/Aircraft\%20Fossen\%202013.pdf}}.
 
 \bibitem {franccois2018}
-\btxnamefont {\btxlastnamefont {Fran{\c{c}}ois-Lavet}, Vincent}, \btxnamefont
-  {Peter \btxlastnamefont {Henderson}}, \btxnamefont {Riashat \btxlastnamefont
-  {Islam}}, \btxnamefont {Marc\btxfnamespacelong G \btxlastnamefont
-  {Bellemare}}\btxandcomma {} \btxandlong {}\ \btxnamefont {Joelle
-  \btxlastnamefont {Pineau}}\btxauthorcolon\ \btxjtitlefont {\btxifchangecase
-  {An introduction to deep reinforcement learning}{An introduction to deep
-  reinforcement learning}}.
+\btxnamefont {\btxlastnamefont {Fran{\c{c}}ois-Lavet}, Vincent}, \btxnamefont {Peter \btxlastnamefont {Henderson}}, \btxnamefont {Riashat \btxlastnamefont {Islam}}, \btxnamefont {Marc\btxfnamespacelong G \btxlastnamefont {Bellemare}}\btxandcomma {} \btxandlong {}\ \btxnamefont {Joelle \btxlastnamefont {Pineau}}\btxauthorcolon\ \btxjtitlefont {\btxifchangecase {An introduction to deep reinforcement learning}{An introduction to deep reinforcement learning}}.
 \newblock \btxjournalfont {arXiv preprint arXiv:1811.12560}, 2018.
 
 \bibitem {fujimoto2018}
-\btxnamefont {\btxlastnamefont {Fujimoto}, Scott}, \btxnamefont {Herke van
-  \btxlastnamefont {Hoof}}\btxandcomma {} \btxandlong {}\ \btxnamefont {David
-  \btxlastnamefont {Meger}}\btxauthorcolon\ \btxtitlefont {\btxifchangecase
-  {Addressing function approximation error in actor-critic methods}{Addressing
-  Function Approximation Error in Actor-Critic Methods}}, 2018.
+\btxnamefont {\btxlastnamefont {Fujimoto}, Scott}, \btxnamefont {Herke van \btxlastnamefont {Hoof}}\btxandcomma {} \btxandlong {}\ \btxnamefont {David \btxlastnamefont {Meger}}\btxauthorcolon\ \btxtitlefont {\btxifchangecase {Addressing function approximation error in actor-critic methods}{Addressing Function Approximation Error in Actor-Critic Methods}}, 2018.
 \newblock {\latintext \btxurlfont{https://arxiv.org/abs/1802.09477}}.
 
 \bibitem {Goodfellow-et-al-2016}
-\btxnamefont {\btxlastnamefont {Goodfellow}, Ian}, \btxnamefont {Yoshua
-  \btxlastnamefont {Bengio}}\btxandcomma {} \btxandlong {}\ \btxnamefont {Aaron
-  \btxlastnamefont {Courville}}\btxauthorcolon\ \btxtitlefont {Deep Learning}.
+\btxnamefont {\btxlastnamefont {Goodfellow}, Ian}, \btxnamefont {Yoshua \btxlastnamefont {Bengio}}\btxandcomma {} \btxandlong {}\ \btxnamefont {Aaron \btxlastnamefont {Courville}}\btxauthorcolon\ \btxtitlefont {Deep Learning}.
 \newblock \btxpublisherfont {MIT Press}, 2016.
 \newblock \url{http://www.deeplearningbook.org}.
 
 \bibitem {gosaviaRL}
-\btxnamefont {\btxlastnamefont {Gosavi}, Abhijit}\btxauthorcolon\ \btxtitlefont
-  {\btxifchangecase {Neural networks and reinforcement learning}{Neural
-  Networks and Reinforcement Learning}}.
+\btxnamefont {\btxlastnamefont {Gosavi}, Abhijit}\btxauthorcolon\ \btxtitlefont {\btxifchangecase {Neural networks and reinforcement learning}{Neural Networks and Reinforcement Learning}}.
 \newblock \url{https://web.mst.edu/~gosavia/neural_networks_RL.pdf}, Year.
 \newblock Marzo de 2023.
 
 \bibitem {laura2020}
-\btxnamefont {\btxlastnamefont {Graesser}, Laura} \btxandlong {}\ \btxnamefont
-  {Wah \btxlastnamefont {Loon~Keng}}\btxauthorcolon\ \btxtitlefont {Foundations
-  of Deep Reinforcement Learning: Theory and Practice in Python}.
-\newblock \btxpublisherfont {Pearson Addison-Wesley}, \btxeditionnumlong {1st
-  ed.}{}, 2020.
+\btxnamefont {\btxlastnamefont {Graesser}, Laura} \btxandlong {}\ \btxnamefont {Wah \btxlastnamefont {Loon~Keng}}\btxauthorcolon\ \btxtitlefont {Foundations of Deep Reinforcement Learning: Theory and Practice in Python}.
+\newblock \btxpublisherfont {Pearson Addison-Wesley}, \btxeditionnumlong {1st ed.}{}, 2020.
 
 \bibitem {Gruene2021}
-\btxnamefont {\btxlastnamefont {Gruene}, Lars}\btxauthorcolon\ \btxtitlefont
-  {\btxifchangecase {Mathematical control theory}{Mathematical Control
-  Theory}}, \btxprintmonthyear{.}{Abril}{2021}{long}.
-\newblock {\latintext
-  \btxurlfont{https://num.math.uni-bayreuth.de/de/team/lars-gruene/skripten/kontrolltheorie/kt_2021_en.pdf}}.
+\btxnamefont {\btxlastnamefont {Gruene}, Lars}\btxauthorcolon\ \btxtitlefont {\btxifchangecase {Mathematical control theory}{Mathematical Control Theory}}, \btxprintmonthyear{.}{Abril}{2021}{long}.
+\newblock {\latintext \btxurlfont{https://num.math.uni-bayreuth.de/de/team/lars-gruene/skripten/kontrolltheorie/kt_2021_en.pdf}}.
 
 \bibitem {haarnoja2018}
-\btxnamefont {\btxlastnamefont {Haarnoja}, Tuomas}, \btxnamefont {Aurick
-  \btxlastnamefont {Zhou}}, \btxnamefont {Pieter \btxlastnamefont
-  {Abbeel}}\btxandcomma {} \btxandlong {}\ \btxnamefont {Sergey
-  \btxlastnamefont {Levine}}\btxauthorcolon\ \btxtitlefont {\btxifchangecase
-  {Soft actor-critic: Off-policy maximum entropy deep reinforcement learning
-  with a stochastic actor}{Soft Actor-Critic: Off-Policy Maximum Entropy Deep
-  Reinforcement Learning with a Stochastic Actor}}, 2018.
+\btxnamefont {\btxlastnamefont {Haarnoja}, Tuomas}, \btxnamefont {Aurick \btxlastnamefont {Zhou}}, \btxnamefont {Pieter \btxlastnamefont {Abbeel}}\btxandcomma {} \btxandlong {}\ \btxnamefont {Sergey \btxlastnamefont {Levine}}\btxauthorcolon\ \btxtitlefont {\btxifchangecase {Soft actor-critic: Off-policy maximum entropy deep reinforcement learning with a stochastic actor}{Soft Actor-Critic: Off-Policy Maximum Entropy Deep Reinforcement Learning with a Stochastic Actor}}, 2018.
 \newblock {\latintext \btxurlfont{https://arxiv.org/abs/1801.01290}}.
 
 \bibitem {Han2018AMI}
-\btxnamefont {\btxlastnamefont {Han}, Xintian}\btxauthorcolon\ \btxtitlefont
-  {\btxifchangecase {A mathematical introduction to reinforcement learning}{A
-  Mathematical Introduction to Reinforcement Learning}}.
+\btxnamefont {\btxlastnamefont {Han}, Xintian}\btxauthorcolon\ \btxtitlefont {\btxifchangecase {A mathematical introduction to reinforcement learning}{A Mathematical Introduction to Reinforcement Learning}}.
 \newblock 2018.
-\newblock {\latintext
-  \btxurlfont{https://api.semanticscholar.org/CorpusID:51988118}}.
+\newblock {\latintext \btxurlfont{https://api.semanticscholar.org/CorpusID:51988118}}.
 
 \bibitem {hui2018rl}
-\btxnamefont {\btxlastnamefont {Hui}, Jonathan}\btxauthorcolon\ \btxjtitlefont
-  {\btxifchangecase {Rl — lqr \& ilqr linear quadratic regulator}{RL — LQR
-  \& iLQR Linear Quadratic Regulator}}.
+\btxnamefont {\btxlastnamefont {Hui}, Jonathan}\btxauthorcolon\ \btxjtitlefont {\btxifchangecase {Rl — lqr \& ilqr linear quadratic regulator}{RL — LQR \& iLQR Linear Quadratic Regulator}}.
 \newblock \btxjournalfont {Medium}, \btxprintmonthyear{.}{dec}{2018}{long}.
-\newblock {\latintext
-  \btxurlfont{https://jonathan-hui.medium.com/rl-lqr-ilqr-linear-quadratic-regulator-a5de5104c750}},
-  Accessed: 25/11/22.
+\newblock {\latintext \btxurlfont{https://jonathan-hui.medium.com/rl-lqr-ilqr-linear-quadratic-regulator-a5de5104c750}}, Accessed: 25/11/22.
 
 \bibitem {hwangbo2017control}
-\btxnamefont {\btxlastnamefont {Hwangbo}, Jemin}, \btxnamefont {Inkyu
-  \btxlastnamefont {Sa}}, \btxnamefont {Roland \btxlastnamefont
-  {Siegwart}}\btxandcomma {} \btxandlong {}\ \btxnamefont {Marco
-  \btxlastnamefont {Hutter}}\btxauthorcolon\ \btxjtitlefont {\btxifchangecase
-  {Control of a quadrotor with reinforcement learning}{Control of a quadrotor
-  with reinforcement learning}}.
-\newblock \btxjournalfont {IEEE Robotics and Automation Letters},
-  2(4):2096--2103, 2017.
+\btxnamefont {\btxlastnamefont {Hwangbo}, Jemin}, \btxnamefont {Inkyu \btxlastnamefont {Sa}}, \btxnamefont {Roland \btxlastnamefont {Siegwart}}\btxandcomma {} \btxandlong {}\ \btxnamefont {Marco \btxlastnamefont {Hutter}}\btxauthorcolon\ \btxjtitlefont {\btxifchangecase {Control of a quadrotor with reinforcement learning}{Control of a quadrotor with reinforcement learning}}.
+\newblock \btxjournalfont {IEEE Robotics and Automation Letters}, 2(4):2096--2103, 2017.
 
 \bibitem {jeng23}
-\btxnamefont {\btxlastnamefont {Jeng}, Shyr\btxfnamespacelong Long} \btxandlong
-  {}\ \btxnamefont {Chienhsun \btxlastnamefont {Chiang}}\btxauthorcolon\
-  \btxjtitlefont {\btxifchangecase {End-to-end autonomous navigation based on
-  deep reinforcement learning with a survival penalty function}{End-to-End
-  Autonomous Navigation Based on Deep Reinforcement Learning with a Survival
-  Penalty Function}}.
-\newblock \btxjournalfont {Sensors}, 23:8651,
-  \btxprintmonthyear{.}{10}{2023}{long}.
+\btxnamefont {\btxlastnamefont {Jeng}, Shyr\btxfnamespacelong Long} \btxandlong {}\ \btxnamefont {Chienhsun \btxlastnamefont {Chiang}}\btxauthorcolon\ \btxjtitlefont {\btxifchangecase {End-to-end autonomous navigation based on deep reinforcement learning with a survival penalty function}{End-to-End Autonomous Navigation Based on Deep Reinforcement Learning with a Survival Penalty Function}}.
+\newblock \btxjournalfont {Sensors}, 23:8651, \btxprintmonthyear{.}{10}{2023}{long}.
 
 \bibitem {ADAM2017}
-\btxnamefont {\btxlastnamefont {Kingma}, Diederik\btxfnamespacelong P.}
-  \btxandlong {}\ \btxnamefont {Jimmy \btxlastnamefont {Ba}}\btxauthorcolon\
-  \btxtitlefont {\btxifchangecase {Adam: A method for stochastic
-  optimization}{Adam: A Method for Stochastic Optimization}}, 2017.
+\btxnamefont {\btxlastnamefont {Kingma}, Diederik\btxfnamespacelong P.} \btxandlong {}\ \btxnamefont {Jimmy \btxlastnamefont {Ba}}\btxauthorcolon\ \btxtitlefont {\btxifchangecase {Adam: A method for stochastic optimization}{Adam: A Method for Stochastic Optimization}}, 2017.
 \newblock {\latintext \btxurlfont{https://arxiv.org/abs/1412.6980}}.
 
 \bibitem {lapan2018deep}
-\btxnamefont {\btxlastnamefont {Lapan}, Maxim}\btxauthorcolon\ \btxtitlefont
-  {Deep Reinforcement Learning Hands-On: Apply modern RL methods, with deep
-  Q-networks, value iteration, policy gradients, TRPO, AlphaGo Zero and more}.
+\btxnamefont {\btxlastnamefont {Lapan}, Maxim}\btxauthorcolon\ \btxtitlefont {Deep Reinforcement Learning Hands-On: Apply modern RL methods, with deep Q-networks, value iteration, policy gradients, TRPO, AlphaGo Zero and more}.
 \newblock \btxpublisherfont {Packt Publishing Ltd}, 2018.
 
 \bibitem {levine2017}
-\btxnamefont {\btxlastnamefont {Levine}, Sergey}\btxauthorcolon\ \btxtitlefont
-  {\btxifchangecase {Cs294-112 deep reinforcement learning 01/25/17}{CS294-112
-  Deep Reinforcement Learning 01/25/17}}.
+\btxnamefont {\btxlastnamefont {Levine}, Sergey}\btxauthorcolon\ \btxtitlefont {\btxifchangecase {Cs294-112 deep reinforcement learning 01/25/17}{CS294-112 Deep Reinforcement Learning 01/25/17}}.
 \newblock \url{https://www.youtube.com/live/mZtlW_xtarI?feature=share}, 2017.
 \newblock Accedido en 25/11/22.
 
 \bibitem {2014-mfcgps}
-\btxnamefont {\btxlastnamefont {Levine}, Sergey} \btxandlong {}\ \btxnamefont
-  {Pieter \btxlastnamefont {Abbeel}}\btxauthorcolon\ \btxtitlefont
-  {\btxifchangecase {Learning neural network policies with guided policy search
-  under unknown dynamics}{Learning Neural Network Policies with Guided Policy
-  Search under Unknown Dynamics}}.
-\newblock \Btxinlong {}\ \btxtitlefont {Neural Information Processing Systems
-  (NIPS)}, 2014.
+\btxnamefont {\btxlastnamefont {Levine}, Sergey} \btxandlong {}\ \btxnamefont {Pieter \btxlastnamefont {Abbeel}}\btxauthorcolon\ \btxtitlefont {\btxifchangecase {Learning neural network policies with guided policy search under unknown dynamics}{Learning Neural Network Policies with Guided Policy Search under Unknown Dynamics}}.
+\newblock \Btxinlong {}\ \btxtitlefont {Neural Information Processing Systems (NIPS)}, 2014.
 
 \bibitem {Deep_Visuomotor_Policies}
-\btxnamefont {\btxlastnamefont {Levine}, Sergey}, \btxnamefont {Chelsea
-  \btxlastnamefont {Finn}}, \btxnamefont {Trevor \btxlastnamefont
-  {Darrell}}\btxandcomma {} \btxandlong {}\ \btxnamefont {Pieter
-  \btxlastnamefont {Abbeel}}\btxauthorcolon\ \btxjtitlefont {\btxifchangecase
-  {End-to-end training of deep visuomotor policies}{End-to-End Training of Deep
-  Visuomotor Policies}}.
+\btxnamefont {\btxlastnamefont {Levine}, Sergey}, \btxnamefont {Chelsea \btxlastnamefont {Finn}}, \btxnamefont {Trevor \btxlastnamefont {Darrell}}\btxandcomma {} \btxandlong {}\ \btxnamefont {Pieter \btxlastnamefont {Abbeel}}\btxauthorcolon\ \btxjtitlefont {\btxifchangecase {End-to-end training of deep visuomotor policies}{End-to-End Training of Deep Visuomotor Policies}}.
 \newblock \btxjournalfont {CoRR}, abs/1504.00702, 2015.
 \newblock {\latintext \btxurlfont{http://arxiv.org/abs/1504.00702}}.
 
 \bibitem {lillicrap2015continuous}
-\btxnamefont {\btxlastnamefont {Lillicrap}, Timothy\btxfnamespacelong P},
-  \btxnamefont {Jonathan\btxfnamespacelong J \btxlastnamefont {Hunt}},
-  \btxnamefont {Alexander \btxlastnamefont {Pritzel}}, \btxnamefont {Nicolas
-  \btxlastnamefont {Heess}}, \btxnamefont {Tom \btxlastnamefont {Erez}},
-  \btxnamefont {Yuval \btxlastnamefont {Tassa}}, \btxnamefont {David
-  \btxlastnamefont {Silver}}\btxandcomma {} \btxandlong {}\ \btxnamefont {Daan
-  \btxlastnamefont {Wierstra}}\btxauthorcolon\ \btxjtitlefont {\btxifchangecase
-  {Continuous control with deep reinforcement learning}{Continuous control with
-  deep reinforcement learning}}.
+\btxnamefont {\btxlastnamefont {Lillicrap}, Timothy\btxfnamespacelong P}, \btxnamefont {Jonathan\btxfnamespacelong J \btxlastnamefont {Hunt}}, \btxnamefont {Alexander \btxlastnamefont {Pritzel}}, \btxnamefont {Nicolas \btxlastnamefont {Heess}}, \btxnamefont {Tom \btxlastnamefont {Erez}}, \btxnamefont {Yuval \btxlastnamefont {Tassa}}, \btxnamefont {David \btxlastnamefont {Silver}}\btxandcomma {} \btxandlong {}\ \btxnamefont {Daan \btxlastnamefont {Wierstra}}\btxauthorcolon\ \btxjtitlefont {\btxifchangecase {Continuous control with deep reinforcement learning}{Continuous control with deep reinforcement learning}}.
 \newblock \btxjournalfont {arXiv preprint arXiv:1509.02971}, 2015.
 
 \bibitem {liu2022robust}
-\btxnamefont {\btxlastnamefont {Liu}, Anlin}, \btxnamefont {Shun
-  \btxlastnamefont {Suzuki}}, \btxnamefont {Wei \btxlastnamefont {Wang}},
-  \btxnamefont {Hong \btxlastnamefont {Liu}}\btxandcomma {} \btxandlong {}\
-  \btxnamefont {Qiang \btxlastnamefont {Wang}}\btxauthorcolon\ \btxjtitlefont
-  {\btxifchangecase {Robust control strategy for quadrotor drone using
-  reference model-based deep deterministic policy gradient}{Robust Control
-  Strategy for Quadrotor Drone Using Reference Model-Based Deep Deterministic
-  Policy Gradient}}.
+\btxnamefont {\btxlastnamefont {Liu}, Anlin}, \btxnamefont {Shun \btxlastnamefont {Suzuki}}, \btxnamefont {Wei \btxlastnamefont {Wang}}, \btxnamefont {Hong \btxlastnamefont {Liu}}\btxandcomma {} \btxandlong {}\ \btxnamefont {Qiang \btxlastnamefont {Wang}}\btxauthorcolon\ \btxjtitlefont {\btxifchangecase {Robust control strategy for quadrotor drone using reference model-based deep deterministic policy gradient}{Robust Control Strategy for Quadrotor Drone Using Reference Model-Based Deep Deterministic Policy Gradient}}.
 \newblock \btxjournalfont {Drones}, 6(9):251, 2022.
 
 \bibitem {lopes2018intelligent}
-\btxnamefont {\btxlastnamefont {Lopes}, Guilherme\btxfnamespacelong Cano},
-  \btxnamefont {Murillo \btxlastnamefont {Ferreira}}, \btxnamefont {Alexandre
-  da~\btxlastnamefont {Silva~Sim{\~o}es}}\btxandcomma {} \btxandlong {}\
-  \btxnamefont {Esther\btxfnamespacelong Luna \btxlastnamefont
-  {Colombini}}\btxauthorcolon\ \btxtitlefont {\btxifchangecase {Intelligent
-  control of a quadrotor with proximal policy optimization reinforcement
-  learning}{Intelligent control of a quadrotor with proximal policy
-  optimization reinforcement learning}}.
-\newblock \Btxinlong {}\ \btxtitlefont {2018 Latin American Robotic Symposium,
-  2018 Brazilian Symposium on Robotics (SBR) and 2018 Workshop on Robotics in
-  Education (WRE)}, \btxpageslong {}\ 503--508. IEEE, 2018.
+\btxnamefont {\btxlastnamefont {Lopes}, Guilherme\btxfnamespacelong Cano}, \btxnamefont {Murillo \btxlastnamefont {Ferreira}}, \btxnamefont {Alexandre da~\btxlastnamefont {Silva~Sim{\~o}es}}\btxandcomma {} \btxandlong {}\ \btxnamefont {Esther\btxfnamespacelong Luna \btxlastnamefont {Colombini}}\btxauthorcolon\ \btxtitlefont {\btxifchangecase {Intelligent control of a quadrotor with proximal policy optimization reinforcement learning}{Intelligent control of a quadrotor with proximal policy optimization reinforcement learning}}.
+\newblock \Btxinlong {}\ \btxtitlefont {2018 Latin American Robotic Symposium, 2018 Brazilian Symposium on Robotics (SBR) and 2018 Workshop on Robotics in Education (WRE)}, \btxpageslong {}\ 503--508. IEEE, 2018.
 
 \bibitem {luukkonen_2011}
-\btxnamefont {\btxlastnamefont {Luukkonen}, Teppo\btxfnamespacelong
-  Teppo}\btxauthorcolon\ \btxtitlefont {\btxifchangecase {Modelling and control
-  of quadcopter}{Modelling and control of quadcopter}},
-  \btxprintmonthyear{.}{Aug}{2011}{long}.
-\newblock {\latintext
-  \btxurlfont{https://sal.aalto.fi/publications/pdf-files/eluu11_public.pdf}}.
+\btxnamefont {\btxlastnamefont {Luukkonen}, Teppo\btxfnamespacelong Teppo}\btxauthorcolon\ \btxtitlefont {\btxifchangecase {Modelling and control of quadcopter}{Modelling and control of quadcopter}}, \btxprintmonthyear{.}{Aug}{2011}{long}.
+\newblock {\latintext \btxurlfont{https://sal.aalto.fi/publications/pdf-files/eluu11_public.pdf}}.
 
 \bibitem {Matheron2020}
-\btxnamefont {\btxlastnamefont {Matheron}, Guillaume}, \btxnamefont {Nicolas
-  \btxlastnamefont {Perrin}}\btxandcomma {} \btxandlong {}\ \btxnamefont
-  {Olivier \btxlastnamefont {Sigaud}}\btxauthorcolon\ \btxtitlefont
-  {Understanding Failures of Deterministic Actor-Critic with Continuous Action
-  Spaces and Sparse Rewards}, \btxpagelong {}\ 308–320.
-\newblock \btxpublisherfont {Springer International Publishing},
-  2020\ifbtxprintISBN {, \mbox{\btxISBN~\btxISBNfont {9783030616168}}}.
-\newblock {\latintext
-  \btxurlfont{http://dx.doi.org/10.1007/978-3-030-61616-8_25}}.
+\btxnamefont {\btxlastnamefont {Matheron}, Guillaume}, \btxnamefont {Nicolas \btxlastnamefont {Perrin}}\btxandcomma {} \btxandlong {}\ \btxnamefont {Olivier \btxlastnamefont {Sigaud}}\btxauthorcolon\ \btxtitlefont {Understanding Failures of Deterministic Actor-Critic with Continuous Action Spaces and Sparse Rewards}, \btxpagelong {}\ 308–320.
+\newblock \btxpublisherfont {Springer International Publishing}, 2020\ifbtxprintISBN {, \mbox{\btxISBN~\btxISBNfont {9783030616168}}}.
+\newblock {\latintext \btxurlfont{http://dx.doi.org/10.1007/978-3-030-61616-8_25}}.
 
 \bibitem {meyn2022}
-\btxnamefont {\btxlastnamefont {Meyn}, Sean}\btxauthorcolon\ \btxtitlefont
-  {Control Systems and Reinforcement Learning}.
+\btxnamefont {\btxlastnamefont {Meyn}, Sean}\btxauthorcolon\ \btxtitlefont {Control Systems and Reinforcement Learning}.
 \newblock \btxpublisherfont {Cambridge University Press}, 2022.
 
 \bibitem {mnih2013}
-\btxnamefont {\btxlastnamefont {Mnih}, Volodymyr}, \btxnamefont {Koray
-  \btxlastnamefont {Kavukcuoglu}}, \btxnamefont {David \btxlastnamefont
-  {Silver}}, \btxnamefont {Alex \btxlastnamefont {Graves}}, \btxnamefont
-  {Ioannis \btxlastnamefont {Antonoglou}}, \btxnamefont {Daan \btxlastnamefont
-  {Wierstra}}\btxandcomma {} \btxandlong {}\ \btxnamefont {Martin
-  \btxlastnamefont {Riedmiller}}\btxauthorcolon\ \btxtitlefont
-  {\btxifchangecase {Playing atari with deep reinforcement learning}{Playing
-  Atari with Deep Reinforcement Learning}}, 2013.
+\btxnamefont {\btxlastnamefont {Mnih}, Volodymyr}, \btxnamefont {Koray \btxlastnamefont {Kavukcuoglu}}, \btxnamefont {David \btxlastnamefont {Silver}}, \btxnamefont {Alex \btxlastnamefont {Graves}}, \btxnamefont {Ioannis \btxlastnamefont {Antonoglou}}, \btxnamefont {Daan \btxlastnamefont {Wierstra}}\btxandcomma {} \btxandlong {}\ \btxnamefont {Martin \btxlastnamefont {Riedmiller}}\btxauthorcolon\ \btxtitlefont {\btxifchangecase {Playing atari with deep reinforcement learning}{Playing Atari with Deep Reinforcement Learning}}, 2013.
 
 \bibitem {Moerland2018}
-\btxnamefont {\btxlastnamefont {Moerland}, Thomas}, \btxnamefont {Joost
-  \btxlastnamefont {Broekens}}, \btxnamefont {Aske \btxlastnamefont
-  {Plaat}}\btxandcomma {} \btxandlong {}\ \btxnamefont {Catholijn
-  \btxlastnamefont {Jonker}}\btxauthorcolon\ \btxpublisherfont {\btxtitlefont
-  {Model-based Reinforcement Learning: A Survey}}.
-\newblock 2023\ifbtxprintISBN {, \mbox{\btxISBN~\btxISBNfont
-  {978-1-63828-056-9}}}.
+\btxnamefont {\btxlastnamefont {Moerland}, Thomas}, \btxnamefont {Joost \btxlastnamefont {Broekens}}, \btxnamefont {Aske \btxlastnamefont {Plaat}}\btxandcomma {} \btxandlong {}\ \btxnamefont {Catholijn \btxlastnamefont {Jonker}}\btxauthorcolon\ \btxpublisherfont {\btxtitlefont {Model-based Reinforcement Learning: A Survey}}.
+\newblock 2023\ifbtxprintISBN {, \mbox{\btxISBN~\btxISBNfont {978-1-63828-056-9}}}.
 
 \bibitem {pang2021}
-\btxnamefont {\btxlastnamefont {Pang}, Shengyuan} \btxandlong {}\ \btxnamefont
-  {Linzhe \btxlastnamefont {Tian}}\btxauthorcolon\ \btxjtitlefont
-  {\btxifchangecase {Control methods for quadrotor’s stability}{Control
-  Methods for Quadrotor’s Stability}}.
-\newblock \btxjournalfont {Journal of Physics: Conference Series}, 1948:012109,
-  \btxprintmonthyear{.}{06}{2021}{long}.
+\btxnamefont {\btxlastnamefont {Pang}, Shengyuan} \btxandlong {}\ \btxnamefont {Linzhe \btxlastnamefont {Tian}}\btxauthorcolon\ \btxjtitlefont {\btxifchangecase {Control methods for quadrotor’s stability}{Control Methods for Quadrotor’s Stability}}.
+\newblock \btxjournalfont {Journal of Physics: Conference Series}, 1948:012109, \btxprintmonthyear{.}{06}{2021}{long}.
 
 \bibitem {peters2010}
-\btxnamefont {\btxlastnamefont {Peters}, Jan}, \btxnamefont {Katharina
-  \btxlastnamefont {M\"{u}lling}}\btxandcomma {} \btxandlong {}\ \btxnamefont
-  {Yasemin \btxlastnamefont {Alt\"{u}n}}\btxauthorcolon\ \btxtitlefont
-  {\btxifchangecase {Relative entropy policy search}{Relative Entropy Policy
-  Search}}.
-\newblock \Btxinlong {}\ \btxtitlefont {Proceedings of the Twenty-Fourth AAAI
-  Conference on Artificial Intelligence}, AAAI'10, \btxpagelong {}\
-  1607–1612. \btxpublisherfont {AAAI Press}, 2010.
+\btxnamefont {\btxlastnamefont {Peters}, Jan}, \btxnamefont {Katharina \btxlastnamefont {M\"{u}lling}}\btxandcomma {} \btxandlong {}\ \btxnamefont {Yasemin \btxlastnamefont {Alt\"{u}n}}\btxauthorcolon\ \btxtitlefont {\btxifchangecase {Relative entropy policy search}{Relative Entropy Policy Search}}.
+\newblock \Btxinlong {}\ \btxtitlefont {Proceedings of the Twenty-Fourth AAAI Conference on Artificial Intelligence}, AAAI'10, \btxpagelong {}\ 1607–1612. \btxpublisherfont {AAAI Press}, 2010.
 
 \bibitem {PetersNeumann2015}
-\btxnamefont {\btxlastnamefont {Peters}, Jan} \btxandlong {}\ \btxnamefont
-  {Gerhard \btxlastnamefont {Neumann}}\btxauthorcolon\ \btxtitlefont
-  {\btxifchangecase {Policy search: Methods and applications}{Policy Search:
-  Methods and Applications}}.
+\btxnamefont {\btxlastnamefont {Peters}, Jan} \btxandlong {}\ \btxnamefont {Gerhard \btxlastnamefont {Neumann}}\btxauthorcolon\ \btxtitlefont {\btxifchangecase {Policy search: Methods and applications}{Policy Search: Methods and Applications}}.
 \newblock Video lecture, \btxprintmonthyear{.}{October}{2015}{long}.
-\newblock {\latintext
-  \btxurlfont{https://icml.cc/2015/tutorials/PolicySearch.pdf}}.
+\newblock {\latintext \btxurlfont{https://icml.cc/2015/tutorials/PolicySearch.pdf}}.
 
 \bibitem {prince2023understanding}
-\btxnamefont {\btxlastnamefont {Prince}, Simon\btxfnamespacelong
-  J.D.}\btxauthorcolon\ \btxtitlefont {Understanding Deep Learning}.
+\btxnamefont {\btxlastnamefont {Prince}, Simon\btxfnamespacelong J.D.}\btxauthorcolon\ \btxtitlefont {Understanding Deep Learning}.
 \newblock \btxpublisherfont {MIT Press}, 2023.
 \newblock {\latintext \btxurlfont{https://udlbook.github.io/udlbook/}}.
 
 \bibitem {Kwong2008}
-\btxnamefont {\btxlastnamefont {{Raymond Kwong}}}\btxauthorcolon\ \btxtitlefont
-  {\btxifchangecase {{Control Systems}}{{Control Systems}}}.
-\newblock {ECE410F Control Systems, University of Toronto Department of
-  Electrical and Computer Engineering }, 2008.
-\newblock {\latintext
-  \btxurlfont{{https://www.control.utoronto.ca/people/profs/kwong/ece410/2008/notes/chap3.pdf}}},
-  {Lecture Notes}.
+\btxnamefont {\btxlastnamefont {{Raymond Kwong}}}\btxauthorcolon\ \btxtitlefont {\btxifchangecase {{Control Systems}}{{Control Systems}}}.
+\newblock {ECE410F Control Systems, University of Toronto Department of Electrical and Computer Engineering }, 2008.
+\newblock {\latintext \btxurlfont{{https://www.control.utoronto.ca/people/profs/kwong/ece410/2008/notes/chap3.pdf}}}, {Lecture Notes}.
 
 \bibitem {Roberts_2022}
-\btxnamefont {\btxlastnamefont {Roberts}, Daniel\btxfnamespacelong A.},
-  \btxnamefont {Sho \btxlastnamefont {Yaida}}\btxandcomma {} \btxandlong {}\
-  \btxnamefont {Boris \btxlastnamefont {Hanin}}\btxauthorcolon\ \btxtitlefont
-  {The Principles of Deep Learning Theory: An Effective Theory Approach to
-  Understanding Neural Networks}.
-\newblock \btxpublisherfont {Cambridge University Press},
-  \btxprintmonthyear{.}{5}{2022}{long}\ifbtxprintISBN {,
-  \mbox{\btxISBN~\btxISBNfont {9781316519332}}}.
+\btxnamefont {\btxlastnamefont {Roberts}, Daniel\btxfnamespacelong A.}, \btxnamefont {Sho \btxlastnamefont {Yaida}}\btxandcomma {} \btxandlong {}\ \btxnamefont {Boris \btxlastnamefont {Hanin}}\btxauthorcolon\ \btxtitlefont {The Principles of Deep Learning Theory: An Effective Theory Approach to Understanding Neural Networks}.
+\newblock \btxpublisherfont {Cambridge University Press}, \btxprintmonthyear{.}{5}{2022}{long}\ifbtxprintISBN {, \mbox{\btxISBN~\btxISBNfont {9781316519332}}}.
 \newblock {\latintext \btxurlfont{http://dx.doi.org/10.1017/9781009023405}}.
 
 \bibitem {Roberts2022}
-\btxnamefont {\btxlastnamefont {Roberts}, Daniel\btxfnamespacelong A.},
-  \btxnamefont {Sho \btxlastnamefont {Yaida}}\btxandcomma {} \btxandlong {}\
-  \btxnamefont {Boris \btxlastnamefont {Hanin}}\btxauthorcolon\ \btxtitlefont
-  {The Principles of Deep Learning Theory: An Effective Theory Approach to
-  Understanding Neural Networks}.
-\newblock \btxpublisherfont {Cambridge University Press},
-  \btxprintmonthyear{.}{5}{2022}{long}\ifbtxprintISBN {,
-  \mbox{\btxISBN~\btxISBNfont {9781316519332}}}.
+\btxnamefont {\btxlastnamefont {Roberts}, Daniel\btxfnamespacelong A.}, \btxnamefont {Sho \btxlastnamefont {Yaida}}\btxandcomma {} \btxandlong {}\ \btxnamefont {Boris \btxlastnamefont {Hanin}}\btxauthorcolon\ \btxtitlefont {The Principles of Deep Learning Theory: An Effective Theory Approach to Understanding Neural Networks}.
+\newblock \btxpublisherfont {Cambridge University Press}, \btxprintmonthyear{.}{5}{2022}{long}\ifbtxprintISBN {, \mbox{\btxISBN~\btxISBNfont {9781316519332}}}.
 \newblock {\latintext \btxurlfont{http://dx.doi.org/10.1017/9781009023405}}.
 
 \bibitem {Rub2020DeepRL}
-\btxnamefont {\btxlastnamefont {Rub{\'i}}, Bartomeu}, \btxnamefont {Bernardo
-  \btxlastnamefont {Morcego}}\btxandcomma {} \btxandlong {}\ \btxnamefont
-  {Ram{\'o}n \btxlastnamefont {P{\'e}rez}}\btxauthorcolon\ \btxjtitlefont
-  {\btxifchangecase {Deep reinforcement learning for quadrotor path following
-  with adaptive velocity}{Deep reinforcement learning for quadrotor path
-  following with adaptive velocity}}.
+\btxnamefont {\btxlastnamefont {Rub{\'i}}, Bartomeu}, \btxnamefont {Bernardo \btxlastnamefont {Morcego}}\btxandcomma {} \btxandlong {}\ \btxnamefont {Ram{\'o}n \btxlastnamefont {P{\'e}rez}}\btxauthorcolon\ \btxjtitlefont {\btxifchangecase {Deep reinforcement learning for quadrotor path following with adaptive velocity}{Deep reinforcement learning for quadrotor path following with adaptive velocity}}.
 \newblock \btxjournalfont {Autonomous Robots}, 45:119--134, 2020.
-\newblock {\latintext
-  \btxurlfont{https://api.semanticscholar.org/CorpusID:226318819}}.
+\newblock {\latintext \btxurlfont{https://api.semanticscholar.org/CorpusID:226318819}}.
 
 \bibitem {Schneider2018}
-\btxnamefont {\btxlastnamefont {Schneider}, Tim}\btxauthorcolon\ \btxtitlefont
-  {\btxifchangecase {Guided policy search for in-hand manipulation}{Guided
-  Policy Search for In-Hand Manipulation}}.
-\newblock \btxifchangecase {Tesis de licenciatura}{Tesis de Licenciatura},
-  Technische Universität Darmstadt, 2018.
+\btxnamefont {\btxlastnamefont {Schneider}, Tim}\btxauthorcolon\ \btxtitlefont {\btxifchangecase {Guided policy search for in-hand manipulation}{Guided Policy Search for In-Hand Manipulation}}.
+\newblock \btxifchangecase {Tesis de licenciatura}{Tesis de Licenciatura}, Technische Universität Darmstadt, 2018.
 
 \bibitem {silver2015}
-\btxnamefont {\btxlastnamefont {Silver}, David}\btxauthorcolon\ \btxtitlefont
-  {\btxifchangecase {Reinforcement learning course by david silver -- lecture
-  3: Planning by dynamic programming}{Reinforcement Learning Course by David
-  Silver -- Lecture 3: Planning by Dynamic Programming}}.
-\newblock
-  \url{https://www.youtube.com/watch?v=Nd1-UUMVfz4&list=PLzuuYNsE1EZAXYR4FJ75jcJseBmo4KQ9-&index=3},
-  2015.
+\btxnamefont {\btxlastnamefont {Silver}, David}\btxauthorcolon\ \btxtitlefont {\btxifchangecase {Reinforcement learning course by david silver -- lecture 3: Planning by dynamic programming}{Reinforcement Learning Course by David Silver -- Lecture 3: Planning by Dynamic Programming}}.
+\newblock \url{https://www.youtube.com/watch?v=Nd1-UUMVfz4&list=PLzuuYNsE1EZAXYR4FJ75jcJseBmo4KQ9-&index=3}, 2015.
 \newblock Accedido 20/01/23.
 
 \bibitem {silver14}
-\btxnamefont {\btxlastnamefont {Silver}, David}, \btxnamefont {Guy
-  \btxlastnamefont {Lever}}, \btxnamefont {Nicolas \btxlastnamefont {Heess}},
-  \btxnamefont {Thomas \btxlastnamefont {Degris}}, \btxnamefont {Daan
-  \btxlastnamefont {Wierstra}}\btxandcomma {} \btxandlong {}\ \btxnamefont
-  {Martin \btxlastnamefont {Riedmiller}}\btxauthorcolon\ \btxtitlefont
-  {\btxifchangecase {Deterministic policy gradient algorithms}{Deterministic
-  Policy Gradient Algorithms}}.
-\newblock \Btxinlong {}\ \btxnamefont {\btxlastnamefont {Xing},
-  Eric\btxfnamespacelong P.} \btxandlong {}\ \btxnamefont {Tony
-  \btxlastnamefont {Jebara}}\ (\btxeditorslong {}): \btxtitlefont {Proceedings
-  of the 31st International Conference on Machine Learning}, \btxvolumelong
-  {}~\btxvolumefont {32} \btxofserieslong {}\ \btxtitlefont {Proceedings of
-  Machine Learning Research}, \btxpageslong {}\ 387--395, Bejing, China,
-  \btxprintmonthyear{.}{22--24 Jun}{2014}{long}. \btxpublisherfont {PMLR}.
-\newblock {\latintext
-  \btxurlfont{https://proceedings.mlr.press/v32/silver14.html}}.
+\btxnamefont {\btxlastnamefont {Silver}, David}, \btxnamefont {Guy \btxlastnamefont {Lever}}, \btxnamefont {Nicolas \btxlastnamefont {Heess}}, \btxnamefont {Thomas \btxlastnamefont {Degris}}, \btxnamefont {Daan \btxlastnamefont {Wierstra}}\btxandcomma {} \btxandlong {}\ \btxnamefont {Martin \btxlastnamefont {Riedmiller}}\btxauthorcolon\ \btxtitlefont {\btxifchangecase {Deterministic policy gradient algorithms}{Deterministic Policy Gradient Algorithms}}.
+\newblock \Btxinlong {}\ \btxnamefont {\btxlastnamefont {Xing}, Eric\btxfnamespacelong P.} \btxandlong {}\ \btxnamefont {Tony \btxlastnamefont {Jebara}}\ (\btxeditorslong {}): \btxtitlefont {Proceedings of the 31st International Conference on Machine Learning}, \btxvolumelong {}~\btxvolumefont {32} \btxofserieslong {}\ \btxtitlefont {Proceedings of Machine Learning Research}, \btxpageslong {}\ 387--395, Bejing, China, \btxprintmonthyear{.}{22--24 Jun}{2014}{long}. \btxpublisherfont {PMLR}.
+\newblock {\latintext \btxurlfont{https://proceedings.mlr.press/v32/silver14.html}}.
 
 \bibitem {singh19}
-\btxnamefont {\btxlastnamefont {Singh}, J.}\btxauthorcolon\ \btxtitlefont
-  {\btxifchangecase {Rl\_quadcopter: Reinforcement learning for a
-  quadcopter}{RL\_quadcopter: Reinforcement Learning for a Quadcopter}}.
+\btxnamefont {\btxlastnamefont {Singh}, J.}\btxauthorcolon\ \btxtitlefont {\btxifchangecase {Rl\_quadcopter: Reinforcement learning for a quadcopter}{RL\_quadcopter: Reinforcement Learning for a Quadcopter}}.
 \newblock \url{https://github.com/1jsingh/RL_quadcopter}, 2019.
 \newblock GitHub repository.
 
 \bibitem {soch2023}
-\btxnamefont {\btxlastnamefont {{Soch, Joram, et al.}}}\btxauthorcolon\
-  \btxtitlefont {\btxifchangecase {Proof: Kullback-leibler divergence for the
-  multivariate normal distribution}{Proof: Kullback-Leibler divergence for the
-  multivariate normal distribution}}, 2023.
+\btxnamefont {\btxlastnamefont {{Soch, Joram, et al.}}}\btxauthorcolon\ \btxtitlefont {\btxifchangecase {Proof: Kullback-leibler divergence for the multivariate normal distribution}{Proof: Kullback-Leibler divergence for the multivariate normal distribution}}, 2023.
 \newblock {\latintext \btxurlfont{https://statproofbook.github.io/P/mvn-kl}}.
 
 \bibitem {Sontag1998}
-\btxnamefont {\btxlastnamefont {Sontag}, Eduardo}\btxauthorcolon\
-  \btxpublisherfont {\btxtitlefont {Mathematical Control Theory: Deterministic
-  Finite-Dimensional Systems}}.
+\btxnamefont {\btxlastnamefont {Sontag}, Eduardo}\btxauthorcolon\ \btxpublisherfont {\btxtitlefont {Mathematical Control Theory: Deterministic Finite-Dimensional Systems}}.
 \newblock \btxprintmonthyear{.}{01}{1998}{long}.
 
 \bibitem {Sutton2018}
-\btxnamefont {\btxlastnamefont {Sutton}, Richard\btxfnamespacelong S.}
-  \btxandlong {}\ \btxnamefont {Andrew\btxfnamespacelong G. \btxlastnamefont
-  {Barto}}\btxauthorcolon\ \btxtitlefont {Reinforcement Learning: An
-  Introduction}.
-\newblock \btxpublisherfont {The MIT Press}, \btxeditionnumlong {second}{},
-  2018.
+\btxnamefont {\btxlastnamefont {Sutton}, Richard\btxfnamespacelong S.} \btxandlong {}\ \btxnamefont {Andrew\btxfnamespacelong G. \btxlastnamefont {Barto}}\btxauthorcolon\ \btxtitlefont {Reinforcement Learning: An Introduction}.
+\newblock \btxpublisherfont {The MIT Press}, \btxeditionnumlong {second}{}, 2018.
 
 \bibitem {Sutton2000}
-\btxnamefont {\btxlastnamefont {Sutton}, Richard\btxfnamespacelong S},
-  \btxnamefont {David \btxlastnamefont {McAllester}}, \btxnamefont {Satinder
-  \btxlastnamefont {Singh}}\btxandcomma {} \btxandlong {}\ \btxnamefont {Yishay
-  \btxlastnamefont {Mansour}}\btxauthorcolon\ \btxtitlefont {\btxifchangecase
-  {Policy gradient methods for reinforcement learning with function
-  approximation}{Policy Gradient Methods for Reinforcement Learning with
-  Function Approximation}}.
-\newblock \Btxinlong {}\ \btxnamefont {\btxlastnamefont {Solla}, S.},
-  \btxnamefont {T. \btxlastnamefont {Leen}}\btxandcomma {} \btxandlong {}\
-  \btxnamefont {K. \btxlastnamefont {M\"{u}ller}}\ (\btxeditorslong {}):
-  \btxtitlefont {Advances in Neural Information Processing Systems},
-  \btxvolumelong {}~\btxvolumefont {12}. \btxpublisherfont {MIT Press}, 2000.
-\newblock {\latintext
-  \btxurlfont{https://proceedings.neurips.cc/paper/1999/file/464d828b85b0bed98e80ade0a5c43b0f-Paper.pdf}}.
+\btxnamefont {\btxlastnamefont {Sutton}, Richard\btxfnamespacelong S}, \btxnamefont {David \btxlastnamefont {McAllester}}, \btxnamefont {Satinder \btxlastnamefont {Singh}}\btxandcomma {} \btxandlong {}\ \btxnamefont {Yishay \btxlastnamefont {Mansour}}\btxauthorcolon\ \btxtitlefont {\btxifchangecase {Policy gradient methods for reinforcement learning with function approximation}{Policy Gradient Methods for Reinforcement Learning with Function Approximation}}.
+\newblock \Btxinlong {}\ \btxnamefont {\btxlastnamefont {Solla}, S.}, \btxnamefont {T. \btxlastnamefont {Leen}}\btxandcomma {} \btxandlong {}\ \btxnamefont {K. \btxlastnamefont {M\"{u}ller}}\ (\btxeditorslong {}): \btxtitlefont {Advances in Neural Information Processing Systems}, \btxvolumelong {}~\btxvolumefont {12}. \btxpublisherfont {MIT Press}, 2000.
+\newblock {\latintext \btxurlfont{https://proceedings.neurips.cc/paper/1999/file/464d828b85b0bed98e80ade0a5c43b0f-Paper.pdf}}.
 
 \bibitem {Szepesvari2010}
-\btxnamefont {\btxlastnamefont {Szepesvári}, Csaba}\btxauthorcolon\
-  \btxtitlefont {Algorithms for Reinforcement Learning}.
-\newblock Synthesis Lectures on Artificial Intelligence and Machine Learning.
-  \btxpublisherfont {Morgan \& Claypool Publishers}, 2010.
-\newblock {\latintext
-  \btxurlfont{http://dx.doi.org/10.2200/S00268ED1V01Y201005AIM009}}.
+\btxnamefont {\btxlastnamefont {Szepesvári}, Csaba}\btxauthorcolon\ \btxtitlefont {Algorithms for Reinforcement Learning}.
+\newblock Synthesis Lectures on Artificial Intelligence and Machine Learning. \btxpublisherfont {Morgan \& Claypool Publishers}, 2010.
+\newblock {\latintext \btxurlfont{http://dx.doi.org/10.2200/S00268ED1V01Y201005AIM009}}.
 
 \bibitem {Tassa2012}
-\btxnamefont {\btxlastnamefont {Tassa}, Yuval}, \btxnamefont {Tom
-  \btxlastnamefont {Erez}}\btxandcomma {} \btxandlong {}\ \btxnamefont {Emanuel
-  \btxlastnamefont {Todorov}}\btxauthorcolon\ \btxtitlefont {\btxifchangecase
-  {Synthesis and stabilization of complex behaviors through online trajectory
-  optimization}{Synthesis and stabilization of complex behaviors through online
-  trajectory optimization}}.
-\newblock \Btxinlong {}\ \btxtitlefont {2012 IEEE/RSJ International Conference
-  on Intelligent Robots and Systems}, \btxpageslong {}\ 4906--4913, 2012.
+\btxnamefont {\btxlastnamefont {Tassa}, Yuval}, \btxnamefont {Tom \btxlastnamefont {Erez}}\btxandcomma {} \btxandlong {}\ \btxnamefont {Emanuel \btxlastnamefont {Todorov}}\btxauthorcolon\ \btxtitlefont {\btxifchangecase {Synthesis and stabilization of complex behaviors through online trajectory optimization}{Synthesis and stabilization of complex behaviors through online trajectory optimization}}.
+\newblock \Btxinlong {}\ \btxtitlefont {2012 IEEE/RSJ International Conference on Intelligent Robots and Systems}, \btxpageslong {}\ 4906--4913, 2012.
 
 \bibitem {underactuated}
-\btxnamefont {\btxlastnamefont {Tedrake}, Russ}\btxauthorcolon\
-  \btxpublisherfont {\btxtitlefont {Underactuated Robotics}}.
+\btxnamefont {\btxlastnamefont {Tedrake}, Russ}\btxauthorcolon\ \btxpublisherfont {\btxtitlefont {Underactuated Robotics}}.
 \newblock 2023.
 \newblock {\latintext \btxurlfont{https://underactuated.csail.mit.edu}}.
 
 \bibitem {Todorov2006}
-\btxnamefont {\btxlastnamefont {Todorov}, Emanuel}\btxauthorcolon\
-  \btxtitlefont {\btxifchangecase {Optimal control theory}{Optimal Control
-  Theory}}.
-\newblock \Btxinlong {}\ \btxnamefont {\btxlastnamefont
-  {Kenji~Doya},~Shin~Ishii, Alexandre\btxfnamespacelong
-  Pouget\btxfnamespacelong Rajesh\btxfnamespacelong P.N\btxfnamespacelong Rao}\
-  (\btxeditorlong {}): \btxtitlefont {Bayesian Brain: Probabilistic Approaches
-  to Neural Coding}, \btxchapterlong {}~12, \btxpageslong {}\ 269--298.
-  \btxpublisherfont {The MIT Press}, 2006.
+\btxnamefont {\btxlastnamefont {Todorov}, Emanuel}\btxauthorcolon\ \btxtitlefont {\btxifchangecase {Optimal control theory}{Optimal Control Theory}}.
+\newblock \Btxinlong {}\ \btxnamefont {\btxlastnamefont {Kenji~Doya},~Shin~Ishii, Alexandre\btxfnamespacelong Pouget\btxfnamespacelong Rajesh\btxfnamespacelong P.N\btxfnamespacelong Rao}\ (\btxeditorlong {}): \btxtitlefont {Bayesian Brain: Probabilistic Approaches to Neural Coding}, \btxchapterlong {}~12, \btxpageslong {}\ 269--298. \btxpublisherfont {The MIT Press}, 2006.
 
 \bibitem {wang2014bregman}
-\btxnamefont {\btxlastnamefont {Wang}, Huahua} \btxandlong {}\ \btxnamefont
-  {Arindam \btxlastnamefont {Banerjee}}\btxauthorcolon\ \btxtitlefont
-  {\btxifchangecase {Bregman alternating direction method of
-  multipliers}{Bregman Alternating Direction Method of Multipliers}}, 2014.
+\btxnamefont {\btxlastnamefont {Wang}, Huahua} \btxandlong {}\ \btxnamefont {Arindam \btxlastnamefont {Banerjee}}\btxauthorcolon\ \btxtitlefont {\btxifchangecase {Bregman alternating direction method of multipliers}{Bregman Alternating Direction Method of Multipliers}}, 2014.
 
 \bibitem {MathWorldBrentsMethod}
-\btxnamefont {\btxlastnamefont {Weisstein}, Eric\btxfnamespacelong
-  W.}\btxauthorcolon\ \btxtitlefont {\btxifchangecase {Brent's method}{Brent's
-  Method}}, Accedido en 2023.
-\newblock {\latintext
-  \btxurlfont{https://mathworld.wolfram.com/BrentsMethod.html}}, From
-  MathWorld--A Wolfram Web Resource.
+\btxnamefont {\btxlastnamefont {Weisstein}, Eric\btxfnamespacelong W.}\btxauthorcolon\ \btxtitlefont {\btxifchangecase {Brent's method}{Brent's Method}}, Accedido en 2023.
+\newblock {\latintext \btxurlfont{https://mathworld.wolfram.com/BrentsMethod.html}}, From MathWorld--A Wolfram Web Resource.
 
 \btxselectlanguage {English}
 \bibitem {wiering2011}
-\btxnamefont {\btxlastnamefont {Wiering}, Marco} \btxandlong {}\ \btxnamefont
-  {Martijn \btxlastnamefont {{Van Otterlo}}}\btxauthorcolon\ \btxtitlefont
-  {Reinforcement Learning: State of the Art}.
-\newblock \btxpublisherfont {Springer}, 2012\ifbtxprintISBN {,
-  \mbox{\btxISBN~\btxISBNfont {978-3-642-27644-6}}}.
+\btxnamefont {\btxlastnamefont {Wiering}, Marco} \btxandlong {}\ \btxnamefont {Martijn \btxlastnamefont {{Van Otterlo}}}\btxauthorcolon\ \btxtitlefont {Reinforcement Learning: State of the Art}.
+\newblock \btxpublisherfont {Springer}, 2012\ifbtxprintISBN {, \mbox{\btxISBN~\btxISBNfont {978-3-642-27644-6}}}.
 
 \expandafter\btxselectlanguage\expandafter {\btxfallbacklanguage}
 \bibitem {michaelrzhang-gps}
-\btxnamefont {\btxlastnamefont {Zhang}, Michael\btxfnamespacelong
-  R.}\btxauthorcolon\ \btxtitlefont {\btxifchangecase {Guide to guided policy
-  search}{Guide to Guided Policy Search}}.
+\btxnamefont {\btxlastnamefont {Zhang}, Michael\btxfnamespacelong R.}\btxauthorcolon\ \btxtitlefont {\btxifchangecase {Guide to guided policy search}{Guide to Guided Policy Search}}.
 \newblock \url{https://michaelrzhang.github.io/gps}, 2017.
 
 \bibitem {zhang2016}
-\btxnamefont {\btxlastnamefont {Zhang}, Tianhao}, \btxnamefont {Gregory
-  \btxlastnamefont {Kahn}}, \btxnamefont {Sergey \btxlastnamefont
-  {Levine}}\btxandcomma {} \btxandlong {}\ \btxnamefont {Pieter
-  \btxlastnamefont {Abbeel}}\btxauthorcolon\ \btxtitlefont {\btxifchangecase
-  {Learning deep control policies for autonomous aerial vehicles with
-  mpc-guided policy search}{Learning Deep Control Policies for Autonomous
-  Aerial Vehicles with MPC-Guided Policy Search}}, 2016.
+\btxnamefont {\btxlastnamefont {Zhang}, Tianhao}, \btxnamefont {Gregory \btxlastnamefont {Kahn}}, \btxnamefont {Sergey \btxlastnamefont {Levine}}\btxandcomma {} \btxandlong {}\ \btxnamefont {Pieter \btxlastnamefont {Abbeel}}\btxauthorcolon\ \btxtitlefont {\btxifchangecase {Learning deep control policies for autonomous aerial vehicles with mpc-guided policy search}{Learning Deep Control Policies for Autonomous Aerial Vehicles with MPC-Guided Policy Search}}, 2016.
 \newblock {\latintext \btxurlfont{https://doi.org/10.48550/arXiv.1509.06791}}.
 
 \bibitem {Shiyu2022}
-\btxnamefont {\btxlastnamefont {Zhao}, Shiyu}\btxauthorcolon\ \btxpublisherfont
-  {\btxtitlefont {Mathematical Foundation of Reinforcement Learning: Draft}}.
+\btxnamefont {\btxlastnamefont {Zhao}, Shiyu}\btxauthorcolon\ \btxpublisherfont {\btxtitlefont {Mathematical Foundation of Reinforcement Learning: Draft}}.
 \newblock 2022.
-\newblock
-  \url{https://github.com/MathFoundationRL/Book-Mathmatical-Foundation-of-Reinforcement-Learning}.
+\newblock \url{https://github.com/MathFoundationRL/Book-Mathmatical-Foundation-of-Reinforcement-Learning}.
 
 \end{thebibliography}

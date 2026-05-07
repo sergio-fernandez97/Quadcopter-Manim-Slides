@@ -14,7 +14,7 @@ Métodos de aprendizaje por refuerzo profundo para el control del sistema dinám
 \faculty{Facultad de Ciencias}
 \degree{Licenciado en Matemáticas Aplicadas}
 \supervisor{Dr. Antonio Capella Kort}
-\cityandyear{Ciudad Universitaria, Ciudad de México, 2025}
+\cityandyear{Ciudad Universitaria, Ciudad de México, 2026}
 \logouni{Escudo-UNAM}
 \logofac{Escudo-FCIENCIAS}
 
@@ -40,17 +40,12 @@ Métodos de aprendizaje por refuerzo profundo para el control del sistema dinám
 
 \usepackage[acronym]{glossaries}
 
-\crefrangeformat{equation}{ecuaciones #3(#1)#4 a #5(#2)#6}
+\crefformat{equation}{ecuación~#2#1#3}
+\Crefformat{equation}{Ecuación~#2#1#3}
+\crefrangeformat{equation}{ecuaciones #3#1#4 a #5#2#6}
+\newcommand{\eqreftext}[1]{ecuación~\ref{#1}}
 
-
-\usepackage[fixlanguage]{babelbib}
-\selectbiblanguage{spanish}
-% Map capitalized "English" to babel's lowercase "english" for babelbib
-\makeatletter
-\newcommand\bibsEnglish{\bibsenglish}
-\newcommand\dateEnglish{\dateenglish}
-\newcommand\extrasEnglish{\extrasenglish}
-\makeatother
+\usepackage{cite}
 \graphicspath{ {figures/} }
 \usepackage{array}
 
@@ -100,7 +95,6 @@ Métodos de aprendizaje por refuerzo profundo para el control del sistema dinám
 \DeclareMathOperator*{\argmax}{arg\,max}
 \DeclareMathOperator*{\argmin}{arg\,min}
 
-\usepackage{cite}
 
 \setlength{\columnsep}{30pt}
 
@@ -108,8 +102,10 @@ Métodos de aprendizaje por refuerzo profundo para el control del sistema dinám
 \usepackage{latexsym}
 
 \usepackage{tikz}
+\usepackage{tikz-3dplot}
 \usetikzlibrary{decorations.pathreplacing}
 \usetikzlibrary{fadings}
+\usetikzlibrary{3d,perspective,calc}
 %%
 
 \newcommand*{\horzbar}{\rule[.5ex]{2.5ex}{0.5pt}}
@@ -156,7 +152,31 @@ Métodos de aprendizaje por refuerzo profundo para el control del sistema dinám
 
 
 
-\makeglossaries
+\makenoidxglossaries
+\newglossaryentry{sym-state}{
+  name={\ensuremath{x_t}},
+  description={Vector de estado del sistema en el instante \ensuremath{t}, con \ensuremath{x_t\in\mathbb{R}^{n_x}}}
+}
+\newglossaryentry{sym-action}{
+  name={\ensuremath{u_t}},
+  description={Vector de control aplicado en el instante \ensuremath{t}, con \ensuremath{u_t\in\mathbb{R}^{n_u}}}
+}
+\newglossaryentry{sym-policy}{
+  name={\ensuremath{\pi_\theta}},
+  description={Política parametrizada por \ensuremath{\theta}}
+}
+\newglossaryentry{sym-reward}{
+  name={\ensuremath{r_t}},
+  description={Recompensa instantánea en el tiempo \ensuremath{t}}
+}
+\newglossaryentry{sym-value}{
+  name={\ensuremath{V^\pi(\mathbf{x})}},
+  description={Función de valor de estado bajo la política \ensuremath{\pi}}
+}
+\newglossaryentry{sym-qvalue}{
+  name={\ensuremath{Q^\pi(\mathbf{x},\mathbf{u})}},
+  description={Función de valor acción-estado bajo la política \ensuremath{\pi}}
+}
 \newacronym{adam}{ADAM}{\textit{Adaptive Moment Estimation}}
 \newacronym{admm}{ADMM}{\textit{Alternating Directions Method of Multipliers}}
 \newacronym{ann}{ANN}{\textit{Artificial Neural Network}}
@@ -166,6 +186,7 @@ Métodos de aprendizaje por refuerzo profundo para el control del sistema dinám
 \newacronym{dqn}{DQN}{\textit{Deep Q-Networks}}
 \newacronym{dpg}{DPG}{\textit{Deterministic Policy Gradient}}
 \newacronym{ilqr}{iLQR}{\textit{Iterative Linear Quadratic Regulator}}
+\newacronym{glie}{GLIE}{\textit{Greedy in the Limit with Infinite Exploration}}
 \newacronym{gps}{GPS}{\textit{Guided Policy Search}}
 \newacronym{kl}{KL}{\textit{Kullback Leibler}}
 \newacronym{lqr}{LQR}{\textit{Linear Quadratic Regulator}}
@@ -200,41 +221,62 @@ Quisiera expresar mi más profundo agradecimiento a los profesores de la Faculta
 
 Agradezco al CIMAT y al Dr. Andrés Christen, quienes me permitieron hacer uso de los servidores de la institución, recurso que fue crucial para realizar las simulaciones y experimentos presentados en este trabajo.
 
+También quiero agradecer al Dr. Ricardo Ramírez, al Dr. Carlos Hernández, a la Dra. Verónica Arriola y al Dr. Huziel Sauceda, quienes dedicaron tiempo a revisar este escrito y cuyas observaciones hiceron de este un mejor trabajo.  
+
 Finalmente, expreso mi gratitud a mis padres, José y Gabriela, quienes me apoyaron y acompañaron a lo largo de toda mi formación académica, motivándome siempre a concluir este esfuerzo. A mis hermanos, Ismael y Regina, por su apoyo incondicional; y en especial a Ismael, quien me inspiró y animó a perseguir una carrera en Matemáticas Aplicadas.
 \end{onehalfspace}
 
 
 
 \chapter*{Resumen}
-\textbf{Objetivo:} Evaluar la aplicación de métodos de aprendizaje por refuerzo con redes neuronales en espacios continuos para la optimización del control de un sistema dinámico de vuelo de un cuadricoptero.
+\textbf{Objetivo:} Evaluar la aplicación de métodos de aprendizaje por refuerzo con redes neuronales en espacios continuos para la optimización del control de un sistema dinámico de vuelo de un cuadricóptero.
 
-Un cuadricóptero es un vehículo aéreo  que se eleva a través  del empuje de cuatro motores, cuyos torques causan rotaciones que permiten controlar su orientación y desplazamiento. A diferencia de lo que ocurre en un avión, el control tiene que actuar rápido, pues intrínsecamente es un sistema inestable. Esto supone un reto al desarrollar estrategias autónomas que garanticen un control efectivo y estable.\cite{fang-i2019}
+Un cuadricóptero es un vehículo aéreo impulsado por cuatro motores, cuyos torques causan rotaciones que permiten controlar su orientación y desplazamiento. Debido a su inestabilidad intrínseca, el diseño de estrategias autónomas de control representa un problema desafiante \cite{fang-i2019}.
 
-El aprendizaje por refuerzo es una rama del aprendizaje automático inspirada en las teorías psicológicas del refuerzo y en el aprendizaje animal por prueba y error \cite{Sutton2000}. En este enfoque, un agente interactúa con un ambiente que le otorga recompensas según sus acciones, guiando así su comportamiento hacia una estrategia óptima que maximice las recompensas acumuladas. En la última década, este paradigma, impulsado por las redes neuronales, se ha aplicado con gran éxito en juegos de tablero, videojuegos, robótica, procesamiento de lenguaje natural, etc \cite{lapan2018deep}.
+El aprendizaje por refuerzo es un paradigma del aprendizaje automático en el que un agente interactúa con un entorno y aprende una estrategia que maximiza recompensas acumuladas \cite{Sutton2000}. En años recientes, su combinación con redes neuronales ha mostrado resultados destacados en juegos, robótica y procesamiento de lenguaje natural \cite{lapan2018deep}.
 
-Una red neuronal artificial es un modelo paramétrico organizado en capas, que transforma la información de entrada mediante operaciones algébricas y funciones no lineales. Su entrenamiento consiste en ajustar los parámetros para reducir el error entre la salida obtenida y la deseada, permitiendo aproximar funciones complejas y aprender representaciones útiles para la toma de decisiones. \cite{Bishop2006, Goodfellow-et-al-2016}
+Una red neuronal artificial es un modelo paramétrico organizado en capas que transforma la información de entrada mediante operaciones algebraicas y funciones no lineales. Su entrenamiento consiste en ajustar los parámetros para reducir el error entre la salida obtenida y la esperada, lo que permite aproximar funciones complejas y aprender representaciones útiles para la toma de decisiones \cite{Bishop2006, Goodfellow-et-al-2016}.
 
-En este trabajo se contrastan dos enfoques de aprendizaje por refuerzo con redes neuronales: \textit{model-based} y \textit{model-free}. En particular, se estudian y aplican los métodos \acrfull{gps} y \acrfull{ddpg}, respectivamente.
+En este trabajo se comparan dos enfoques de aprendizaje por refuerzo con redes neuronales —basado en modelos y sin modelos— mediante los métodos \acrfull{gps} \cite{2014-mfcgps} y \acrfull{ddpg} \cite{lillicrap2015continuous}, respectivamente, con la finalidad de utilizarlos para cumplir el objetivo planteado.
 
-Se presenta el modelo matemático de un cuadricóptero, considerado como un sistema dinámico con parámetros de control, el cual se utiliza para generar simulaciones de vuelo. Posteriormente, se introducen estrategias provenientes de la teoría de control, como el control por retroalimentación y el método \acrfull{ilqr}.
+Se presenta y desarrolla el modelo del cuadricóptero, junto con el marco teórico de control y aprendizaje por refuerzo necesario para formular el problema. Asimismo, se desarrollan los métodos mencionados anteriormente.
 
-A continuación se desarrolla el marco teórico del aprendizaje por refuerzo en conjuntos finitos, lo cual da pie al estudio del aprendizaje por refuerzo profundo, donde el control se representa mediante una red neuronal artificial. Se detalla la construcción del método \acrshort{gps}, incluyendo la explicación del algoritmo de optimización \acrfull{badmm} y la incorporación del \acrshort{ilqr} en el proceso de entrenamiento. Asimismo, a partir del algoritmo \textit{Q-learning}, se deriva y explica el método \acrshort{ddpg}.
+Finalmente, se describe el proceso de entrenamiento —mediante los métodos \acrshort{gps} y \acrshort{ddpg}— y se contrastan los resultados con métodos clásicos de control, con énfasis en el desempeño y la estabilidad.
 
-Finalmente, se describe la configuración del entorno y el proceso de entrenamiento para ambos métodos. Se presentan los resultados obtenidos y se comparan las estrategias de aprendizaje por refuerzo con métodos clásicos de control, analizando el desempeño y la estabilidad de cada enfoque.
+\textbf{Palabras clave: aprendizaje por refuerzo, control óptimo, cuadricóptero, control de vuelo, redes neuronales artificiales, \acrshort{gps}, \acrshort{ddpg}, \acrshort{ilqr}}.
+\newpage
+
+\chapter*{Abstract}
+\textbf{Objective:} To evaluate the application of reinforcement learning methods with neural networks in continuous spaces for optimizing the flight control of a quadcopter dynamic system.
+
+A quadcopter is an aerial vehicle driven by four motors whose torques generate rotations that control its orientation and displacement. Due to its intrinsic instability, designing autonomous control strategies is a challenging task \cite{fang-i2019}.
+
+Reinforcement Learning is a Machine Learning paradigm in which an agent interacts with an environment and learns a strategy that maximizes cumulative rewards \cite{Sutton2000}. In recent years, its combination with neural networks has shown strong performance in domains such as games, robotics, and natural language processing \cite{lapan2018deep}.
+
+An artificial neural network is a layered parametric model that transforms input information through algebraic operations and nonlinear functions. Training consists of adjusting parameters to reduce the error between obtained and expected outputs, which allows the approximation of complex functions and the learning of useful representations for decision making \cite{Bishop2006, Goodfellow-et-al-2016}.
+
+This work compares two reinforcement learning approaches with neural networks —model-based and model-free— through the methods \acrfull{gps} \cite{2014-mfcgps} and \acrfull{ddpg} \cite{lillicrap2015continuous}, respectively, with the aim of using them to fulfill the stated objective.
+
+The quadcopter model is presented and developed, together with the theoretical framework of control and reinforcement learning needed to formulate the problem. Likewise, the methods from above are also developed.
+
+Finally, the training process —using the \acrshort{gps} and \acrshort{ddpg} methods— is described, and the results are contrasted with classical control methods, with emphasis on performance and stability.
+
+\textbf{Keywords: reinforcement learning, optimal control, quadcopter, flight control, artificial neural networks, \acrshort{gps}, \acrshort{ddpg}, \acrshort{ilqr}}.
 \newpage
 
 
 
 \tableofcontents{}
-
 \thispagestyle{empty}
 \listoffigures
 \listoftables
 
+\printnoidxglossary[type=\acronymtype,title=Siglas,sort=use]
+%\glsaddall
+%\printnoidxglossary[type=main,title=Notación matemática,sort=use, nonumberlist]
+
 \cleardoublepage
 \pagenumbering{arabic}
-
-% \printglossary[type=\acronymtype,title=Glosario de acrónimos]
 
 \mainmatter % This resets page numbering and should help with chapter numbering
 \setcounter{chapter}{0} % Ensure we start from 1
@@ -270,11 +312,9 @@ Finalmente, se describe la configuración del entorno y el proceso de entrenamie
 % -----------------------------------------------------------------------
 % Back matter
 % -----------------------------------------------------------------------
-\bibliographystyle{babplain}
+\bibliographystyle{ieeetr}
 \bibliography{references.bib}
 
 %\printbibliography
-\clearpage
-\printglossary[type=\acronymtype]
 
 \end{document}

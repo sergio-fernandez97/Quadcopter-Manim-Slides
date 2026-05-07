@@ -1,43 +1,52 @@
 \chapter{Redes neuronales artificiales}
-\label{sec:DL}
+\label{appendix:DL}
 
 En gran medida el éxito de la inteligencia artificial se debe al desarrollo del \textbf{aprendizaje profundo}, mejor conocido como \textbf{\acrfull{dl}}. El aprendizaje profundo utiliza \textbf{redes neuronales artificiales} como modelo subyacente para la inteligencia artificial \cite{Roberts_2022}. Las redes neuronales artificiales son estructuras paramétricas adaptativas que procesan información. Se les denomina redes porque están compuestas por múltiples funciones y se les suele asociar con gráficas acíclicas \cite{Goodfellow-et-al-2016}. Aunque este modelo tuvo su inspiración en la neurociencia, hoy en día guarda poca relación con ese campo de estudio \footnote{El concepto de neurona artificial fue concebido por McCulloch y Pitts en 1943 como un modelo de una neurona biológica \cite{Roberts_2022}. Posteriormente, en 1958 Rosenblatt introdujo el modelo perceptrón, que incorpora el uso de parámetros ajustables \cite{Roberts_2022}. El modelo de perceptrón fue el primer cimiento del aprendizaje profundo.}. En la actualidad, las redes neuronales artificiales son máquinas de aproximación de funciones que están diseñadas para lograr generalización estadística \cite{Goodfellow-et-al-2016}. 
 
-\section{Redes unidireccionales (\textit{feedforward})}
-Para este trabajo sólo será necesario introducir una clase de red neuronal artificial, conocida como \textbf{perceptrón multicapa}, también denominado \acrfull{mlp}. Un \acrshort{mlp} es una función paramétrica adaptativa que tiene el fin de aproximar otra función. Este tipo de redes neuronales tiene la cualidad de que los valores de entrada sólo se propagan en una dirección y no generan ciclos internamente \cite{Roberts_2022}. Por esta razón también se les conoce como \textbf{redes unidireccionales} (\textit{feedforward}). En este trabajo se usa el termino \acrfull{ann} para referirse a un \acrshort{mlp}.
+\section{Redes unidireccionales}
+Para este trabajo sólo será necesario introducir una clase de red neuronal artificial, conocida como \textbf{perceptrón multicapa}, también denominado \acrfull{mlp}. Un \acrshort{mlp} es una función paramétrica adaptativa que tiene el fin de aproximar otra función. Este tipo de redes neuronales tiene la cualidad de que los valores de entrada sólo se propagan en una dirección y no generan ciclos internamente \cite{Roberts_2022}. Por esta razón también se les conoce como \textbf{redes unidireccionales} (\textit{feedforward}). En este trabajo se usa el término \acrfull{ann} para referirse a un \acrshort{mlp}.
 
-En esta sección se definen los principales de una red neuronal unidireccional, como  neuronas, funciones de activación, parámetros y capas (\textit{layers}). Todos estos elementos se agrupan en una estructura llamada arquitectura.
+En esta sección se definen los principales elementos de una \acrshort{ann} unidireccional, como  neuronas, funciones de activación, parámetros y capas (\textit{layers}). Todos estos elementos se agrupan en una estructura llamada arquitectura.
 
 
 \subsection{Arquitectura}
 \label{sec:ann_architecture}
-La arquitectura se define como la topología, estructura u organización de la red neuronal. La arquitectura de la red neuronal se compone de neuronas o nodos, que son conectados por medio de un enlace. Este enlace es direccional y representa la trayectoria que debe seguir la información. Las neuronas se agrupan en unidades estructurales llamadas capas. \cite{Goodfellow-et-al-2016}
+La arquitectura se define como la topología, estructura u organización de la \acrshort{ann}. Dicha arquitectura se compone de neuronas o nodos, que son conectados por medio de un enlace. Este enlace es direccional y representa la trayectoria que debe seguir la información. Las neuronas se agrupan en unidades estructurales llamadas capas. \cite{Goodfellow-et-al-2016}
 
-La siguiente definición esta basada en lo mostrado en \cite{Roberts2022}.
+La siguiente definición está basada en lo mostrado en \cite{Roberts2022}.
 
 \begin{definition}
 \label{def:ANN}
-Una \textbf{red neuronal unidireccional completamente conectada} esta descrita por su arquitectura $a = \langle N, \phi \rangle$, donde $N \in \mathbb{N}^{L+1}$ es un arreglo que representa a la cantidad de nodos en cada capa, $L \in \mathbb{N}$ representa al número de capas y $\phi : \mathbb{R} \rightarrow \mathbb{R}$ se refiere a la función de activación. Sean $n_0$, $n_L$ y $n_{\ell} \in \mathbb{N}$ el número de neuronas en la capa de entrada, salida y $\ell$-ésima, respectivamente. Sea $f_a(\cdot ;\bm{\theta}): \mathbb{R}^{n_0} \rightarrow \mathbb{R}^{n_L}$ la función correspondiente a la red neuronal, que para todo valor $\mathbf{x} \in \mathbb{R}^{n_0}$ y parámetros
-$$\bm{\theta} = \left(\mathbf{W}^{[\ell]}, \mathbf{b}^{[\ell]}\right)_{\ell =1}^{L},$$
+Una \textbf{red neuronal unidireccional completamente conectada} está descrita por su arquitectura $a = \langle N, \phi \rangle$, donde $N \in \mathbb{N}^{L+1}$ es un arreglo que representa a la cantidad de nodos en cada capa, $L \in \mathbb{N}$ representa al número de capas y $\phi : \mathbb{R} \rightarrow \mathbb{R}$ se refiere a la función de activación. Sean $n_0$, $n_L$ y $n_{\ell} \in \mathbb{N}$ el número de neuronas en la capa de entrada, salida y $\ell$-ésima, respectivamente. Sea $f_a(\cdot ;\bm{\theta}): \mathbb{R}^{n_0} \rightarrow \mathbb{R}^{n_L}$ la función correspondiente a la \acrshort{ann}, que para todo valor $\mathbf{x} \in \mathbb{R}^{n_0}$ y parámetros
+$$
+\bm{\theta} = \left(\mathbf{W}^{[\ell]}, \mathbf{b}^{[\ell]}\right)_{\ell =1}^{L} \in \Theta,
+$$
 se expresa de la siguiente forma,
 %Sea $L\in \mathbb{N}$ con $L \geq 2$ y sean $n_0$ y $n_L \in \mathbb{N}$. Sea $\mathcal{N}(\cdot | \theta):\mathbb{R}^{n_0} \rightarrow \mathbb{R}^{n_L}$ un \textbf{perceptrón multicapa unidireccional} con $L$ capas, parámetros $\theta$ y función de activación $\phi$, que se define de la siguiente manera: 
 \begin{align}
 f_a(\textbf{x}; \bm{\theta}) := \phi\circ(T_{L}(\phi\circ(T_{L-1}(\cdots \phi\circ(T_1(\mathbf{x})) \cdots)))).
 \label{eq:ANN}
 \end{align}
- Donde $T_{\ell}$ representa la transformación aplicada al valor de salida $\mathbf{z} \in \mathbb{R}^{n_{
+donde,
+$$
+\Theta := \prod_{\ell=1}^{L}
+\left(
+\mathbb{R}^{n_{\ell}\times n_{\ell-1}} \times \mathbb{R}^{n_{\ell}}
+\right).
+$$
+ La expresión $T_{\ell}$ representa la transformación aplicada al valor de salida $\mathbf{z} \in \mathbb{R}^{n_{
  \ell -1}}$ de la capa anterior.
- Esta transformación esta dada por la siguiente expresión,
+ Esta transformación está dada por la siguiente expresión,
 $$T_{\ell}(\mathbf{z}) = \mathbf{W}^{[\ell]}\mathbf{z} + \mathbf{b}^{[\ell]} \qquad \mathbf{W}^{[\ell]} \in \mathbb{R}^{n_{\ell} \times n_{\ell -1}}, \mathbf{b}^{[\ell]} \in \mathbb{R}^{n_{\ell}} \qquad \forall \ell \in \{1, 2, \cdots, L\}.$$
 La función de escalar $\phi: \mathbb{R} \rightarrow \mathbb{R}$ se denomina función de activación y el operador $\circ$ representa que la operación se realiza elemento por elemento.
 %Sean $\textbf{x}\in \mathbb{R}^{1 \times n_x}$, $\textbf{y} \in \mathbb{R}^{1 \times n_y}$ y $W^{[\ell]} \in \mathbb{R}^{n_{\ell} \times n_{\ell - 1}}$ donde $\ell$ representa el índice de capa, $n_{\ell-1}$ y $n_{\ell}$ son las dimensiones de entrada y salida de la capa $\ell$, respectivamente.
 \end{definition}
-Una red neuronal esta completamente caracterizada por su arquitectura $a = \langle N, \phi \rangle$ y sus parámetros $\bm\theta$, es decir, que basta con conocer la cantidad de capas, su dimensión y la función de activación que se aplica a cada neurona para saber la forma de la red neuronal. Cuando no sea necesario hacer énfasis sobre la arquitectura de la red neuronal, se omite en la notación de tal forma que $f_a(\mathbf{x}; \bm{\theta})=f(\mathbf{x}; \bm{\theta})$.
+Una \acrshort{ann} está completamente caracterizada por su arquitectura $a = \langle N, \phi \rangle$ y sus parámetros $\bm\theta$, es decir, que basta con conocer la cantidad de capas, su dimensión y la función de activación que se aplica a cada neurona para saber la forma de la \acrshort{ann}. Cuando no sea necesario hacer énfasis sobre la arquitectura de la \acrshort{ann}, se omite en la notación de tal forma que $f_a(\mathbf{x}; \bm{\theta})=f(\mathbf{x}; \bm{\theta})$.
 
-En este caso una neurona se refiere a la aplicación de la transformación $T_{\ell}$ y la subsecuente aplicación de su correspondiente función de activación $\phi$ sobre uno de los valores de salida $\mathbf{z}_j$ de la capa anterior. Esta interpretación de las neuronas como módulos unitarios se hace patente en la representación gráfica de una red neuronal como se muestra en la figura \ref{fig:multilayer-perceptron}.
+En este caso una neurona se refiere a la aplicación de la transformación $T_{\ell}$ y la subsecuente aplicación de su correspondiente función de activación $\phi$ sobre uno de los valores de salida $\mathbf{z}_j$ de la capa anterior. Esta interpretación de las neuronas como módulos unitarios se hace patente en la representación gráfica de una \acrshort{ann} como se muestra en la figura \ref{fig:multilayer-perceptron}.
 
 \subsubsection{Función de activación}
-Usualmente la función de activación se escoge como una función no lineal con el fin de incrementar la expresividad de una red neuronal \cite{Roberts_2022}. Sin una función de activación o con una función de activación lineal, el mapeo definido por una red neuronal de la forma \ref{eq:ANN} se restringiría a ser lineal \cite{prince2023understanding}. A continuación se muestran las funciones de activación comúnmente empleadas. 
+Usualmente la función de activación se escoge como una función no lineal con el fin de incrementar la expresividad de una \acrshort{ann} \cite{Roberts_2022}. Sin una función de activación o con una función de activación lineal, el mapeo definido por una \acrshort{ann} de la forma en la \eqreftext{eq:ANN} se restringiría a ser lineal \cite{prince2023understanding}. A continuación se muestran las funciones de activación comúnmente empleadas. 
 
 \begin{example}
 Sea $\phi: \mathbb{R} \rightarrow [-1, 1]$ la función de activación dada por la siguiente expresión,
@@ -46,7 +55,7 @@ Esta función es denominada como \textbf{tangente hiperbólica}.
 \end{example}
 
 \begin{example}
-Sea $\phi: \mathbb{R} \rightarrow \mathbb{R}$ la función de activación llamada \textbf{\acrfull{relu}}. Esta dada por la siguiente expresión,
+Sea $\phi: \mathbb{R} \rightarrow \mathbb{R}$ la función de activación llamada \textbf{\acrfull{relu}}. Está dada por la siguiente expresión,
 $$\phi(x) = 
 \begin{cases}
 0 & \text{ si } x<0, \\
@@ -146,14 +155,14 @@ $$
 	    \draw [decorate,decoration={brace,amplitude=10pt},xshift=-4pt,yshift=0pt] (8.5,4.5) -- (9.75,4.5) node [black,midway,yshift=+0.6cm]{$L$-esima capa oculta};
 	    \draw [decorate,decoration={brace,amplitude=10pt},xshift=-4pt,yshift=0pt] (11.5,4) -- (12.75,4) node [black,midway,yshift=+0.6cm]{capa de salida};
 	\end{tikzpicture}
-	\caption{Red que representa un perceptrón multicapa de $L$ capas ocultas con $n_0$ valores de entrada y $n_{L+1}$ valores de salida. La $L$-esima capa oculta recibe $n_{L}$ valores de la capa anterior. En este caso $h_{n}^{[\ell]} = \phi\left(\mathbf{W}^{[\ell]}\mathbf{h}_{m}^{[\ell -1]} + \mathbf{b}^{[\ell]}\right) $ representa la $n$-ésima salida de la $\ell$-ésima capa de la red neuronal, dónde $1 \leq \ell \leq L$.}	
+	\caption{Red que representa un perceptrón multicapa de $L$ capas ocultas con $n_0$ valores de entrada y $n_{L+1}$ valores de salida. La $L$-esima capa oculta recibe $n_{L}$ valores de la capa anterior. En este caso $h_{n}^{[\ell]} = \phi\left(\mathbf{W}^{[\ell]}\mathbf{h}_{m}^{[\ell -1]} + \mathbf{b}^{[\ell]}\right) $ representa la $n$-ésima salida de la $\ell$-ésima capa de la \acrshort{ann}, donde $1 \leq \ell \leq L$.}	
  \label{fig:multilayer-perceptron}
 \end{figure}
 
 \section{Entrenamiento}
 El entrenamiento de una \acrshort{ann} se refiere al proceso de encontrar los parámetros óptimos para la tarea que realiza. Este proceso también se suele denominar aprendizaje. Para encontrar estos valores, existen múltiples técnicas, la más común ha sido hacer uso de la optimización basada en gradientes. \cite{Goodfellow-et-al-2016}
 
-Los algoritmos de aprendizaje basados en gradientes tienen la capacidad de eficientemente procesar datos de entrenamiento al optimizar una función objetivo o pérdida que directamente mide el desempeño de la red neuronal para una tarea específica. En particular, una función de pérdida puede comparar la salida del mapeo de la red neuronal con el valor deseado o etiqueta \cite{Roberts_2022}, este enfoque se denomina aprendizaje supervisado.
+Los algoritmos de aprendizaje basados en gradientes tienen la capacidad de eficientemente procesar datos de entrenamiento al optimizar una función objetivo o pérdida que directamente mide el desempeño de la \acrshort{ann} para una tarea específica. En particular, una función de pérdida puede comparar la salida del mapeo de la \acrshort{ann} con el valor deseado o etiqueta \cite{Roberts_2022}, este enfoque se denomina aprendizaje supervisado.
 
 \subsection{Aprendizaje supervisado}
 \label{sec:supervised_learning}
@@ -166,12 +175,12 @@ Antes de describir el proceso de entrenamiento, es necesario entender que signif
 \end{align}
 tal que entre más cercano sea $f(\mathbf{x};\bm\theta)$ a $\mathbf{y}$, menor será el valor de la función objetivo. \cite{Roberts_2022}
 
-La meta del entrenamiento es ajustar los parámetros del modelo de tal forma que permita reducir el valor de \ref{eq:loss_super} de tantas muestras como sea posible \cite{Roberts_2022}. Idealmente, se necesita reducir el valor esperado sobre toda la distribución de datos, 
+La meta del entrenamiento es ajustar los parámetros del modelo de tal forma que permita reducir el valor en la \eqreftext{eq:loss_super} de tantas muestras como sea posible \cite{Roberts_2022}. Idealmente, se necesita reducir el valor esperado sobre toda la distribución de datos, 
 \begin{align}
     \mathbb{E}[\mathcal{L}(\bm\theta)] = \int p(x, y)\mathcal{L}\Big(f(\mathbf{x};\bm\theta), \mathbf{y}\Big) dxdy .
     \label{eq:mean_loss}
 \end{align}
-Sin embargo, en la práctica no siempre se tiene acceso a una expresión analítica de la distribución de los datos \cite{Roberts_2022}. En lugar de ello, se usa una expresión \textbf{empírica} de \ref{eq:mean_loss}. Se muestrean un conjunto finito de datos $\mathcal{A}$ y se optimiza la siguiente función, 
+Sin embargo, en la práctica no siempre se tiene acceso a una expresión analítica de la distribución de los datos \cite{Roberts_2022}. En lugar de ello, se usa una expresión \textbf{empírica} en la \eqreftext{eq:mean_loss}. Se muestrean un conjunto finito de datos $\mathcal{A}$ y se optimiza la siguiente función, 
 \begin{align}
     \mathcal{L}_{\mathcal{A}}(\bm\theta) = \frac{1}{|\mathcal{A}|}\sum_{(\mathbf{x}, \mathbf{y}) \in \mathcal{A}} \mathcal{L}\Big(f(\mathbf{x};\bm\theta), \mathbf{y}\Big),
     \label{eq:train_loss}
@@ -187,22 +196,22 @@ Específicamente, entrenar una \acrshort{ann} consiste en encontrar una configur
     \right].
     \label{eq:min_train_loss}
 \end{align}
-\subsection{Descenso de gradiente}
+\subsection{Descenso por el gradiente}
 \label{sec:gradient_decent}
-Si la función objetivo \ref{eq:train_loss} es diferenciable, revolver el problema de optimización planteado por la expresión \ref{eq:min_train_loss} es equivalente a encontrar el valor extremo $\bm\theta^{*}$ por medio de la siguiente ecuación,
+Si la función objetivo en la \eqreftext{eq:train_loss} es diferenciable, revolver el problema de optimización planteado en la \eqreftext{eq:min_train_loss} es equivalente a encontrar el valor extremo $\bm\theta^{*}\in\Theta$ por medio de la siguiente ecuación,
 $$\mathbf{0}=\nabla_{\bm\theta}\mathcal{L}_{\mathcal{A}}(\bm\theta).$$
 Sin embargo, esta ecuación no puede resolverse directamente salvo en ciertos casos. En la práctica, en lugar de obtener una solución analítica se utilizan algoritmos iterativos que en cada paso reduzcan el error.
 
-El método de \textbf{descenso de gradiente} es un algoritmo de optimización de primer orden que comúnmente es utilizado para encontrar el mínimo de funciones utilizadas en aprendizaje automático como la expresión \ref{eq:train_loss} \cite{Roberts_2022}.
-Para encontrar un mínimo de una función utilizando el descenso de gradiente, se toman pasos actualización proporcionales al gradiente negativo de la misma función a partir del valor actual \cite{mml-book2020}.
+El método de \textbf{descenso por el gradiente} es un algoritmo de optimización de primer orden que comúnmente es utilizado para encontrar el mínimo de funciones utilizadas en aprendizaje automático como la \eqreftext{eq:train_loss} \cite{Roberts_2022}.
+Para encontrar un mínimo de una función utilizando el descenso por el gradiente, se toman pasos actualización proporcionales al gradiente negativo de la misma función a partir del valor actual \cite{mml-book2020}.
 
-En particular, en el aprendizaje profundo se utiliza una versión del método llamado \textbf{descenso de gradiente estocástico}, cuya regla de actualización aplicado al problema \ref{eq:min_train_loss} es,
+En particular, en el aprendizaje profundo se utiliza una versión del método llamado \textbf{descenso por el gradiente estocástico}, cuya regla de actualización aplicado al problema en la \eqreftext{eq:min_train_loss} es,
 \begin{align}
     \bm\theta^{(k+1)} = \bm\theta^{(k)} - \alpha \nabla_{\bm\theta}\mathcal{L}_{\mathcal{S}_{k}}(\bm\theta)\Big|_{\bm\theta = \bm\theta^{(k)}},
     \label{eq:SGD}
 \end{align}
-dónde $k$ representa el número de actualizaciones anteriores. Cada $\mathcal{S}_{k}$ es llamado 
-\textbf{\textit{batch}} o \textit{mini-batch} y representa una partición del conjunto de entrenamiento $\mathcal{A}$. En este caso el entrenamiento se divide en \textbf{épocas} (\textit{epochs}), una época consta de utilizar la regla \ref{eq:SGD} sobre todos los \textit{mini-batches} que conforman el conjunto de entrenamiento. \cite{Roberts_2022} 
+donde $k$ representa el número de actualizaciones anteriores. Cada $\mathcal{S}_{k}$ es llamado 
+\textbf{\textit{batch}} o \textit{mini-batch} y representa una partición del conjunto de entrenamiento $\mathcal{A}$. En este caso el entrenamiento se divide en \textbf{épocas} (\textit{epochs}), una época consta de utilizar la regla en la \eqreftext{eq:SGD} sobre todos los \textit{mini-batches} que conforman el conjunto de entrenamiento. \cite{Roberts_2022} 
 
 
 

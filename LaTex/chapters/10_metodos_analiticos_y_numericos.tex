@@ -1,4 +1,7 @@
 \chapter{Métodos Analíticos y Numéricos}
+\label{appendix:metodos_numericos}
+
+En este apéndice se presentan herramientas matemáticas complementarias utilizadas en el desarrollo de este trabajo. En particular, se incluye una introducción a la aproximación estocástica y un resultado sobre la divergencia de Kullback-Leibler para distribuciones normales multivariadas.
 
 \section{Aproximación estocástica}
 La aproximación estocástica se refiere a una amplia clase de métodos estocásticos iterativos que tienen el objetivo de encontrar raíces o resolver problemas de optimización. No obstante, la definición de estas tareas en muchas ocasiones implica estimar funciones desconocidas. \cite{Shiyu2022}
@@ -13,26 +16,28 @@ Sea $Z$ una variable aleatoria. Se desea obtener una estimación del valor esper
 \end{align}
 Esta aproximación corresponde a la estimación Monte Carlo. Por la ley de los grandes números, se sabe que conforme $n$ crece, la aproximación se asemeja al valor esperado real.
 
-El cálculo de la expresión \ref{eq:MC_mean}, tiene una desventaja significativa, ya que antes de la hacer la estimación se requiere tener un número significativo de muestras. Esto representa un inconveniente si el tiempo de muestreo es tardado. Para resolver esta cuestión, se puede calcular la expresión \ref{eq:MC_mean} de forma incremental e iterativa. Esto se hace realizando el siguiente cálculo en cada iteración $k$,
+El cálculo de la \eqreftext{eq:MC_mean}, tiene una desventaja significativa, ya que antes de la hacer la estimación se requiere tener un número significativo de muestras. Esto representa un inconveniente si el tiempo de muestreo es tardado. Para resolver esta cuestión, se puede calcular la \eqreftext{eq:MC_mean} de forma incremental e iterativa. Esto se hace realizando el siguiente cálculo en cada iteración $k$,
 \begin{align}
     w_{k} = \frac{1}{k}\sum_{i=1}^{k}
     z_i \quad \forall k \in \{2, 3, \cdots\}.
 \end{align}
 La aproximación $w_{k}$ se puede expresar en términos de $w_{k-1}$, como se muestra debajo,
-\begin{align}
-    w_{k} &= \frac{1}{k}\left(z_{k} + \sum_{i=1}^{k-1}z_{i} \right)\\
-    &= \frac{1}{k}(z_{k}+(k-1)w_{k-1}) \\
-    &= w_{k-1}-\frac{1}{k}(w_{k-1} -z_{k})
+\begin{equation}
+    \begin{aligned}
+        w_{k} &= \frac{1}{k}\left(z_{k} + \sum_{i=1}^{k-1}z_{i} \right)\\
+        &= \frac{1}{k}(z_{k}+(k-1)w_{k-1}) \\
+        &= w_{k-1}-\frac{1}{k}(w_{k-1} -z_{k})
+    \end{aligned}
     \label{eq:SA_mean}
-\end{align}
-La expresión \ref{eq:SA_mean} permite obtener una estimación del promedio desde el primer momento en que se tenga una muestra. Por lo que puede ser utilizada para otra tarea mientras continua la estimación del promedio.
+\end{equation}
+La expresión \eqreftext{eq:SA_mean} permite obtener una estimación del promedio desde el primer momento en que se tenga una muestra. Por lo que puede ser utilizada para otra tarea mientras continua la estimación del promedio.
 
-Adicionalmente, se puede considerar una modificación de la regla de optimización \ref{eq:SA_mean}, dada por la siguiente expresión,
+Adicionalmente, se puede considerar una modificación de la regla de optimización en la \eqreftext{eq:SA_mean}, dada por la siguiente expresión,
 \begin{align}
     w_{k} &= w_{k-1}-\alpha_{k}(w_{k-1} -z_{k}),
     \label{eq:SA_mean2}
 \end{align}
-en este caso el termino $\alpha_{k}$ remplaza a $1/k$. La sucesión dada por \ref{eq:SA_mean2} converge bajo condiciones especificas que debe satisfacer la sucesión $\{\alpha_{k}\}$. Este es un caso particular del algoritmo llamado Robbins-Monro.
+en este caso el término $\alpha_{k}$ remplaza a $1/k$. La sucesión dada por la \eqreftext{eq:SA_mean2} converge bajo condiciones especificas que debe satisfacer la sucesión $\{\alpha_{k}\}$. Este es un caso particular del algoritmo llamado Robbins-Monro.
 
 \subsection{Método Robbins-Monro}
 \label{sec:RM}
@@ -43,47 +48,55 @@ En general, este método busca resolver problemas con la siguiente forma,
     g(w) =0,
     \label{eq:RM_problem}
 \end{align}
-dónde $w\in \mathbb{R}$ es la variable para la que se resuelve el problema y $g:\mathbb{R}\rightarrow{\mathbb{R}}$ es una función. Concretamente, el método \acrshort{rm} se especializa en resolver el caso en que la función $g$ es desconocida y no puede ser observada con precisión. En lugar de ello, se asume que las observaciones disponibles tienen un ruido aditivo, como se muestra en la siguiente expresión,
-$$\tilde{g}(w, \eta) = g(w) + \eta,$$
-dónde $\eta \in \mathbb{R}$ es un error de observación.
+donde $w\in \mathbb{R}$ es la variable para la que se resuelve el problema y $g:\mathbb{R}\rightarrow{\mathbb{R}}$ es una función. Concretamente, el método \acrshort{rm} se especializa en resolver el caso en que la función $g$ es desconocida y no puede ser observada con precisión. En lugar de ello, se asume que las observaciones disponibles tienen un ruido aditivo, como se muestra en la siguiente expresión,
+\begin{align}
+    \tilde{g}(w, \eta) = g(w) + \eta,
+\end{align}
+donde $\eta \in \mathbb{R}$ es un error de observación.
 
-Bajo las consideraciones anteriores el método \acrshort{rm} resuelve \ref{eq:RM_problem}, utilizando la siguiente regla de actualización,
+Bajo las consideraciones anteriores el método \acrshort{rm} resuelve \eqreftext{eq:RM_problem}, utilizando la siguiente regla de actualización,
 \begin{align}
     w_{k+1} &= w_{k} -\alpha_k\tilde{g}(w_k, \eta_k),
     \label{eq:RM_rule}
 \end{align}
-dónde $w_k$ es la k-ésima estimación de la raíz, $\tilde{g}(w_k, \eta_k)$ es su correspondiente observación y $\alpha_k$ es un coeficiente positivo.
+donde $w_k$ es la k-ésima estimación de la raíz, $\tilde{g}(w_k, \eta_k)$ es su correspondiente observación y $\alpha_k$ es un coeficiente positivo.
 
-El teorema de Robbins-Monro garantiza la convergencia de la sucesión $w_k$ dada por \ref{eq:RM_rule} bajo ciertas condiciones. En primer lugar establece que $g$ debe ser monótona creciente o no decreciente. En segundo lugar la sucesión $\{\alpha_k\}$ debe satisfacer las siguientes hipótesis,
+El teorema de Robbins-Monro garantiza la convergencia de la sucesión $w_k$ dada por la \eqreftext{eq:RM_rule} bajo ciertas condiciones. En primer lugar establece que $g$ debe ser monótona creciente o no decreciente. En segundo lugar la sucesión $\{\alpha_k\}$ debe satisfacer las siguientes hipótesis,
 \begin{align}
     1) \sum_{k=1}^{\infty}\alpha_{k}^2 < \infty \qquad 2)\sum_{k=1}^{\infty} \alpha_{k} \rightarrow \infty.
 \end{align}
 Según se expone en \cite{Shiyu2022}, la condición $1)$ garantiza que la diferencia $w_{k+1}-w_{k} \rightarrow 0$, es decir que haya convergencia. Mientras que la condición $2)$ asegura que la convergencia no sea tan rápida y lo haga a partir de cualquier valor inicial.
 
 \subsubsection{Aplicación a la estimación del promedio}
-Retomando la expresión \ref{eq:SA_mean2}, que es la aplicación del método \acrshort{rm} para la estimación del promedio. Se puede considerar que 
-$$g(w) = w - \mathbb{E}[Z].$$
-Al resolver la ecuación $g(w)=0$, se logra encontrar $\mathbb{E}[Z]$. En este caso la observación disponible esta dada por 
-$$\tilde{g}(w, z) = w-z.$$
-Ya que $z$ es una muestra de $Z$, se obtiene que
-\begin{align*}
+Retomando la \eqreftext{eq:SA_mean2}, que es la aplicación del método \acrshort{rm} para la estimación del promedio. Se puede considerar que 
+\begin{align}
+    g(w) = w - \mathbb{E}[Z].
+\end{align}
+Al resolver la ecuación $g(w)=0$, se logra encontrar $\mathbb{E}[Z]$. En este caso la observación disponible está dada por 
+\begin{align}
+    \tilde{g}(w, z) = w-z.
+\end{align}
+Ya que $z$ es una muestra de $Z$, se obtiene que,
+\begin{equation}
+    \begin{aligned}
     \tilde{g}(w, \eta) &= w-z \\
     &= w - z + \mathbb{E}[Z] - \mathbb{E}[Z] \\
     &= \underbrace{(w - \mathbb{E}[Z])}_{g(w)} + \underbrace{(\mathbb{E}[Z]-z)}_{\eta}.
-\end{align*}
+    \end{aligned}
+\end{equation}
 
 
 
-\section{Divergencia Kullback-Leibler para distribuciones normales multivariadas}
+\section{Divergencia de Kullback-Leibler para distribuciones normales multivariadas}
 
-El siguiente teorema y su correspondiente demostración estan basados en el resultado presentados en \textit{Kullback-Leibler divergence for the multivariate normal distribution} \cite{soch2023}.
+El siguiente teorema y su correspondiente demostración están basados en el resultado presentado en \textit{Kullback-Leibler divergence for the multivariate normal distribution} \cite{soch2023}.
 
 \begin{theorem}
     Sea $\mathbf{x} \in \mathbb{R}^{n}$ un vector aleatorio. Se asume que dos funciones de densidad de distribuciones normales multivariadas $p$ y $q$ describen la probabilidad de distribución de $\mathbf{x}$ de la siguiente manera,
-    \begin{align*}
+    \begin{align}
         p: & \quad \mathbf{x} \sim \mathcal{N}(\bm{\mu}_1, \bm{\Sigma}_1), \\
         q: & \quad \mathbf{x} \sim \mathcal{N}(\bm{\mu}_2, \bm{\Sigma}_2).
-    \end{align*}
+    \end{align}
     Entonces la divergencia de Kullback-Leibler de $p$ con respecto a $q$ está dada por la siguiente expresión,
     \begin{align}
     D_{\text{KL}}(p||q) &= \frac{1}{2}\left[ 
@@ -97,11 +110,12 @@ El siguiente teorema y su correspondiente demostración estan basados en el resu
 \begin{proof}
     La divergencia KL para dos variables aleatorias continuas
     está dada por,
-    \begin{align*}
+    \begin{align}
         D_{\text{KL}}(p||q) = \int_{\mathbb{R}^{n}}p(\mathbf{x})\log \frac{p(\mathbf{x})}{q(\mathbf{x})}d\mathbf{x},
-    \end{align*}
-    aplicando esta expresión a las funciones de densidad de las normales multivariables $p$ y $q$, se obtiene que, 
-    \begin{align*}
+    \end{align}
+    aplicando esta expresión a las funciones de densidad de las normales multivariables $p$ y $q$, se obtiene que,
+\begin{equation} 
+    \begin{aligned}
         D_{\text{KL}}(p||q) &= \int_{\mathbb{R}^{n}} 
         \mathcal{N}(\mathbf{x}; \bm{\mu}_1, \bm{\Sigma}_1)
         \log\frac{
@@ -131,10 +145,11 @@ El siguiente teorema y su correspondiente demostración estan basados en el resu
         -(\mathbf{x}-\bm{\mu}_1)^{\top}\bm{\Sigma}_{1}^{-1}(\mathbf{x}- \bm{\mu}_1)
         + (\mathbf{x}-\bm{\mu}_2)^{\top}\bm{\Sigma}_{2}^{-1}(\mathbf{x}- \bm{\mu}_2)
         \right\rangle_p.
-    \end{align*}
-    
-    Usando el hecho de que para $a \in \mathbb{R}$, $a=\text{tr}(a)$ y aplicando la propiedad $\text{tr}(\mathbf{ABC})=\text{tr}(\mathbf{BCA})$, se tiene que, 
-    \begin{align*}
+    \end{aligned}
+\end{equation}
+Usando el hecho de que para $a \in \mathbb{R}$, $a=\text{tr}(a)$ y aplicando la propiedad $\text{tr}(\mathbf{ABC})=\text{tr}(\mathbf{BCA})$, se tiene que,
+\begin{equation}
+    \begin{aligned}
         &= \frac{1}{2}\left\langle 
         \log|\bm{\Sigma}_2\bm{\Sigma}_1^{-1}| 
         - \text{tr}\left(\bm{\Sigma}_1^{-1}(\mathbf{x}-\bm{\mu}_1)(\mathbf{x}-\bm{\mu}_1)^{\top} \right)
@@ -146,9 +161,10 @@ El siguiente teorema y su correspondiente demostración estan basados en el resu
         + \text{tr}\left(
         \bm{\Sigma}_2^{-1}(\mathbf{x}\mathbf{x}^{\top} -2 \bm{\mu}_2\mathbf{x}^{\top} + \bm{\mu}_2\bm{\mu}_2^{\top})
         \right)\right\rangle_p.
-    \end{align*}
+    \end{aligned}
+\end{equation}
     Debido a que la función $\text{tr}$ y el operador $\langle\cdot\rangle_p$ son lineales, se puede realizar el siguiente cambio sobre el lado derecho de la igualdad, 
-    \begin{align*}
+    \begin{align}
         &= \frac{1}{2}\left(\log|\bm{\Sigma}_2\bm{\Sigma}_1^{-1}|
         - \text{tr}\left(\bm{\Sigma}_{1}^{-1}\left\langle 
         (\mathbf{x}- \bm{\mu}_1)(\mathbf{x}-\bm{\mu}_1)^{\top}
@@ -159,13 +175,18 @@ El siguiente teorema y su correspondiente demostración estan basados en el resu
         \left\langle \bm{\mu}_2\bm{\mu}_2^{\top}\right\rangle_p\right]
         \right)
         \right)
-    \end{align*}
-    Usando el hecho de que al calcular valor esperado para $p$ de una forma lineal se obtiene lo siguiente, 
-    $$\langle \mathbf{A}\mathbf{x}\rangle_p= \mathbf{A}\bm{\mu}_1,$$
+    \end{align}
+    Usando el hecho de que al calcular valor esperado para $p$ de una forma lineal se obtiene la ecuación debajo, 
+    \begin{equation}
+    \langle \mathbf{A}\mathbf{x}\rangle_p= \mathbf{A}\bm{\mu}_1,
+    \end{equation}
     y que el valor esperado para $p$ de una forma cuadrática da lo siguiente,
-    $$\langle \mathbf{x}^{\top}\mathbf{A}\mathbf{x} \rangle_p = \bm{\mu}^{\top}_1\mathbf{A}\bm{\mu}_1 + \text{tr}(\mathbf{A}\bm{\Sigma}_1),$$
+    \begin{equation}
+    \langle \mathbf{x}^{\top}\mathbf{A}\mathbf{x} \rangle_p = \bm{\mu}^{\top}_1\mathbf{A}\bm{\mu}_1 + \text{tr}(\mathbf{A}\bm{\Sigma}_1),
+    \end{equation}
     se obtiene la siguiente expresión,
-    \begin{align*}
+    \begin{equation}
+    \begin{aligned}
         2 \cdot D_{\text{KL}}(p||q) &= 
         \log |\bm{\Sigma}_2\bm{\Sigma}_1^{-1}| 
         - \text{tr}\left(\bm{\Sigma}_{1}^{-1}\bm{\Sigma}_1\right) + 
@@ -186,15 +207,16 @@ El siguiente teorema y su correspondiente demostración estan basados en el resu
         -2\bm{\mu}_1^{\top}\bm{\Sigma}_2^{-1}\bm{\mu}_2 
         + \bm{\mu}_2^{\top}\bm{\Sigma}_2^{-1}\bm{\mu}_2
         \right).
-    \end{align*}
+    \end{aligned}
+    \end{equation}
     Finalmente, factorizando y ordenando los términos se obtiene,
-    \begin{align*}
+    \begin{align}
     D_{\text{KL}}(p||q)= \frac{1}{2}\left[ 
     (\bm{\mu}_1 - \bm{\mu}_2)^{\top}\bm{\Sigma}_2^{-1}(\bm{\mu}_2-\bm{\mu}_1)
     +\text{tr}\left(\bm{\Sigma}_2^{-1}\bm{\Sigma}_1\right)
     - \log|\bm{\Sigma}_1 \bm{\Sigma}_2^{-1}|
     -n\right].
-    \end{align*}
+    \end{align}
 \end{proof}
 
 
@@ -206,11 +228,5 @@ El siguiente teorema y su correspondiente demostración estan basados en el resu
 %\url{https://statproofbook.github.io/P/mvn-kl.html}
 %\cite{brunton2019}
 
-\bibliographystyle{babplain}
-\bibliography{references.bib}
 
-%\printbibliography
-\clearpage
-\printglossary[type=\acronymtype]
 
-\end{document}

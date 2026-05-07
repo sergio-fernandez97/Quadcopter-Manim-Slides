@@ -1,17 +1,17 @@
 # Build artifacts
-*.aux
-*.bbl
-*.blg
-*.fdb_latexmk
-*.fls
-*.glo
-*.ist
-*.lof
-*.lot
-*.out
-*.toc
-*.acn
-*.synctex.gz
+LaTex/*.aux
+LaTex/*.bbl
+LaTex/*.blg
+LaTex/*.fdb_latexmk
+LaTex/*.fls
+LaTex/*.glo
+LaTex/*.ist
+LaTex/*.lof
+LaTex/*.lot
+LaTex/*.out
+LaTex/*.toc
+LaTex/*.acn
+LaTex/*.synctex.gz
 
 # Compiled PDFs
 *.pdf

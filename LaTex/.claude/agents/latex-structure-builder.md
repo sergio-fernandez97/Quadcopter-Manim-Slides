@@ -1,7 +1,7 @@
 ---
 name: latex-structure-builder
 description: "Use this agent for creating the directory structure `./chapters/` and `./figures/`."
-model: sonnet
+model: inherit
 color: orange
 ---
 

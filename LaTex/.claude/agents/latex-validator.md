@@ -1,7 +1,7 @@
 ---
 name: latex-validator
 description: "Compiles the refactored LaTeX project and reports success or errors. Run last."
-model: sonnet
+model: inherit
 color: blue
 ---
 
