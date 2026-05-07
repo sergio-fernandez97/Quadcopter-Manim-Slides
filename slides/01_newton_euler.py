@@ -17,41 +17,62 @@ from manim_slides import Slide
 class NewtonEulerSlide(Slide):
     def construct(self):
         # Title
-        title = Text("Dinámica de traslación y rotación local", font_size=48, color=WHITE)
+        title = Text("Dinámica de traslación y rotación local", font_size=40, color=YELLOW)
         title.to_edge(UP)
         self.add(title)
         self.next_slide()
 
-        # Opening statement about Euler equations of motion
-        opening_statement = Text(
-            "Las ecuaciones de movimiento del sistema local derivan de las ecuaciones de Newton-Euler.",
-            font_size=28,
-            color=WHITE
+        # Opening statement about Euler equations of motion - boxed
+        opening_text = Text(
+            "Las ecuaciones de movimiento del sistema local\nderivan de las ecuaciones de Newton-Euler.",
+            font_size=22,
+            color=WHITE,
+            line_spacing=1.4,
         )
-        opening_statement.shift(UP * 2)
-        self.play(Write(opening_statement))
+        opening_box = RoundedRectangle(
+            corner_radius=0.2,
+            width=opening_text.width + 0.6,
+            height=opening_text.height + 0.4,
+            color=GRAY,
+            fill_opacity=0.15,
+            stroke_width=1,
+        )
+        opening_group = VGroup(opening_box, opening_text).arrange(ORIGIN)
+        opening_group.shift(UP * 1.5)
+        self.play(Write(opening_group))
         self.wait(2)
         self.next_slide()
-        self.play(FadeOut(opening_statement))
+        self.play(FadeOut(opening_group))
         self.wait(0.5)
 
-        # Newton's second law statement and initial equation (upper part)
+        # Newton's second law statement - boxed
         newton_statement = Text(
-            "Segunda ley de Newton: La fuerza neta es igual a la masa por la aceleración",
-            font_size=24,
-            color=WHITE
+            "Segunda ley de Newton",
+            font_size=22,
+            color=YELLOW
         )
         newton_statement.shift(UP * 2.5)
-        
+
         newton_eq_initial = MathTex(
             r"\mathbf{F} = m\mathbf{a}",
             font_size=40
         )
         newton_eq_initial.shift(UP * 1.8)
-        
-        self.play(Write(newton_statement))
-        self.wait(1)
-        self.play(Write(newton_eq_initial))
+
+        # Box for Newton's law
+        newton_box = RoundedRectangle(
+            corner_radius=0.2,
+            width=newton_eq_initial.width + 1,
+            height=newton_eq_initial.height + 0.8,
+            color=GRAY,
+            fill_opacity=0.15,
+            stroke_width=1,
+        )
+        newton_box.move_to(newton_eq_initial.get_center())
+
+        self.play(Write(newton_statement), run_time=0.5)
+        self.wait(0.5)
+        self.play(Write(newton_eq_initial), Create(newton_box))
         self.wait(1)
         self.next_slide()
 
@@ -231,7 +252,7 @@ class NewtonEulerSlide(Slide):
         # Transform to angular velocities
         angular_velocities = MathTex(
             r"\dot p &= \frac{1}{I_{xx}}\tau_{\varphi} - qr \left(\frac{I_{zz} - I_{yy}}{I_{xx}}\right) \\",
-            r"\dot q &= \frac{1}{I_{xx}}\tau_{\theta} - pr \left(\frac{I_{xx} - I_{zz}}{I_{yy}}\right) \\",
+            r"\dot q &= \frac{1}{I_{yy}}\tau_{\theta} - pr \left(\frac{I_{xx} - I_{zz}}{I_{yy}}\right) \\",
             r"\dot r &= \frac{1}{I_{zz}}\tau_{\psi}",
             font_size=32
         )
@@ -255,7 +276,7 @@ class NewtonEulerSlide(Slide):
 
         angular_velocities_expanded = MathTex(
             r"\dot p &= \frac{\ell k}{I_{xx}}\left(\omega_4^2 - \omega_2^2\right) - qr \left(\frac{I_{zz} - I_{yy}}{I_{xx}}\right) \\",
-            r"\dot q &= \frac{\ell k}{I_{xx}}\left(\omega_3^2 - \omega_1^2\right) - pr \left(\frac{I_{xx} - I_{zz}}{I_{yy}}\right) \\",
+            r"\dot q &= \frac{\ell k}{I_{yy}}\left(\omega_3^2 - \omega_1^2\right) - pr \left(\frac{I_{xx} - I_{zz}}{I_{yy}}\right) \\",
             r"\dot r &= \frac{b}{I_{zz}}\left(\omega_2^2 + \omega_4^2 - \omega_1^2 - \omega_3^2\right)",
             font_size=32
         )

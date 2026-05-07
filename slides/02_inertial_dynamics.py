@@ -16,23 +16,34 @@ from manim_slides import Slide
 
 class InertialDynamicsSlide(Slide):
     def construct(self):
-        # Title
-        title = Text("Dinámica de traslación y rotación inercial", font_size=48, color=WHITE)
+        # Title - updated to YELLOW per CLAUDE.md style
+        title = Text("Dinámica de traslación y rotación inercial", font_size=42, color=YELLOW)
         title.to_edge(UP)
         self.add(title)
         self.next_slide()
 
-        # Opening statement
-        opening_statement = Text(
-            "Las ecuaciones de movimiento del sistema inerciales\nrelacionan velocidades locales con coordenadas inerciales.",
-            font_size=26,
-            color=WHITE
+        # Opening statement - boxed content per CLAUDE.md
+        opening_text = Text(
+            "Las ecuaciones de movimiento del sistema inercial\nrelacionan velocidades locales con coordenadas inerciales.",
+            font_size=22,
+            color=WHITE,
+            line_spacing=1.4,
         )
-        opening_statement.shift(UP * 2)
-        self.play(Write(opening_statement))
+        opening_box = RoundedRectangle(
+            corner_radius=0.2,
+            width=opening_text.width + 0.6,
+            height=opening_text.height + 0.4,
+            color=GRAY,
+            fill_opacity=0.15,
+            stroke_width=1,
+        )
+        opening_group = VGroup(opening_box, opening_text).arrange(ORIGIN)
+        opening_group.shift(UP * 2)
+
+        self.play(Write(opening_group))
         self.wait(2)
         self.next_slide()
-        self.play(FadeOut(opening_statement))
+        self.play(FadeOut(opening_group))
         self.wait(0.5)
 
         # Translation dynamics statement and initial equation (upper part)

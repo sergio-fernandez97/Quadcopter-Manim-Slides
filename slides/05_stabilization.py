@@ -36,6 +36,66 @@ class StabilizationSlide(Slide):
         self.play(FadeOut(opening_text))
         self.wait(0.5)
 
+        # Add stability definitions from LaTeX Section 2.3
+        stability_title = Text("Definiciones de estabilidad:", font_size=30, color=YELLOW)
+        stability_title.shift(UP * 2.8)
+
+        self.play(Write(stability_title))
+        self.wait(0.5)
+
+        # Create box for stability definitions
+        stability_box = RoundedRectangle(
+            corner_radius=0.2,
+            width=13,
+            height=3.8,
+            color=GRAY,
+            fill_opacity=0.15,
+            stroke_width=1
+        )
+        stability_box.shift(DOWN * 0.3)
+        self.play(FadeIn(stability_box))
+
+        # Lyapunov stable definition
+        lyapunov_def = MathTex(
+            r"\text{Lyapunov estable: } \|x(t;x_0) - x^*\| \leq \epsilon \text{ para todo } t \geq 0",
+            r"\text{ cuando } \|x_0 - x^*\| \leq \delta",
+            font_size=22
+        )
+        lyapunov_def.shift(UP * 1.5)
+
+        # Asymptotic stable definition
+        asymptotic_def = MathTex(
+            r"\text{Asintóticamente estable: } \lim_{t \to \infty} \|x(t;x_0) - x^*\| = 0",
+            font_size=22
+        )
+        asymptotic_def.shift(UP * 0.5)
+
+        # Exponential stable definition
+        exponential_def = MathTex(
+            r"\text{Exponencialmente estable: } \|x(t;x_0) - x^*\| \leq c e^{-\rho t} \|x_0 - x^*\|",
+            font_size=22
+        )
+        exponential_def.shift(DOWN * 0.5)
+
+        self.play(Write(lyapunov_def), run_time=2)
+        self.wait(1)
+        self.play(Write(asymptotic_def), run_time=2)
+        self.wait(1)
+        self.play(Write(exponential_def), run_time=2)
+        self.wait(1.5)
+        self.next_slide()
+
+        # Fade out stability definitions
+        self.play(
+            FadeOut(stability_title),
+            FadeOut(stability_box),
+            FadeOut(lyapunov_def),
+            FadeOut(asymptotic_def),
+            FadeOut(exponential_def),
+            run_time=1
+        )
+        self.wait(0.5)
+
         # Definition label
         definition_label = Text("Definición:", font_size=32, color=YELLOW)
         definition_label.shift(UP * 2.5)

@@ -145,6 +145,12 @@ class InertialFrameSlide(ThreeDSlide):
         # ==============================================================
         # SECTION 3 – Three-column rotation display (Roll / Pitch / Yaw)
         # ==============================================================
+        # Add Euler angle title first
+        euler_title = Text("Ángulo de Euler", font_size=32, color=YELLOW).to_edge(UP, buff=0.5)
+        self.add_fixed_in_frame_mobjects(euler_title)
+        self.play(FadeIn(euler_title), run_time=1)
+        self.next_slide()
+
         # Fade out sections 1-2
         self.play(
             FadeOut(title), FadeOut(def_group),
@@ -165,8 +171,8 @@ class InertialFrameSlide(ThreeDSlide):
         center_3d = np.array([0, 0, 0])
         right_3d = np.array([-d, d, 0])
 
-        mini_scale = 0.35
-        arm_mini = 1.2
+        mini_scale = 0.6  # Increased from 0.35
+        arm_mini = 1.8  # Increased from 1.2
 
         # --- Roll column (left) ----------------------------------
         roll_axes = ThreeDAxes(
@@ -213,7 +219,7 @@ class InertialFrameSlide(ThreeDSlide):
             np.array([4.5, 3.2, 0])
         )
 
-        # Torques
+        # Torques with labels
         roll_torque = MathTex(
             r"\boldsymbol{\tau}_{\varphi} = \ell k (\omega_{4}^2 - \omega_2^{2})",
             font_size=24,
@@ -227,7 +233,12 @@ class InertialFrameSlide(ThreeDSlide):
             font_size=24,
         ).set_color(BLUE).move_to(np.array([4.5, -1.6, 0]))
 
-        # Rotation matrices
+        # Torque labels
+        torque_label_roll = Text("torque", font_size=16, color=RED).next_to(roll_torque, DOWN, buff=0.1)
+        torque_label_pitch = Text("torque", font_size=16, color=GREEN).next_to(pitch_torque, DOWN, buff=0.1)
+        torque_label_yaw = Text("torque", font_size=16, color=BLUE).next_to(yaw_torque, DOWN, buff=0.1)
+
+        # Rotation matrices with labels
         roll_matrix = MathTex(
             r"\mathbf{R}(\varphi) = \begin{bmatrix}"
             r" 1 & 0 & 0 \\"
@@ -253,13 +264,44 @@ class InertialFrameSlide(ThreeDSlide):
             font_size=20,
         ).set_color(BLUE).move_to(np.array([4.5, -2.8, 0]))
 
+        # Rotation matrix labels
+        matrix_label_roll = Text("matriz de rotación", font_size=16, color=RED).next_to(roll_matrix, DOWN, buff=0.1)
+        matrix_label_pitch = Text("matriz de rotación", font_size=16, color=GREEN).next_to(pitch_matrix, DOWN, buff=0.1)
+        matrix_label_yaw = Text("matriz de rotación", font_size=16, color=BLUE).next_to(yaw_matrix, DOWN, buff=0.1)
+
+        # Curved arrows indicating rotation direction for each axis
+        # Roll (rotation around x-axis) - curved arrow on the side
+        roll_curved_arrow = CurvedArrow(
+            start_point=np.array([-4.5 + 0.3, 2.3, 0]),
+            end_point=np.array([-4.5 - 0.3, 2.3, 0]),
+            color=RED,
+            angle=0.5
+        )
+
+        # Pitch (rotation around y-axis) - curved arrow
+        pitch_curved_arrow = CurvedArrow(
+            start_point=np.array([0 + 0.3, 2.3, 0]),
+            end_point=np.array([0 - 0.3, 2.3, 0]),
+            color=GREEN,
+            angle=0.5
+        )
+
+        # Yaw (rotation around z-axis) - curved arrow
+        yaw_curved_arrow = CurvedArrow(
+            start_point=np.array([4.5 + 0.3, 2.3, 0]),
+            end_point=np.array([4.5 - 0.3, 2.3, 0]),
+            color=BLUE,
+            angle=0.5
+        )
+
         # --- Fade in each column one at a time ---
 
         # Roll
-        self.add_fixed_in_frame_mobjects(roll_col_title, roll_torque, roll_matrix)
+        self.add_fixed_in_frame_mobjects(roll_col_title, roll_torque, roll_matrix, roll_curved_arrow)
         self.play(
             FadeIn(roll_3d), FadeIn(roll_col_title),
             FadeIn(roll_torque), FadeIn(roll_matrix),
+            FadeIn(roll_curved_arrow),
             run_time=1.5,
         )
         self.play(
@@ -414,17 +456,23 @@ class InertialFrameSlide(ThreeDSlide):
         # ==============================================================
         # SECTION 5 – Force T_B / T_z and upward movement
         # ==============================================================
+        # Empuje label
+        empuje_label = Text("Empuje en la dirección z", font_size=20, color=YELLOW).to_edge(LEFT, buff=1).shift(UP * 1.8)
+        self.add_fixed_in_frame_mobjects(empuje_label)
+
         thrust_eq = MathTex(
             r"T_z = k \sum_{i=1}^{4} \omega_{i}^2", font_size=28,
         ).to_edge(LEFT, buff=1).shift(UP * 1)
+
+        thrust_label = Text("Empuje en la dirección z", font_size=16, color=WHITE).next_to(thrust_eq, DOWN, buff=0.1)
 
         vector_T = MathTex(
             r"\mathbf{T}_{B} = \begin{bmatrix} 0 \\ 0 \\ T_z \end{bmatrix}",
             font_size=28,
         ).next_to(thrust_eq, DOWN, buff=0.5, aligned_edge=LEFT)
 
-        self.add_fixed_in_frame_mobjects(thrust_eq, vector_T)
-        self.play(FadeIn(thrust_eq), FadeIn(vector_T), run_time=1.5)
+        self.add_fixed_in_frame_mobjects(thrust_eq, thrust_label, vector_T)
+        self.play(FadeIn(empuje_label), FadeIn(thrust_eq), FadeIn(thrust_label), FadeIn(vector_T), run_time=1.5)
         self.next_slide()
 
         # Move quadcopter upwards (along z / OUT)
@@ -445,8 +493,16 @@ class InertialFrameSlide(ThreeDSlide):
         title_sistema = Text(
             "Sistema de referencia inercial", font_size=36, color=YELLOW,
         ).to_edge(UP, buff=0.5)
-        self.add_fixed_in_frame_mobjects(title_sistema)
-        self.play(FadeIn(title_sistema), run_time=1)
+
+        # Brief description based on LaTeX source
+        sistema_inercial_desc = Text(
+            "Marco fijo global. Describe posición y orientación respecto a un origen absoluto.",
+            font_size=18,
+            color=WHITE,
+        ).to_edge(LEFT, buff=1).shift(DOWN * 0.3)
+
+        self.add_fixed_in_frame_mobjects(title_sistema, sistema_inercial_desc)
+        self.play(FadeIn(title_sistema), FadeIn(sistema_inercial_desc), run_time=1)
         self.next_slide()
 
         # Position vector ξ (left)
@@ -511,8 +567,16 @@ class InertialFrameSlide(ThreeDSlide):
         title_local = Text(
             "Sistema de referencia local", font_size=36, color=YELLOW,
         ).to_edge(UP, buff=0.5)
-        self.add_fixed_in_frame_mobjects(title_local)
-        self.play(FadeIn(title_local), run_time=1)
+
+        # Brief description for local reference frame
+        sistema_local_desc = Text(
+            "Marco fijo al vehículo. Define velocidades lineales y angulares relativas.",
+            font_size=18,
+            color=WHITE,
+        ).to_edge(LEFT, buff=1).shift(DOWN * 0.3)
+
+        self.add_fixed_in_frame_mobjects(title_local, sistema_local_desc)
+        self.play(FadeIn(title_local), FadeIn(sistema_local_desc), run_time=1)
         self.next_slide()
 
         # Translate and rotate the quadcopter

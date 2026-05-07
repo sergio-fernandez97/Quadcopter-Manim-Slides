@@ -169,7 +169,7 @@ class QuadcopterMotionSlide(Slide):
         # Order: u, v, w, p, q, r, phi, theta, psi, x, y, z
         merged_lhs_vector = MathTex(
             r"\begin{bmatrix} \dot u \\ \dot v \\ \dot w \\ \dot p \\ \dot q \\ \dot r \\ \dot{\varphi} \\ \dot{\theta} \\ \dot{\psi} \\ \dot{x} \\ \dot{y} \\ \dot{z} \end{bmatrix}",
-            font_size=32
+            font_size=26
         )
         merged_lhs_vector.move_to(ORIGIN)
 
@@ -265,7 +265,7 @@ class QuadcopterMotionSlide(Slide):
         # Fade in the control vector
         control_vector = MathTex(
             r"\begin{bmatrix} \omega_1 \\ \omega_2 \\ \omega_3 \\ \omega_4 \end{bmatrix}^{\top}",
-            font_size=32
+            font_size=26
         )
         control_vector.move_to(state_vector.get_center() + RIGHT * 3)
         
@@ -517,7 +517,7 @@ class QuadcopterMotionSlide(Slide):
             r"\mathbf{f}(\mathbf{x}^{*}, \mathbf{u}^{*}) + ",
             r"\nabla_{\mathbf{x}} \mathbf{f}(\mathbf{x}^{*}, \mathbf{u}^{*}) \cdot \overline{\mathbf{x}} + ",
             r"\nabla_{\mathbf{u}}\mathbf{f}(\mathbf{x}^{*}, \mathbf{u}^{*}) \cdot \overline{\mathbf{u}}",
-            font_size=32
+            font_size=26
         )
         linearization_eq.shift(DOWN * 1)
         
@@ -548,7 +548,7 @@ class QuadcopterMotionSlide(Slide):
             r"\mathbf{0} + ",
             r"\nabla_{\mathbf{x}} \mathbf{f}(\mathbf{x}^{*}, \mathbf{u}^{*}) \cdot \overline{\mathbf{x}} + ",
             r"\nabla_{\mathbf{u}}\mathbf{f}(\mathbf{x}^{*}, \mathbf{u}^{*}) \cdot \overline{\mathbf{u}}",
-            font_size=32
+            font_size=26
         )
         linearization_eq_step2.move_to(linearization_eq.get_center())
         
@@ -560,7 +560,7 @@ class QuadcopterMotionSlide(Slide):
             r"\mathbf{f}(\mathbf{x}^{*} + \overline{\mathbf{x}}, \mathbf{u}^{*} + \overline{\mathbf{u}}) \approx ",
             r"\nabla_{\mathbf{x}} \mathbf{f}(\mathbf{x}^{*}, \mathbf{u}^{*}) \cdot \overline{\mathbf{x}} + ",
             r"\nabla_{\mathbf{u}}\mathbf{f}(\mathbf{x}^{*}, \mathbf{u}^{*}) \cdot \overline{\mathbf{u}}",
-            font_size=32
+            font_size=26
         )
         linearization_eq_step3.move_to(linearization_eq.get_center())
         
@@ -572,7 +572,7 @@ class QuadcopterMotionSlide(Slide):
             r"\dot{\mathbf{x}} \approx ",
             r"\nabla_{\mathbf{x}} \mathbf{f}(\mathbf{x}^{*}, \mathbf{u}^{*}) \cdot \overline{\mathbf{x}} + ",
             r"\nabla_{\mathbf{u}}\mathbf{f}(\mathbf{x}^{*}, \mathbf{u}^{*}) \cdot \overline{\mathbf{u}}",
-            font_size=32
+            font_size=26
         )
         linearization_with_dot.move_to(linearization_eq.get_center())
         
@@ -587,7 +587,7 @@ class QuadcopterMotionSlide(Slide):
             r"\overline{\mathbf{x}} + ",
             r"\mathbf{B}",
             r"\overline{\mathbf{u}}",
-            font_size=32
+            font_size=26
         )
         linearization_ab.move_to(linearization_eq.get_center())
         
