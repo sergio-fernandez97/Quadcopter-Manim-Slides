@@ -21,6 +21,17 @@ if [[ "$FILE_PATH" == */slides/*.py ]] && [[ "$FILE_PATH" == *.py ]]; then
       echo "Render failed (exit $EXIT_CODE) for $BASENAME" >&2
     else
       echo "Render complete: $CLASS_NAME" >&2
+      # Convert to HTML for layout validator
+      SLIDE_NAME="${BASENAME%.py}"
+      HTML_OUT="presentation/${SLIDE_NAME}.html"
+      echo "Converting $CLASS_NAME to HTML at $HTML_OUT..." >&2
+      uv run manim-slides convert "$CLASS_NAME" "$HTML_OUT" -ccontrols=true 2>&1
+      CONVERT_EXIT=$?
+      if [ $CONVERT_EXIT -ne 0 ]; then
+        echo "HTML conversion failed (exit $CONVERT_EXIT) for $CLASS_NAME" >&2
+      else
+        echo "HTML conversion complete: $HTML_OUT" >&2
+      fi
     fi
   fi
 fi

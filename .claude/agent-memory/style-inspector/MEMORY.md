@@ -1,0 +1,1 @@
+- [Style Guide Patterns](style_guide_patterns.md) — canonical colors, typography, layout, animations extracted from all 14 slide files
