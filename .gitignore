@@ -253,4 +253,7 @@ LaTex/main.acn
 LaTex/main.synctex.gzmain
 
 presentation/
+draft/
+
+.playwright-mcp/ 
 
