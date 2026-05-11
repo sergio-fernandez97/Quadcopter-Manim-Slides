@@ -24,6 +24,179 @@ class ILQRSlide(Slide):
         self.next_slide()
 
         # ============================================================
+        # SECTION A: Control Óptimo
+        # ============================================================
+
+        oc_label = Text("Control Óptimo", font_size=32, color=BLUE)
+        oc_label.move_to(UP * 2)
+
+        oc_eq = MathTex(
+            r"\min_{\mathbf{u}_0, \cdots, \mathbf{u}_{T-1}} \sum_{t=0}^{T} c(\mathbf{x}_t, \mathbf{u}_t)"
+            r" \quad \text{s.t.} \quad \mathbf{x}_{t+1} = f(\mathbf{x}_t, \mathbf{u}_t)",
+            font_size=26,
+        )
+        oc_eq.next_to(oc_label, DOWN, buff=0.5)
+
+        oc_eq_box = RoundedRectangle(
+            corner_radius=0.2,
+            width=oc_eq.width + 0.8,
+            height=oc_eq.height + 0.5,
+            color=YELLOW,
+            fill_opacity=0.1,
+            stroke_width=2,
+        )
+        oc_eq_box.move_to(oc_eq)
+
+        self.play(FadeIn(oc_label), FadeIn(oc_eq_box), FadeIn(oc_eq))
+        self.wait(0.5)
+        self.next_slide()
+
+        oc_bullets = VGroup(
+            MathTex(r"\bullet \text{ Encontrar trayectoria que minimice costo sujeto a dinámica}", font_size=24),
+            MathTex(r"\bullet \; c(\mathbf{x}_t, \mathbf{u}_t) \text{: costo instantáneo}", font_size=24),
+            MathTex(r"\bullet \; c(\boldsymbol{\tau}) \text{: costo acumulado de la trayectoria}", font_size=24),
+        ).arrange(DOWN, buff=0.25, aligned_edge=LEFT)
+        oc_bullets.next_to(oc_eq_box, DOWN, buff=0.5)
+
+        self.play(FadeIn(oc_bullets))
+        self.wait(0.5)
+        self.next_slide()
+
+        # Clear section A
+        self.play(
+            FadeOut(oc_label),
+            FadeOut(oc_eq_box),
+            FadeOut(oc_eq),
+            FadeOut(oc_bullets),
+        )
+        self.wait(0.3)
+
+        # ============================================================
+        # SECTION B: Función de valor V
+        # ============================================================
+
+        vf_label = Text("Función de valor V", font_size=32, color=BLUE)
+        vf_label.move_to(UP * 2.5)
+
+        vf_def = Text(
+            "La función de valor óptima V* satisface la ecuación de Bellman",
+            font_size=22,
+            color=GRAY_B,
+        )
+        vf_def.next_to(vf_label, DOWN, buff=0.4)
+
+        self.play(FadeIn(vf_label), FadeIn(vf_def))
+        self.wait(0.3)
+
+        vf_bellman = MathTex(
+            r"V_{*}(\mathbf{x}_t) = \min_{\mathbf{u}_t \in \mathcal{U}(\mathbf{x}_t)}"
+            r" \left\{ \underbrace{c(\mathbf{x}_t, \mathbf{u}_t) + V_{*}(\mathbf{x}_{t+1})}_{Q(\mathbf{x}_t, \mathbf{u}_t)} \right\}",
+            font_size=26,
+        )
+        vf_bellman.next_to(vf_def, DOWN, buff=0.4)
+
+        vf_bellman_box = RoundedRectangle(
+            corner_radius=0.2,
+            width=vf_bellman.width + 0.8,
+            height=vf_bellman.height + 0.5,
+            color=YELLOW,
+            fill_opacity=0.1,
+            stroke_width=2,
+        )
+        vf_bellman_box.move_to(vf_bellman)
+
+        self.play(FadeIn(vf_bellman_box), FadeIn(vf_bellman))
+        self.wait(0.5)
+        self.next_slide()
+
+        vf_boundary = MathTex(
+            r"\text{donde } \mathbf{x}_{t+1} = f(\mathbf{x}_t, \mathbf{u}_t)"
+            r" \text{ y } V_{*}(\mathbf{x}_{T}) = c(\mathbf{x}_{T}, \mathbf{0})",
+            font_size=22,
+            color=GRAY_B,
+        )
+        vf_boundary.next_to(vf_bellman_box, DOWN, buff=0.4)
+
+        vf_note = MathTex(
+            r"Q(\mathbf{x}_t, \mathbf{u}_t) \text{: costo inmediato + costo óptimo futuro}",
+            font_size=22,
+            color=GREEN,
+        )
+        vf_note.next_to(vf_boundary, DOWN, buff=0.3)
+
+        self.play(FadeIn(vf_boundary), FadeIn(vf_note))
+        self.wait(0.5)
+        self.next_slide()
+
+        # Clear section B
+        self.play(
+            FadeOut(vf_label),
+            FadeOut(vf_def),
+            FadeOut(vf_bellman_box),
+            FadeOut(vf_bellman),
+            FadeOut(vf_boundary),
+            FadeOut(vf_note),
+        )
+        self.wait(0.3)
+
+        # ============================================================
+        # SECTION C: Iteración de Valores
+        # ============================================================
+
+        vi_label = Text("Programación Dinámica: Iteración de Valores", font_size=30, color=BLUE)
+        vi_label.move_to(UP * 2.5)
+
+        vi_bullets = VGroup(
+            MathTex(r"\bullet \text{ Principio de optimalidad de Bellman: subsecuencia óptima sigue siendo óptima}", font_size=22),
+            MathTex(r"\bullet \text{ Resuelve la ecuación de Bellman recursivamente}", font_size=22),
+        ).arrange(DOWN, buff=0.25, aligned_edge=LEFT)
+        vi_bullets.next_to(vi_label, DOWN, buff=0.4)
+
+        self.play(FadeIn(vi_label), FadeIn(vi_bullets))
+        self.wait(0.5)
+        self.next_slide()
+
+        vi_eval = MathTex(
+            r"V_{k+1}(\mathbf{x}) = \min_{\mathbf{u}} \left\{ c(\mathbf{x}, \mathbf{u}) + V_k(f(\mathbf{x}, \mathbf{u})) \right\}",
+            font_size=26,
+        )
+        vi_eval_label = Text("Evaluación de política", font_size=20, color=GRAY_B)
+        vi_eval_group = VGroup(vi_eval, vi_eval_label).arrange(DOWN, buff=0.15)
+
+        vi_policy = MathTex(
+            r"\mu_{k+1}(\mathbf{x}) = \arg\min_{\mathbf{u}} \left\{ c(\mathbf{x}, \mathbf{u}) + V_k(f(\mathbf{x}, \mathbf{u})) \right\}",
+            font_size=26,
+        )
+        vi_policy_label = Text("Ley de control óptimo", font_size=20, color=GRAY_B)
+        vi_policy_group = VGroup(vi_policy, vi_policy_label).arrange(DOWN, buff=0.15)
+
+        vi_eqs = VGroup(vi_eval_group, vi_policy_group).arrange(DOWN, buff=0.4)
+        vi_eqs.next_to(vi_bullets, DOWN, buff=0.5)
+
+        vi_box = RoundedRectangle(
+            corner_radius=0.2,
+            width=vi_eqs.width + 0.8,
+            height=vi_eqs.height + 0.5,
+            color=GRAY,
+            fill_opacity=0.15,
+            stroke_width=1,
+        )
+        vi_box.move_to(vi_eqs)
+
+        self.play(FadeIn(vi_box), FadeIn(vi_eqs))
+        self.wait(0.5)
+        self.next_slide()
+
+        # Clear section C
+        self.play(
+            FadeOut(vi_label),
+            FadeOut(vi_bullets),
+            FadeOut(vi_box),
+            FadeOut(vi_eqs),
+        )
+        self.wait(0.3)
+
+        # ============================================================
         # SECTION 1: Introduction and Motivation
         # ============================================================
 
@@ -610,37 +783,156 @@ class ILQRSlide(Slide):
         self.wait(0.3)
 
         # ============================================================
-        # SECTION 10: Algorithm Summary
+        # SECTION 10: iLQR Algorithm
         # ============================================================
 
-        summary_label = Text("Resumen del algoritmo iLQR", font_size=30, color=BLUE)
-        summary_label.move_to(UP * 2.5)
+        alg_label = Text("Algoritmo iLQR", font_size=30, color=BLUE)
+        alg_label.move_to(UP * 2.5)
 
-        self.play(FadeIn(summary_label))
+        loop_header = Text("Mientras no haya convergencia", font_size=24, color=YELLOW)
+        loop_header.next_to(alg_label, DOWN, buff=0.35)
+
+        self.play(FadeIn(alg_label), FadeIn(loop_header))
         self.wait(0.3)
 
-        # Algorithm steps
-        steps = VGroup(
-            MathTex(r"1. \text{ Inicializar trayectoria nominal } \hat{\boldsymbol{\tau}}", font_size=24),
-            MathTex(r"2. \text{ Calcular } \mathbf{F}_t, \mathbf{C}_t, \mathbf{c}_t \text{ (linearizar/cuadratizar)}", font_size=24),
-            MathTex(r"3. \text{ Backward pass: calcular } \mathbf{K}_t, \mathbf{k}_t", font_size=24),
-            MathTex(r"4. \text{ Forward pass: generar nueva trayectoria}", font_size=24),
-            MathTex(r"5. \text{ Line search y regularización}", font_size=24),
-            MathTex(r"6. \text{ Repetir hasta convergencia}", font_size=24),
-        ).arrange(DOWN, buff=0.25, aligned_edge=LEFT)
-        steps.next_to(summary_label, DOWN, buff=0.5)
+        step1_title = Text("1. Linealizar dinámica y cuadratizar costo", font_size=22, color=GREEN)
+        step1_eq = MathTex(
+            r"\mathbf{F}_t = \nabla_{\mathbf{x}_t,\mathbf{u}_t} f(\hat{\mathbf{x}}_t, \hat{\mathbf{u}}_t),"
+            r"\quad \mathbf{c}_t = \nabla_{\mathbf{x}_t,\mathbf{u}_t} c(\hat{\mathbf{x}}_t, \hat{\mathbf{u}}_t),"
+            r"\quad \mathbf{C}_t = \nabla_{\mathbf{x}_t,\mathbf{u}_t}^{2} c(\hat{\mathbf{x}}_t, \hat{\mathbf{u}}_t)",
+            font_size=21,
+        )
+        step1_eq.scale_to_fit_width(config.frame_width - 1.4)
+        step1_group = VGroup(step1_title, step1_eq).arrange(DOWN, buff=0.25, aligned_edge=LEFT)
 
-        steps_box = RoundedRectangle(
+        step2_title = Text("2. Backward pass para t = T-1, ..., 0", font_size=22, color=GREEN)
+        step2_eqs = VGroup(
+            MathTex(
+                r"\mathbf{Q}_t = \mathbf{C}_t + \mathbf{F}_t^\top \mathbf{V}_{t+1} \mathbf{F}_t,"
+                r"\quad \mathbf{q}_t = \mathbf{c}_t + \mathbf{F}_t^\top \mathbf{v}_{t+1}",
+                font_size=22,
+            ),
+            MathTex(
+                r"\mathbf{K}_t = -\tilde{\mathbf{Q}}_{\mathbf{uu}_t}^{-1}\tilde{\mathbf{Q}}_{\mathbf{ux}_t},"
+                r"\quad \mathbf{k}_t = \tilde{\mathbf{Q}}_{\mathbf{uu}_t}^{-1}\tilde{\mathbf{q}}_{\mathbf{u}_t}",
+                font_size=22,
+            ),
+            MathTex(
+                r"\mathbf{V}_t,\mathbf{v}_t \leftarrow \text{actualizar función de valor}",
+                font_size=22,
+                color=GRAY_B,
+            ),
+        ).arrange(DOWN, buff=0.18, aligned_edge=LEFT)
+        step2_eqs.scale_to_fit_width(config.frame_width - 1.4)
+        step2_group = VGroup(step2_title, step2_eqs).arrange(DOWN, buff=0.25, aligned_edge=LEFT)
+
+        phase1 = VGroup(step1_group, step2_group).arrange(DOWN, buff=0.45, aligned_edge=LEFT)
+        phase1.next_to(loop_header, DOWN, buff=0.45)
+
+        phase1_box = RoundedRectangle(
             corner_radius=0.2,
-            width=steps.width + 1,
-            height=steps.height + 0.6,
+            width=phase1.width + 0.8,
+            height=phase1.height + 0.6,
             color=GRAY,
             fill_opacity=0.15,
             stroke_width=1,
         )
-        steps_box.move_to(steps)
+        phase1_box.move_to(phase1)
 
-        self.play(FadeIn(steps_box), FadeIn(steps))
+        self.play(FadeIn(phase1_box), FadeIn(step1_group))
+        self.wait(0.5)
+        self.next_slide()
+
+        self.play(FadeIn(step2_group))
+        self.wait(0.5)
+        self.next_slide()
+
+        self.play(FadeOut(phase1_box), FadeOut(phase1))
+        self.wait(0.2)
+
+        step3_title = Text("3. Forward pass con búsqueda de línea", font_size=22, color=GREEN)
+        step3_eqs = VGroup(
+            MathTex(
+                r"\forall \alpha \in \boldsymbol{\alpha}:"
+                r"\quad \mathbf{u}_t = \hat{\mathbf{u}}_t + \alpha \mathbf{k}_t + \mathbf{K}_t(\mathbf{x}_t - \hat{\mathbf{x}}_t)",
+                font_size=20,
+            ),
+            MathTex(
+                r"\mathbf{x}_{t+1} = f(\mathbf{x}_t, \mathbf{u}_t),"
+                r"\quad \text{calcular } c(\boldsymbol{\tau}) \text{ y } c(\hat{\boldsymbol{\tau}})",
+                font_size=20,
+            ),
+            MathTex(
+                r"\text{si } c(\boldsymbol{\tau}) < c(\hat{\boldsymbol{\tau}})"
+                r"\Rightarrow \hat{\boldsymbol{\tau}} \leftarrow \boldsymbol{\tau},\ \lambda \downarrow,\ \alpha^{*} = \alpha",
+                font_size=19,
+                color=GRAY_B,
+            ),
+            MathTex(
+                r"\text{en otro caso } \lambda \uparrow \text{ y continuar con el siguiente } \alpha",
+                font_size=19,
+                color=GRAY_B,
+            ),
+        ).arrange(DOWN, buff=0.18, aligned_edge=LEFT)
+        step3_eqs.scale_to_fit_width(config.frame_width - 1.6)
+        step3_group = VGroup(step3_title, step3_eqs).arrange(DOWN, buff=0.25, aligned_edge=LEFT)
+
+        step4_title = Text("4. Verificar convergencia y actualizar trayectoria nominal", font_size=22, color=GREEN)
+        step4_eqs = VGroup(
+            MathTex(
+                r"\frac{|c(\boldsymbol{\tau}) - c(\hat{\boldsymbol{\tau}})|}{c(\hat{\boldsymbol{\tau}})} < \epsilon_{\text{tol}}",
+                font_size=22,
+            ),
+            MathTex(
+                r"\text{si se cumple el umbral: terminar; en otro caso continuar iterando}",
+                font_size=20,
+            ),
+        ).arrange(DOWN, buff=0.18, aligned_edge=LEFT)
+        step4_group = VGroup(step4_title, step4_eqs).arrange(DOWN, buff=0.25, aligned_edge=LEFT)
+
+        step3_group.next_to(loop_header, DOWN, buff=0.45)
+
+        step3_box = RoundedRectangle(
+            corner_radius=0.2,
+            width=step3_group.width + 0.8,
+            height=step3_group.height + 0.6,
+            color=GRAY,
+            fill_opacity=0.15,
+            stroke_width=1,
+        )
+        step3_box.move_to(step3_group)
+
+        self.play(FadeIn(step3_box), FadeIn(step3_group))
+        self.wait(0.5)
+        self.next_slide()
+
+        self.play(FadeOut(step3_box), FadeOut(step3_group))
+        self.wait(0.2)
+
+        step4_group.next_to(loop_header, DOWN, buff=0.55)
+
+        step4_box = RoundedRectangle(
+            corner_radius=0.2,
+            width=step4_group.width + 0.8,
+            height=step4_group.height + 0.6,
+            color=GRAY,
+            fill_opacity=0.15,
+            stroke_width=1,
+        )
+        step4_box.move_to(step4_group)
+
+        self.play(FadeIn(step4_box), FadeIn(step4_group))
+        self.wait(0.5)
+        self.next_slide()
+
+        closing_note = Text(
+            "El ciclo alterna planeación hacia atrás y simulación hacia adelante",
+            font_size=20,
+            color=YELLOW,
+        )
+        closing_note.next_to(step4_box, DOWN, buff=0.35)
+
+        self.play(FadeIn(closing_note))
         self.wait(0.5)
         self.next_slide()
 
