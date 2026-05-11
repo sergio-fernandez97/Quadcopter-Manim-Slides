@@ -27,6 +27,12 @@ uv run manim-slides present InertialFrameSlide
 
 # Convert a scene to HTML
 uv run manim-slides convert SCENE scene.html -ccontrols=true
+
+# Bootstrap the dev integration branch for Claude slide work
+.claude/scripts/bootstrap_dev_branch.sh
+
+# Prepare a dedicated slide worktree from dev
+.claude/scripts/prepare_slide_branch.sh --id 14 --slug td_learning
 ```
 
 ## Presentation Controls
@@ -90,15 +96,40 @@ the agent MUST:
 - When adding slides: create file in `slides/`, add scene path to `slides.toml`
 - Keep generated media (`media/`) out of commits; only commit source files under `slides/`
 
+## Git Workflow
+
+- The integration branch for slide work is `dev`.
+- New slide work should be done from a dedicated `slide/*` feature branch created from `dev`.
+- Preferred branch format: `slide/<nn>-<topic-slug>`.
+- Preferred workflow:
+  1. Run `.claude/scripts/bootstrap_dev_branch.sh` once to create or track `dev`.
+  2. Run `.claude/scripts/prepare_slide_branch.sh --id <nn> --slug <topic_slug>` to create or reuse a worktree under `.worktrees/`.
+  3. Launch a dedicated `claude --worktree` session from that worktree path.
+  4. Run `/slide <draft-or-topic>` inside that worktree session.
+- Never publish slide work from `main`.
+- Never publish slide work directly from `dev`.
+- PRs for slide work must target `dev`.
+- Only stage source files that belong to the slide task. Do not include `media/` or `presentation/` outputs unless the user explicitly asks for generated artifacts in git.
+
+## GitHub Integration
+
+- Context7 is required before writing Manim or manim-slides code.
+- PR automation expects a GitHub integration in Claude Code:
+  - preferred: a configured GitHub MCP/app so Claude can create or update PRs directly
+  - fallback: authenticated `gh` CLI
+- If neither GitHub MCP nor authenticated `gh` is available, the workflow may still push the feature branch but must report that PR creation remains manual.
+
 ## `/slide` Skill — Draft-to-Slide Pipeline
 
 Create or update slides from markdown drafts in `./draft/`:
 
 ```bash
-/slide draft/14_td_learning.md          # full pipeline: parse → build → validate → render
+/slide draft/14_td_learning.md                # full pipeline: parse → build → validate → render → publish to dev PR
 /slide td_learning                       # matches draft by topic name
 /slide draft/14_td_learning.md --no-render    # skip rendering (fast iteration)
 /slide draft/14_td_learning.md --no-validate  # skip math + layout validation
+/slide draft/14_td_learning.md --no-publish   # build/update only, no commit/push/PR
+/slide draft/14_td_learning.md --draft-pr     # open the PR as draft
 ```
 
 ### Draft format
@@ -125,7 +156,13 @@ $$V(s_t) \leftarrow V(s_t) + \alpha [r_{t+1} + \gamma V(s_{t+1}) - V(s_t)]$$
 
 ### Pipeline
 
-The skill orchestrates these agents: `draft-reader` + `style-inspector` (parallel) → `slide-builder`/`slide-updater` → `math-validator` → render → `slide-layout-validator`.
+The skill orchestrates these agents: `draft-reader` + `style-inspector` (parallel) → `slide-builder`/`slide-updater` → `math-validator` → render → `slide-layout-validator` → `slide-publisher`.
+
+### Worktree guardrails
+
+- If `/slide` is run on `main` or `dev` with publishing enabled, it must stop before any Git publication step and direct the user to `/worktree_slide`.
+- If `/slide` is run from a feature branch that does not match `slide/*`, it must not auto-publish unless that branch is explicitly confirmed as intentional.
+- `/worktree_slide` is the preparation command for creating or reusing a slide-specific worktree before opening a dedicated Claude worktree session.
 
 ### Auto-render hook
 
