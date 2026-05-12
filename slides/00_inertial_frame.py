@@ -174,6 +174,22 @@ class InertialFrameSlide(ThreeDSlide):
         mini_scale = 0.6  # Increased from 0.35
         arm_mini = 1.8  # Increased from 1.2
 
+        # 3D curved arcs indicating rotation axis for each Euler angle.
+        # Each arc is oriented in the plane of the corresponding rotation.
+        # Roll: rotation around x-axis → arc in the yz-plane
+        roll_arc = Arc(radius=0.7, start_angle=-PI / 4, angle=3 * PI / 2, color=RED, stroke_width=4)
+        roll_arc.rotate(-PI / 2, axis=UP, about_point=ORIGIN)
+        roll_arc.add_tip(tip_length=0.18)
+
+        # Pitch: rotation around y-axis → arc in the xz-plane
+        pitch_arc = Arc(radius=0.7, start_angle=-PI / 4, angle=3 * PI / 2, color=GREEN, stroke_width=4)
+        pitch_arc.rotate(PI / 2, axis=RIGHT, about_point=ORIGIN)
+        pitch_arc.add_tip(tip_length=0.18)
+
+        # Yaw: rotation around z-axis → arc stays in the xy-plane
+        yaw_arc = Arc(radius=0.7, start_angle=-PI / 4, angle=3 * PI / 2, color=BLUE, stroke_width=4)
+        yaw_arc.add_tip(tip_length=0.18)
+
         # --- Roll column (left) ----------------------------------
         roll_axes = ThreeDAxes(
             x_range=[-1.5, 1.5], y_range=[-1.5, 1.5], z_range=[-1.5, 1.5],
@@ -182,7 +198,7 @@ class InertialFrameSlide(ThreeDSlide):
         roll_xa = Arrow3D(start=ORIGIN, end=RIGHT * 1.2, color=RED, thickness=0.04)
         roll_ya = Arrow3D(start=ORIGIN, end=UP * 1.2, color=GREEN, thickness=0.02)
         roll_za = Arrow3D(start=ORIGIN, end=OUT * 1.2, color=BLUE, thickness=0.02)
-        roll_3d = VGroup(roll_axes, roll_quad, roll_xa, roll_ya, roll_za)
+        roll_3d = VGroup(roll_axes, roll_quad, roll_xa, roll_ya, roll_za, roll_arc)
         roll_3d.scale(mini_scale).shift(left_3d)
 
         # --- Pitch column (center) -------------------------------
@@ -193,7 +209,7 @@ class InertialFrameSlide(ThreeDSlide):
         pitch_xa = Arrow3D(start=ORIGIN, end=RIGHT * 1.2, color=RED, thickness=0.02)
         pitch_ya = Arrow3D(start=ORIGIN, end=UP * 1.2, color=GREEN, thickness=0.04)
         pitch_za = Arrow3D(start=ORIGIN, end=OUT * 1.2, color=BLUE, thickness=0.02)
-        pitch_3d = VGroup(pitch_axes, pitch_quad, pitch_xa, pitch_ya, pitch_za)
+        pitch_3d = VGroup(pitch_axes, pitch_quad, pitch_xa, pitch_ya, pitch_za, pitch_arc)
         pitch_3d.scale(mini_scale).shift(center_3d)
 
         # --- Yaw column (right) ----------------------------------
@@ -204,7 +220,7 @@ class InertialFrameSlide(ThreeDSlide):
         yaw_xa = Arrow3D(start=ORIGIN, end=RIGHT * 1.2, color=RED, thickness=0.02)
         yaw_ya = Arrow3D(start=ORIGIN, end=UP * 1.2, color=GREEN, thickness=0.02)
         yaw_za = Arrow3D(start=ORIGIN, end=OUT * 1.2, color=BLUE, thickness=0.04)
-        yaw_3d = VGroup(yaw_axes, yaw_quad, yaw_xa, yaw_ya, yaw_za)
+        yaw_3d = VGroup(yaw_axes, yaw_quad, yaw_xa, yaw_ya, yaw_za, yaw_arc)
         yaw_3d.scale(mini_scale).shift(right_3d)
 
         # Fixed-in-frame labels for each column (screen coords)
@@ -269,39 +285,13 @@ class InertialFrameSlide(ThreeDSlide):
         matrix_label_pitch = Text("matriz de rotación", font_size=16, color=GREEN).next_to(pitch_matrix, DOWN, buff=0.1)
         matrix_label_yaw = Text("matriz de rotación", font_size=16, color=BLUE).next_to(yaw_matrix, DOWN, buff=0.1)
 
-        # Curved arrows indicating rotation direction for each axis
-        # Roll (rotation around x-axis) - curved arrow on the side
-        roll_curved_arrow = CurvedArrow(
-            start_point=np.array([-4.5 + 0.3, 2.3, 0]),
-            end_point=np.array([-4.5 - 0.3, 2.3, 0]),
-            color=RED,
-            angle=0.5
-        )
-
-        # Pitch (rotation around y-axis) - curved arrow
-        pitch_curved_arrow = CurvedArrow(
-            start_point=np.array([0 + 0.3, 2.3, 0]),
-            end_point=np.array([0 - 0.3, 2.3, 0]),
-            color=GREEN,
-            angle=0.5
-        )
-
-        # Yaw (rotation around z-axis) - curved arrow
-        yaw_curved_arrow = CurvedArrow(
-            start_point=np.array([4.5 + 0.3, 2.3, 0]),
-            end_point=np.array([4.5 - 0.3, 2.3, 0]),
-            color=BLUE,
-            angle=0.5
-        )
-
         # --- Fade in each column one at a time ---
 
         # Roll
-        self.add_fixed_in_frame_mobjects(roll_col_title, roll_torque, roll_matrix, roll_curved_arrow)
+        self.add_fixed_in_frame_mobjects(roll_col_title, roll_torque, roll_matrix)
         self.play(
             FadeIn(roll_3d), FadeIn(roll_col_title),
             FadeIn(roll_torque), FadeIn(roll_matrix),
-            FadeIn(roll_curved_arrow),
             run_time=1.5,
         )
         self.play(
@@ -354,6 +344,7 @@ class InertialFrameSlide(ThreeDSlide):
 
         # Fade out torques and titles
         self.play(
+            FadeOut(euler_title),
             FadeOut(roll_torque), FadeOut(pitch_torque), FadeOut(yaw_torque),
             FadeOut(roll_col_title), FadeOut(pitch_col_title), FadeOut(yaw_col_title),
             run_time=1,
@@ -496,7 +487,7 @@ class InertialFrameSlide(ThreeDSlide):
 
         # Brief description based on LaTeX source
         sistema_inercial_desc = Text(
-            "Marco fijo global. Describe posición y orientación respecto a un origen absoluto.",
+            "Marco inercial {I}: fijo al suelo; describe posición y orientación absolutas del vehículo.",
             font_size=18,
             color=WHITE,
         ).to_edge(LEFT, buff=1).shift(DOWN * 0.3)
@@ -549,15 +540,27 @@ class InertialFrameSlide(ThreeDSlide):
         )
         self.next_slide()
 
+        # Combined inertial position vector q
+        q_combined = MathTex(
+            r"\mathbf{q} = \begin{bmatrix} \boldsymbol{\xi} \\ \boldsymbol{\eta} \end{bmatrix}",
+            font_size=32,
+        ).to_edge(DOWN, buff=1.2)
+        self.add_fixed_in_frame_mobjects(q_combined)
+        self.play(FadeIn(q_combined), run_time=1)
+        self.wait(0.5)
+        self.next_slide()
+
         # Fade out inertial system
         self.play(
             FadeOut(title_sistema),
+            FadeOut(sistema_inercial_desc),
             FadeOut(pos_lineal_label),
             FadeOut(vector_xi_label),
             FadeOut(vector_xi_matrix),
             FadeOut(pos_angular_label),
             FadeOut(vector_eta_label),
             FadeOut(vector_eta_matrix),
+            FadeOut(q_combined),
             run_time=1,
         )
 
@@ -570,7 +573,7 @@ class InertialFrameSlide(ThreeDSlide):
 
         # Brief description for local reference frame
         sistema_local_desc = Text(
-            "Marco fijo al vehículo. Define velocidades lineales y angulares relativas.",
+            "Marco local {B}: origen en el CM del vehículo; describe velocidades lineales y angulares.",
             font_size=18,
             color=WHITE,
         ).to_edge(LEFT, buff=1).shift(DOWN * 0.3)
@@ -663,4 +666,14 @@ class InertialFrameSlide(ThreeDSlide):
             FadeIn(vector_omega_matrix),
             run_time=1.5,
         )
+        self.next_slide()
+
+        # Combined local velocity vector v
+        v_combined = MathTex(
+            r"\mathbf{v} = \begin{bmatrix} \boldsymbol{\upsilon} \\ \boldsymbol{\omega} \end{bmatrix}",
+            font_size=32,
+        ).to_edge(DOWN, buff=1.2)
+        self.add_fixed_in_frame_mobjects(v_combined)
+        self.play(FadeIn(v_combined), run_time=1)
+        self.wait(0.5)
         self.next_slide()
