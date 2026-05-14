@@ -20,6 +20,7 @@ slides = [
     "slides.12_continuous_policy.ContinuousPolicySlide",
     "slides.13_ilqr.ILQRSlide",
     "slides.14_ddpg.DDPGSlide",
+    "slides.15_gps.GPSSlide",
 ]
 
 [presentation]
