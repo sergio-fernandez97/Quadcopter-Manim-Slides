@@ -85,13 +85,29 @@ the agent MUST:
 - **Composition**: Use `VGroup` for related mobjects
 - **Key concepts**: Use `BulletedList` from Manim to present key concepts or bullet points on slides
 - **Slide style**: Aim for slides that resemble Beamer presentations—more static, with animations used sparingly for emphasis rather than constant motion. Prioritize clarity and readability over complex animations.
+- **Color palette** (canonical, established in `slides/00_portrait.py`):
+  - Titles / section headings: `BLUE_B`
+  - Box borders, separators, and strokes: `BLUE_D`
+  - Box fill background: `BLUE_D` with `fill_opacity=0.12, stroke_width=1.5`
+  - Body / main text: `WHITE`
+  - Subdued / secondary text: `GRAY_A`
+  - Background: `BLACK` (configured in `slides.toml`, never set in code)
+  - Semantic accents (titles, labels, equations, or any element that benefits from visual distinction):
+    - `GREEN` — definitions, positive properties, update rules, algorithm outputs
+    - `ORANGE` — alternatives, exploration, secondary concepts, local controllers
+    - `RED_C` — warnings, problems, instabilities
+    - `GOLD` — reward signals
+    - `PURPLE` — neural network hidden layers
+    - `YELLOW` — inline highlights within a slide (Lagrange multipliers, key variables being introduced)
+  - Rule: body prose stays `WHITE`; use accent colors on the specific term or label that carries the semantic weight, not on entire paragraphs
 - **Transitions**: Every scene must use `self.next_slide()` to create transition points between logical sections. These pauses allow the speaker to explain each element before proceeding. Place `next_slide()` after revealing new content (equations, diagrams, bullet points) that requires explanation.
 - **Boxed content**: Wrap definitions, theorems, and bulleted lists (not simple labels) inside a rounded gray rectangle with high transparency. Example:
   ```python
-  box = RoundedRectangle(corner_radius=0.2, width=10, height=2, color=GRAY, fill_opacity=0.15, stroke_width=1)
+  box = RoundedRectangle(corner_radius=0.2, width=10, height=2, color=BLUE_D, fill_opacity=0.12, stroke_width=1.5)
   content = BulletedList("Item 1", "Item 2", font_size=24)
   VGroup(box, content).arrange(ORIGIN)
   ```
+- **Math rendering**: Every mathematical expression — variables, operators, equations, Greek letters, superscripts, subscripts — must be rendered with `MathTex` (for pure LaTeX math) or `Tex` (for mixed text+math). Never render math inside a plain `Text` object, not even inline symbols like θ, λ, or x_t. When mixing prose and math in a single line, use `VGroup` of `Text` + `MathTex` arranged horizontally, or use `Tex` with `\text{}` for the prose portion.
 - **Concise text**: Minimize words in theorems and definitions. You may rephrase user-provided content for brevity while preserving meaning.
 - When adding slides: create file in `slides/`, add scene path to `slides.toml`
 - Keep generated media (`media/`) out of commits; only commit source files under `slides/`

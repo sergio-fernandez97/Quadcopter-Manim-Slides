@@ -210,28 +210,28 @@ class InertialFrameSlide(ThreeDSlide):
         # Fixed-in-frame labels for each column (screen coords)
         # Titles
         roll_col_title = Text("Roll (eje x)", font_size=22, color=RED).move_to(
-            np.array([-4.5, 3.2, 0])
+            np.array([-4.5, 2.7, 0])
         )
         pitch_col_title = Text("Pitch (eje y)", font_size=22, color=GREEN).move_to(
-            np.array([0, 3.2, 0])
+            np.array([0, 2.7, 0])
         )
         yaw_col_title = Text("Yaw (eje z)", font_size=22, color=BLUE).move_to(
-            np.array([4.5, 3.2, 0])
+            np.array([4.5, 2.7, 0])
         )
 
         # Torques with labels
         roll_torque = MathTex(
             r"\boldsymbol{\tau}_{\varphi} = \ell k (\omega_{4}^2 - \omega_2^{2})",
             font_size=24,
-        ).set_color(RED).move_to(np.array([-4.5, -1.6, 0]))
+        ).set_color(RED).move_to(np.array([-4.5, -1.9, 0]))
         pitch_torque = MathTex(
             r"\boldsymbol{\tau}_{\theta} = \ell k (\omega_{3}^2 - \omega_1^{2})",
             font_size=24,
-        ).set_color(GREEN).move_to(np.array([0, -1.6, 0]))
+        ).set_color(GREEN).move_to(np.array([0, -1.9, 0]))
         yaw_torque = MathTex(
             r"\boldsymbol{\tau}_{\psi} = b \sum_{i=1}^{4} (-1)^{i+1} \omega_{i}^2",
             font_size=24,
-        ).set_color(BLUE).move_to(np.array([4.5, -1.6, 0]))
+        ).set_color(BLUE).move_to(np.array([4.5, -1.9, 0]))
 
         # Torque labels
         torque_label_roll = Text("torque", font_size=16, color=RED).next_to(roll_torque, DOWN, buff=0.1)
@@ -246,7 +246,7 @@ class InertialFrameSlide(ThreeDSlide):
             r" 0 & -S_{\varphi} & C_{\varphi}"
             r" \end{bmatrix}",
             font_size=20,
-        ).set_color(RED).move_to(np.array([-4.5, -2.8, 0]))
+        ).set_color(RED).move_to(np.array([-4.5, -3.0, 0]))
         pitch_matrix = MathTex(
             r"\mathbf{R}(\theta) = \begin{bmatrix}"
             r" C_{\theta} & 0 & -S_{\theta} \\"
@@ -254,7 +254,7 @@ class InertialFrameSlide(ThreeDSlide):
             r" S_{\theta} & 0 & C_{\theta}"
             r" \end{bmatrix}",
             font_size=20,
-        ).set_color(GREEN).move_to(np.array([0, -2.8, 0]))
+        ).set_color(GREEN).move_to(np.array([0, -3.0, 0]))
         yaw_matrix = MathTex(
             r"\mathbf{R}(\psi) = \begin{bmatrix}"
             r" C_{\psi} & S_{\psi} & 0 \\"
@@ -262,7 +262,7 @@ class InertialFrameSlide(ThreeDSlide):
             r" 0 & 0 & 1"
             r" \end{bmatrix}",
             font_size=20,
-        ).set_color(BLUE).move_to(np.array([4.5, -2.8, 0]))
+        ).set_color(BLUE).move_to(np.array([4.5, -3.0, 0]))
 
         # Rotation matrix labels
         matrix_label_roll = Text("matriz de rotación", font_size=16, color=RED).next_to(roll_matrix, DOWN, buff=0.1)
