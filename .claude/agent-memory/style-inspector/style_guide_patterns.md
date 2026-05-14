@@ -5,7 +5,7 @@ metadata:
   type: project
 ---
 
-## Core Style Patterns (verified across all 16 scene files, 2026-05-11)
+## Core Style Patterns (verified across all 16 scene files, 2026-05-13)
 
 **Canonical title**: `Text("Title", font_size=42, color=YELLOW).to_edge(UP, buff=0.5)` animated with `FadeIn`.
 **Section labels**: `Text("Label", font_size=28-32, color=BLUE)`.

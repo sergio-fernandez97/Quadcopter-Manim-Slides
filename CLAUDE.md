@@ -85,6 +85,9 @@ the agent MUST:
 - **Composition**: Use `VGroup` for related mobjects
 - **Key concepts**: Use `BulletedList` from Manim to present key concepts or bullet points on slides
 - **Slide style**: Aim for slides that resemble Beamer presentations—more static, with animations used sparingly for emphasis rather than constant motion. Prioritize clarity and readability over complex animations.
+- **Text reveal**: Do not write phrases progressively during animations. Fade in the complete phrase instead.
+- **Text alignment**: Most text should be left-aligned. Use centered or other alignment only in clear special cases.
+- **Immediate compliance fixes**: If the agent finds an existing slide that does not comply with the text reveal or text alignment rules, it must modify that slide immediately.
 - **Color palette** (canonical, established in `slides/00_portrait.py`):
   - Titles / section headings: `BLUE_B`
   - Box borders, separators, and strokes: `BLUE_D`
@@ -183,3 +186,7 @@ The skill orchestrates these agents: `draft-reader` + `style-inspector` (paralle
 ### Auto-render hook
 
 A PostToolUse hook auto-renders slides when any `slides/*.py` file is created or modified via Write/Edit tools.
+
+### Worktree presentation preservation hook
+
+A PreToolUse Bash hook preserves non-empty `presentation/` artifacts from Claude worktrees by copying them into the repository-level `presentation/` directory before the worktree is removed.
