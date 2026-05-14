@@ -23,8 +23,9 @@ class NewtonEulerSlide(Slide):
     def construct(self):
         # Title
         title = Text("Dinámica de traslación y rotación local", font_size=40, color=YELLOW)
-        title.to_edge(UP)
-        self.add(title)
+        title.to_edge(UP, buff=0.5)
+        self.play(FadeIn(title))
+        self.wait(0.5)
         self.next_slide()
 
         # ===========================
@@ -78,8 +79,8 @@ class NewtonEulerSlide(Slide):
         )
         opening_group = VGroup(opening_box, opening_text).arrange(ORIGIN)
         opening_group.shift(UP * 1.5)
-        self.play(Write(opening_group))
-        self.wait(2)
+        self.play(FadeIn(opening_group))
+        self.wait(0.5)
         self.next_slide()
         self.play(FadeOut(opening_group))
         self.wait(0.5)
@@ -99,20 +100,9 @@ class NewtonEulerSlide(Slide):
         )
         newton_eq_initial.shift(UP * 1.8)
 
-        # Box for Newton's law
-        newton_box = RoundedRectangle(
-            corner_radius=0.2,
-            width=newton_eq_initial.width + 1,
-            height=newton_eq_initial.height + 0.8,
-            color=GRAY,
-            fill_opacity=0.15,
-            stroke_width=1,
-        )
-        newton_box.move_to(newton_eq_initial.get_center())
-
-        self.play(Write(newton_statement), run_time=0.5)
+        self.play(FadeIn(newton_statement), run_time=0.5)
         self.wait(0.5)
-        self.play(Write(newton_eq_initial), Create(newton_box))
+        self.play(FadeIn(newton_eq_initial))
         self.wait(1)
         self.next_slide()
 
@@ -131,10 +121,10 @@ class NewtonEulerSlide(Slide):
         )
         euler_eq_initial.shift(DOWN * 1.5)
 
-        self.play(Write(euler_statement))
-        self.wait(1)
-        self.play(Write(euler_eq_initial))
-        self.wait(2)
+        self.play(FadeIn(euler_statement))
+        self.wait(0.5)
+        self.play(FadeIn(euler_eq_initial))
+        self.wait(0.5)
         self.next_slide()
 
         # Fade out statements
@@ -163,7 +153,7 @@ class NewtonEulerSlide(Slide):
             Transform(euler_eq_initial, euler_eq),
             run_time=2
         )
-        self.wait(1)
+        self.wait(0.5)
         self.next_slide()
 
         # Update references
@@ -216,7 +206,7 @@ class NewtonEulerSlide(Slide):
         translation_expanded.set_color_by_tex(r"\dot{\boldsymbol{\upsilon}}", linear_velocity_color)
 
         self.play(Transform(newton_eq, translation_expanded), run_time=1.5)
-        self.wait(2)
+        self.wait(0.5)
         self.next_slide()
 
         upsilon_eq = MathTex(r"\dot{\boldsymbol{\upsilon}}")
@@ -232,10 +222,10 @@ class NewtonEulerSlide(Slide):
         explanation_linear.to_edge(DOWN, buff=0.3)
 
         self.play(Transform(newton_eq, upsilon_eq),
-            Write(explanation_linear),
+            FadeIn(explanation_linear),
             run_time=1.5
             )
-        self.wait(1)
+        self.wait(0.5)
 
         # Transform to linear velocities
         linear_velocities = MathTex(
@@ -255,11 +245,11 @@ class NewtonEulerSlide(Slide):
 
         self.play(
             Transform(newton_eq, linear_velocities),
-            Write(linear_label),
+            FadeIn(linear_label),
             FadeOut(explanation_linear),
             run_time=2
         )
-        self.wait(1)
+        self.wait(0.5)
         self.next_slide()
 
         linear_velocities_expanded = MathTex(
@@ -279,21 +269,8 @@ class NewtonEulerSlide(Slide):
             ),
             run_time=1.5)
 
-        self.wait(2)
-        self.next_slide()
-
-        # Brief closing for translational dynamics (NEW)
-        linear_close = Text(
-            "Estas tres ecuaciones describen la dinámica de traslación en el sistema local.",
-            font_size=19,
-            color=GRAY_B,
-        )
-        linear_close.to_edge(DOWN, buff=0.4)
-        self.play(FadeIn(linear_close))
         self.wait(0.5)
         self.next_slide()
-        self.play(FadeOut(linear_close))
-        self.wait(0.3)
 
         # ===========================
         # ROTATIONAL DYNAMICS (EXISTING)
@@ -312,10 +289,10 @@ class NewtonEulerSlide(Slide):
 
         self.play(
             Transform(euler_eq, omega_eq),
-            Write(explanation_angular),
+            FadeIn(explanation_angular),
             run_time=1.5
             )
-        self.wait(1)
+        self.wait(0.5)
 
         # Expand Euler's equation (expanded form obtained by solving for ω̇)
         rotation_expanded = MathTex(
@@ -326,8 +303,31 @@ class NewtonEulerSlide(Slide):
         rotation_expanded.set_color_by_tex(r"\dot{\boldsymbol{\omega}}", angular_velocity_color)
 
         self.play(Transform(euler_eq, rotation_expanded), run_time=1.5)
-        self.wait(1)
+        self.wait(0.5)
         self.next_slide()
+
+        # Inertia matrix display
+        inertia_label = Text("Matriz de inercia:", font_size=22, color=GRAY_A)
+        inertia_eq = MathTex(
+            r"\mathbf{I} = \begin{bmatrix} I_{xx} & 0 & 0 \\ 0 & I_{yy} & 0 \\ 0 & 0 & I_{zz} \end{bmatrix}",
+            font_size=28,
+        )
+        inertia_content = VGroup(inertia_label, inertia_eq).arrange(RIGHT, buff=0.3)
+        inertia_content.next_to(euler_eq, DOWN, buff=0.35)
+        inertia_box = RoundedRectangle(
+            corner_radius=0.2,
+            width=inertia_content.width + 0.8,
+            height=inertia_content.height + 0.5,
+            color=BLUE_D,
+            fill_opacity=0.12,
+            stroke_width=1.5,
+        )
+        inertia_box.move_to(inertia_content)
+        self.play(FadeIn(inertia_label), FadeIn(inertia_box), FadeIn(inertia_eq), FadeOut(explanation_angular))
+        self.wait(0.5)
+        self.next_slide()
+        self.play(FadeOut(inertia_label), FadeOut(inertia_box), FadeOut(inertia_eq))
+        self.wait(0.2)
 
         # Transform to angular velocities
         angular_velocities = MathTex(
@@ -347,11 +347,10 @@ class NewtonEulerSlide(Slide):
 
         self.play(
             Transform(euler_eq, angular_velocities),
-            Write(angular_label),
-            FadeOut(explanation_angular),
+            FadeIn(angular_label),
             run_time=2
         )
-        self.wait(1)
+        self.wait(0.5)
         self.next_slide()
 
         angular_velocities_expanded = MathTex(
@@ -371,16 +370,58 @@ class NewtonEulerSlide(Slide):
             ),
             run_time=1.5)
 
-        self.wait(3)
-        self.next_slide()
-
-        # Brief closing for rotational dynamics (NEW)
-        angular_close = Text(
-            "Estas tres ecuaciones corresponden a la dinámica de rotación en el sistema local.",
-            font_size=19,
-            color=GRAY_B,
-        )
-        angular_close.to_edge(DOWN, buff=0.4)
-        self.play(FadeIn(angular_close))
         self.wait(0.5)
         self.next_slide()
+
+        # Shift both equations to the left half
+        self.play(
+            newton_eq.animate.scale(0.75).to_edge(LEFT, buff=0.4).shift(UP * 0.5),
+            linear_label.animate.scale(0.75).to_edge(LEFT, buff=0.4).shift(UP * 2.5),
+            euler_eq.animate.scale(0.75).to_edge(LEFT, buff=0.4).shift(DOWN * 1.5),
+            angular_label.animate.scale(0.75).to_edge(LEFT, buff=0.4).shift(DOWN * 0.0),
+            run_time=1.2,
+        )
+        self.wait(0.4)
+
+        # Constants table (right half)
+        def table_row(sym, val, unit, meaning):
+            s = MathTex(sym, font_size=18, color=YELLOW)
+            v = MathTex(val, font_size=18, color=WHITE)
+            u = MathTex(unit, font_size=18, color=GRAY_A)
+            m = Text(meaning, font_size=16, color=GRAY_A)
+            return VGroup(s, v, u, m).arrange(RIGHT, buff=0.25)
+
+        table_title = Text("Constantes del modelo", font_size=22, color=BLUE_B)
+        table_rows = VGroup(
+            table_row(r"g",        r"9.81",                        r"\text{m}\cdot\text{s}^{-2}",   "const. de gravitación"),
+            table_row(r"m",        r"0.468",                       r"\text{kg}",                    "masa del cuadricóptero"),
+            table_row(r"\ell",     r"0.225",                       r"\text{m}",                     "dist. rotor–c. de masa"),
+            table_row(r"b",        r"2.980 \times 10^{-6}",       r"-",                            "coef. de arrastre"),
+            table_row(r"k",        r"1.140 \times 10^{-7}",       r"-",                            "coef. de elevación"),
+            table_row(r"I_{xx}",   r"4.856 \times 10^{-3}",       r"\text{kg}\cdot\text{m}^2",    "inercia eje x"),
+            table_row(r"I_{yy}",   r"4.856 \times 10^{-3}",       r"\text{kg}\cdot\text{m}^2",    "inercia eje y"),
+            table_row(r"I_{zz}",   r"8.801 \times 10^{-3}",       r"\text{kg}\cdot\text{m}^2",    "inercia eje z"),
+        ).arrange(DOWN, buff=0.15, aligned_edge=LEFT)
+
+        table_group = VGroup(table_title, table_rows).arrange(DOWN, buff=0.3, aligned_edge=LEFT)
+        table_group.to_edge(RIGHT, buff=0.4)
+
+        table_box = RoundedRectangle(
+            corner_radius=0.2,
+            width=table_group.width + 0.8,
+            height=table_group.height + 0.6,
+            color=BLUE_D,
+            fill_opacity=0.12,
+            stroke_width=1.5,
+        )
+        table_box.move_to(table_group)
+
+        self.play(FadeIn(table_title), FadeIn(table_box), FadeIn(table_rows))
+        self.wait(0.5)
+        self.next_slide()
+        self.play(
+            FadeOut(newton_eq), FadeOut(linear_label),
+            FadeOut(euler_eq),  FadeOut(angular_label),
+            FadeOut(table_title), FadeOut(table_box), FadeOut(table_rows),
+        )
+        self.wait(0.3)
