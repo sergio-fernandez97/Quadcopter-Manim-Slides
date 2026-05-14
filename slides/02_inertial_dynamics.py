@@ -35,9 +35,9 @@ class InertialDynamicsSlide(Slide):
             corner_radius=0.2,
             width=idea_items.width + 0.8,
             height=idea_items.height + 0.6,
-            color=GRAY,
-            fill_opacity=0.15,
-            stroke_width=1,
+            color=BLUE_D,
+            fill_opacity=0.12,
+            stroke_width=1.5,
         )
         idea_box.move_to(idea_items)
         idea_group = VGroup(idea_label, idea_box, idea_items)
@@ -60,9 +60,9 @@ class InertialDynamicsSlide(Slide):
             corner_radius=0.2,
             width=opening_text.width + 0.6,
             height=opening_text.height + 0.4,
-            color=GRAY,
-            fill_opacity=0.15,
-            stroke_width=1,
+            color=BLUE_D,
+            fill_opacity=0.12,
+            stroke_width=1.5,
         )
         opening_group = VGroup(opening_box, opening_text).arrange(ORIGIN)
         opening_group.shift(UP * 2)
@@ -76,10 +76,19 @@ class InertialDynamicsSlide(Slide):
         # Translation dynamics statement and initial equation (upper part)
         translation_statement = Text(
             "Dinámica de traslación: Relación entre coordenadas inerciales y velocidades locales",
-            font_size=24,
-            color=WHITE
+            font_size=22,
+            color=WHITE,
         )
-        translation_statement.shift(UP * 2.5)
+        translation_stmt_box = RoundedRectangle(
+            corner_radius=0.2,
+            width=translation_statement.width + 0.6,
+            height=translation_statement.height + 0.4,
+            color=BLUE_D,
+            fill_opacity=0.12,
+            stroke_width=1.5,
+        )
+        translation_statement_group = VGroup(translation_stmt_box, translation_statement).arrange(ORIGIN)
+        translation_statement_group.shift(UP * 2.5)
 
         translation_eq_initial = MathTex(
             r"\dot{\boldsymbol{q}} = \boldsymbol{\upsilon}",
@@ -87,7 +96,7 @@ class InertialDynamicsSlide(Slide):
         )
         translation_eq_initial.shift(UP * 1.8)
 
-        self.play(FadeIn(translation_statement))
+        self.play(FadeIn(translation_statement_group))
         self.wait(0.5)
         self.play(FadeIn(translation_eq_initial))
         self.wait(0.5)
@@ -95,11 +104,21 @@ class InertialDynamicsSlide(Slide):
 
         # Rotation dynamics statement and initial equation (lower part)
         rotation_statement = Text(
-            "Dinámica de rotación: La velocidad angular inercial se relaciona con la angular local\n mediante una transformación.",
-            font_size=24,
-            color=WHITE
+            "Dinámica de rotación: La velocidad angular inercial se relaciona con la angular local\nmediante una transformación.",
+            font_size=22,
+            color=WHITE,
+            line_spacing=1.3,
         )
-        rotation_statement.shift(DOWN * 0.2)
+        rotation_stmt_box = RoundedRectangle(
+            corner_radius=0.2,
+            width=rotation_statement.width + 0.6,
+            height=rotation_statement.height + 0.4,
+            color=BLUE_D,
+            fill_opacity=0.12,
+            stroke_width=1.5,
+        )
+        rotation_statement_group = VGroup(rotation_stmt_box, rotation_statement).arrange(ORIGIN)
+        rotation_statement_group.shift(DOWN * 0.2)
 
         rotation_eq_initial = MathTex(
             r"\dot{\boldsymbol{\eta}} = \mathbf{W}_{\boldsymbol{\eta}}\boldsymbol{\omega}",
@@ -107,7 +126,7 @@ class InertialDynamicsSlide(Slide):
         )
         rotation_eq_initial.shift(DOWN * 1.5)
 
-        self.play(FadeIn(rotation_statement))
+        self.play(FadeIn(rotation_statement_group))
         self.wait(0.5)
         self.play(FadeIn(rotation_eq_initial))
         self.wait(0.5)
@@ -115,8 +134,8 @@ class InertialDynamicsSlide(Slide):
 
         # Fade out statements
         self.play(
-            FadeOut(translation_statement),
-            FadeOut(rotation_statement)
+            FadeOut(translation_statement_group),
+            FadeOut(rotation_statement_group)
         )
         self.wait(0.5)
 
@@ -163,12 +182,12 @@ class InertialDynamicsSlide(Slide):
         rotation_expanded = MathTex(
             r"\begin{bmatrix} \dot{\varphi} \\ \dot{\theta} \\ \dot{\psi} \end{bmatrix} = "
             r"\begin{bmatrix}"
-            r"1 & S_{\varphi}T_{\theta} & C_{\varphi}T_{\theta} \\"
-            r"0 & C_{\varphi} & -S_{\varphi} \\"
-            r"0 & S_{\varphi}/C_{\theta} & C_{\varphi}/C_{\theta}"
+            r"1 & \sin\varphi\tan\theta & \cos\varphi\tan\theta \\"
+            r"0 & \cos\varphi & -\sin\varphi \\"
+            r"0 & \dfrac{\sin\varphi}{\cos\theta} & \dfrac{\cos\varphi}{\cos\theta}"
             r"\end{bmatrix}"
             r"\begin{bmatrix} p \\ q \\ r \end{bmatrix}",
-            font_size=28
+            font_size=26
         )
         rotation_expanded.move_to(rotation_eq.get_center())
         rotation_expanded.shift(UP * 0.3)
@@ -179,27 +198,26 @@ class InertialDynamicsSlide(Slide):
         )
         self.wait(0.5)
 
-        # Create brace under the matrix part (the matrix is part of the MathTex)
-        # We'll create a brace that spans the matrix portion
-        # The matrix bmatrix is typically the second part (index 1) in the MathTex
-        # Create a brace below the entire equation, then position it to point at the matrix
-        matrix_brace = Brace(rotation_expanded, DOWN, buff=0.1)
-        matrix_label_expanded = matrix_brace.get_text(
-            "Matriz de cambio de coordenadas de la velocidad angular"
+        matrix_note = Text(
+            "W_η: matriz de cambio de coordenadas de la velocidad angular",
+            font_size=18,
+            color=GRAY_A,
         )
+        matrix_note_box = RoundedRectangle(
+            corner_radius=0.15,
+            width=matrix_note.width + 0.5,
+            height=matrix_note.height + 0.35,
+            color=BLUE_D,
+            fill_opacity=0.12,
+            stroke_width=1.5,
+        )
+        matrix_note_group = VGroup(matrix_note_box, matrix_note).arrange(ORIGIN)
+        matrix_note_group.next_to(rotation_expanded, DOWN, buff=0.35)
 
-        self.play(
-            Create(matrix_brace),
-            FadeIn(matrix_label_expanded),
-            run_time=1.5
-        )
+        self.play(FadeIn(matrix_note_group))
         self.wait(1.5)
         self.next_slide()
-        self.play(
-            FadeOut(matrix_brace),
-            FadeOut(matrix_label_expanded),
-            run_time=1
-        )
+        self.play(FadeOut(matrix_note_group), run_time=1)
         self.wait(0.5)
 
         # --- W_eta conceptual note (NEW) ---
@@ -260,7 +278,9 @@ class InertialDynamicsSlide(Slide):
             font_size=36
         )
         translation_expanded.move_to(translation_eq.get_center())
-        translation_expanded.set_color_by_tex(r"\begin{bmatrix} u \\ v \\ w \end{bmatrix}", linear_velocity_color)
+        translation_expanded.set_color_by_tex(r"u", linear_velocity_color)
+        translation_expanded.set_color_by_tex(r"v", linear_velocity_color)
+        translation_expanded.set_color_by_tex(r"w", linear_velocity_color)
 
         self.play(Transform(translation_eq, translation_expanded), run_time=1.5)
         self.wait(1)
@@ -281,45 +301,47 @@ class InertialDynamicsSlide(Slide):
         self.play(Transform(translation_eq, translation_equations), run_time=1.5)
         self.wait(0.5)
 
-        # --- Kinematic identity note (NEW) ---
-        # Added after dot-x=u, dot-y=v, dot-z=w is shown
-        kinematic_note = Text(
-            "No aparece una nueva ley dinámica: u, v, w son simplemente\n"
-            "las derivadas temporales de x, y, z.",
-            font_size=20,
-            color=GRAY_B,
+        no_new_law_text = Text(
+            "No aparece una nueva\nley dinámica:\nu, v, w son simplemente\nlas derivadas temporales\nde x, y, z.",
+            font_size=18,
+            color=WHITE,
             line_spacing=1.3,
         )
-        kinematic_note.next_to(translation_eq, DOWN, buff=0.5)
+        no_new_law_box = RoundedRectangle(
+            corner_radius=0.2,
+            width=no_new_law_text.width + 0.5,
+            height=no_new_law_text.height + 0.4,
+            color=BLUE_D,
+            fill_opacity=0.12,
+            stroke_width=1.5,
+        )
+        no_new_law_group = VGroup(no_new_law_box, no_new_law_text).arrange(ORIGIN)
+        no_new_law_group.next_to(translation_eq, LEFT, buff=0.6)
 
-        self.play(FadeIn(kinematic_note))
-        self.wait(0.5)
+        self.play(FadeIn(no_new_law_group))
         self.next_slide()
-        self.play(FadeOut(kinematic_note))
+        self.play(FadeOut(no_new_law_group))
         self.wait(0.3)
 
-        # --- Closing bridge to next slide (NEW) ---
         closing_text = Text(
-            "Junto con la dinámica local de la slide anterior,\n"
-            "estas relaciones completan el sistema de ecuaciones de movimiento de primer orden.",
-            font_size=22,
-            color=WHITE,
-            line_spacing=1.4,
+            "Junto con la dinámica local, estas relaciones completan\n"
+            "el sistema de ecuaciones de movimiento de primer orden.",
+            font_size=20,
+            color=GRAY_A,
+            line_spacing=1.3,
         )
         closing_box = RoundedRectangle(
             corner_radius=0.2,
-            width=closing_text.width + 0.8,
-            height=closing_text.height + 0.6,
-            color=GRAY,
-            fill_opacity=0.15,
-            stroke_width=1,
+            width=closing_text.width + 0.6,
+            height=closing_text.height + 0.4,
+            color=BLUE_D,
+            fill_opacity=0.12,
+            stroke_width=1.5,
         )
-        closing_box.move_to(closing_text)
         closing_group = VGroup(closing_box, closing_text).arrange(ORIGIN)
-        closing_group.next_to(title, DOWN, buff=1.5)
+        closing_group.to_edge(DOWN, buff=0.3)
 
-        self.play(FadeIn(closing_group))
-        self.wait(0.5)
+        self.play(FadeIn(closing_group), run_time=1)
         self.next_slide()
-        self.play(FadeOut(closing_group))
-        self.wait(0.3)
+        self.play(FadeOut(closing_group), run_time=0.8)
+        self.wait(1)
