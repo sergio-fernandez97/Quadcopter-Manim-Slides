@@ -1,13 +1,20 @@
 {
   "permissions": {
     "allow": [
+      "Write(slides/**)",
+      "Edit(slides/**)",
       "Bash(chmod:*)",
       "Bash(python:*)",
       "Bash(python3:*)",
+      "Bash(git:*)",
+      "Bash(gh:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(git push)",
       "Bash(git -C \"/Users/sergio.fernandez/Documents/personal/tesis /Quadcopter-Manim-Slides\" log --oneline -10)",
+      "Bash(.codex/scripts/bootstrap_dev_branch.sh:*)",
+      "Bash(.codex/scripts/prepare_slide_branch.sh:*)",
+      "Bash(.codex/scripts/publish_slide_pr.sh:*)",
       "Bash(tree:*)",
       "Bash(wc:*)",
       "Bash(uv run manim-slides render slides/13_ilqr.py ILQRSlide)",
@@ -27,7 +34,12 @@
       "mcp__playwright__browser_evaluate",
       "mcp__playwright__browser_take_screenshot",
       "mcp__playwright__browser_press_key",
-      "Skill(slide)"
+      "Skill(slide)",
+      "Bash(/usr/bin/git -C '/Users/sergio.fernandez/Documents/personal/tesis /Quadcopter-Manim-Slides/.codex/worktrees/slide+01-newton-euler-update' diff --staged -- .codex/agent-memory/style-inspector/style_guide_patterns.md)",
+      "Bash(/usr/bin/git -C '/Users/sergio.fernandez/Documents/personal/tesis /Quadcopter-Manim-Slides/.codex/worktrees/slide+15-gps' checkout --ours slides.toml)",
+      "Bash(/usr/bin/git -C '/Users/sergio.fernandez/Documents/personal/tesis /Quadcopter-Manim-Slides/.codex/worktrees/slide+15-gps' add slides.toml)",
+      "Bash(/usr/bin/git -C '/Users/sergio.fernandez/Documents/personal/tesis /Quadcopter-Manim-Slides/.codex/worktrees/slide+15-gps' commit --no-edit)",
+      "Bash(/usr/bin/git *)"
     ]
   },
   "hooks": {

@@ -2,6 +2,8 @@ Commit and push the following changes to git: $ARGUMENTS
 
 ## Instructions
 
+Use this as a generic fallback command. For slide work, prefer `/slide` inside a slide worktree so publication targets `dev` automatically.
+
 1. Run `git status` and `git diff` to review the changes
 2. Stage only the relevant files mentioned in the arguments (or all if not specified)
 3. Write a clear, concise commit message following conventional commits style:

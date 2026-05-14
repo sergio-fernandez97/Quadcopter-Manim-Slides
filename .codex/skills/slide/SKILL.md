@@ -1,119 +1,146 @@
 ---
 name: slide
-description: "Create or update a Manim slide from a markdown draft file in ./draft/. Orchestrates draft-reader, style-inspector, slide-builder/updater, math-validator, and slide-layout-validator agents. Use when the user wants to turn a draft into a presentation slide."
+description: "Create or update a Manim slide from a markdown draft file in ./draft/. Orchestrates draft-reader, style-inspector, slide-builder/updater, math-validator, slide-layout-validator, and slide-publisher."
 user-invocable: true
-allowed-tools: Bash(uv run:*) Read Write Edit Agent
-argument-hint: "<draft-file-or-topic> [--no-render] [--no-validate]"
+allowed-tools: Read Write Edit Agent Bash(git:*) Bash(uv run:*) Bash(gh:*) Bash(.codex/scripts/bootstrap_dev_branch.sh:*) Bash(.codex/scripts/prepare_slide_branch.sh:*) Bash(.codex/scripts/publish_slide_pr.sh:*) mcp__context7__resolve-library-id mcp__context7__query-docs
+argument-hint: "<draft-file-or-topic> [--no-render] [--no-validate] [--no-publish] [--draft-pr] [--update-existing-pr]"
 ---
 
 Create or update a Manim slide from a markdown draft: $ARGUMENTS
 
 ## Arguments
 
-- A path to a markdown file in `./draft/` (e.g., `draft/14_td_learning.md`)
-- OR a topic name that matches an existing draft file (e.g., `td_learning`)
+- A path to a markdown file in `./draft/` (e.g. `draft/14_td_learning.md`)
+- OR a topic name that matches an existing draft file (e.g. `td_learning`)
 - Optional flag: `--no-render` to skip rendering and layout validation
 - Optional flag: `--no-validate` to skip math and layout validation
+- Optional flag: `--no-publish` to skip commit/push/PR creation
+- Optional flag: `--draft-pr` to open the PR as a draft
+- Optional flag: `--update-existing-pr` to update an existing PR on the current feature branch
 
 ## Instructions
 
-### Step 0: Resolve the draft file
+### Step 0: Resolve arguments and draft file
 
-1. Parse `$ARGUMENTS` to separate the file/topic from flags (`--no-render`, `--no-validate`).
+1. Parse `$ARGUMENTS` into:
+   - draft path or topic
+   - `--no-render`
+   - `--no-validate`
+   - `--no-publish`
+   - `--draft-pr`
+   - `--update-existing-pr`
 2. If the argument is a file path (contains `/` or ends with `.md`), use it directly.
 3. If it is a topic name, glob for `draft/*{topic}*.md`.
 4. If no match is found, list available drafts in `./draft/` and ask the user which one to use.
 5. Read the draft file to confirm it exists and has content.
 
-### Step 1: Parse the draft and inspect style (PARALLEL)
+### Step 0.5: Enforce branch and worktree policy
 
-Launch **two agents in parallel** in a single message:
+1. Read the repository state:
+   ```bash
+   git branch --show-current
+   git worktree list --porcelain
+   git status --short --branch
+   ```
+2. If the user did not pass `--no-publish`, ensure `dev` exists:
+   ```bash
+   .codex/scripts/bootstrap_dev_branch.sh
+   ```
+3. Publishing rules:
+   - Never publish from `main`
+   - Never publish from `dev`
+   - Prefer running inside a `slide/*` feature branch that was created for a dedicated worktree session
+4. If the current branch is `main` or `dev` and publishing is enabled:
+   - stop before making Git changes
+   - tell the user to prepare a worktree with `/worktree_slide`
+   - continue only if they rerun with `--no-publish`
+5. If the current branch is not `slide/*` and publishing is enabled:
+   - warn the user that the branch does not follow the slide branch convention
+   - do not auto-publish unless the user explicitly confirms that branch is the intended PR branch
 
-**Agent A — draft-reader:**
+### Step 1: Parse the draft and inspect style (parallel)
+
+Launch two agents in parallel in a single message:
+
+**Agent A — draft-reader**
 - Dispatch the `draft-reader` agent with:
-  ```
+  ```text
   TASK: extract
   FILE: <resolved draft path>
   ```
-- Receive CONTENT_SUMMARY JSON (including metadata and cited_files).
+- Receive `CONTENT_SUMMARY` JSON.
 
-**Agent B — style-inspector:**
+**Agent B — style-inspector**
 - Dispatch the `style-inspector` agent with:
-  ```
+  ```text
   TASK: inspect
   FILES: all
   ```
-- Receive STYLE_GUIDE JSON.
-
-Both agents run in parallel since they have no dependencies on each other.
+- Receive `STYLE_GUIDE` JSON.
 
 ### Step 2: Determine mode (create vs update)
 
-1. Extract metadata from CONTENT_SUMMARY: `mode`, `slide_number`, `target_file`, `target_class`.
+1. Extract metadata from `CONTENT_SUMMARY`: `mode`, `slide_number`, `target_file`, `target_class`.
 2. If `mode` is explicitly set in metadata, use it.
-3. Otherwise, check if a file with the `slide_number` prefix exists in `slides/`:
-   - Run: `ls slides/ | grep "^$(printf '%02d' $slide_number)_"`
-   - If a match exists → mode = `update`; extract target_file and target_class from the existing file
-   - If no match → mode = `create`
+3. Otherwise, check whether a file with the `slide_number` prefix already exists in `slides/`.
+   - If a match exists, use `update`.
+   - If no match exists, use `create`.
 4. If `slide_number` is null and mode is `create`:
-   - Scan `slides/` for the highest NN prefix: `ls slides/*.py | sort -n | tail -1`
-   - Set slide_number = max(NN) + 1
-   - Derive `target_file` as `{NN}_{snake_case_title}.py`
-   - Derive `target_class` as `{CamelCaseTitle}Slide`
+   - scan `slides/` for the highest numbered slide
+   - set `slide_number = max + 1`
+   - derive `target_file` as `{NN}_{snake_case_title}.py`
+   - derive `target_class` as `{CamelCaseTitle}Slide`
 
-### Step 3: Query context7 MCP
+### Step 3: Query Context7 before writing slide code
 
-Before dispatching slide-builder or slide-updater, query the `context7` MCP server for:
-- `manim-slides` API reference (slide transitions, ThreeDSlide usage)
-- `manim` API reference (MathTex, BulletedList, VGroup, animations)
+Before dispatching `slide-builder` or `slide-updater`, query Context7 for:
+- `manim-slides` APIs for `Slide`, `ThreeDSlide`, and transition control
+- `manim` APIs for `MathTex`, `Tex`, `BulletedList`, `VGroup`, and animation primitives
 
-This satisfies the repo instruction requirement to ground generated code in Context7 references.
+If documentation conflicts with memory or repo habits, follow the retrieved docs.
 
 ### Step 4: Build or update the slide
 
 **If mode = `create`:**
-1. Dispatch the `slide-builder` agent with:
-   ```
+1. Dispatch `slide-builder` with:
+   ```text
    TASK: build
    SLIDE_TITLE: <metadata.title>
    OUTPUT_FILE: <target_file>
-   CONTENT_SUMMARY: <JSON from Step 1 Agent A>
-   STYLE_GUIDE: <JSON from Step 1 Agent B>
-   ADDITIONAL_INSTRUCTIONS: <metadata.additional_instructions + relevant context7 API refs>
+   CONTENT_SUMMARY: <JSON from draft-reader>
+   STYLE_GUIDE: <JSON from style-inspector>
+   ADDITIONAL_INSTRUCTIONS: <metadata.additional_instructions + relevant Context7 notes>
    ```
-2. After the agent produces the `.py` file, register the new slide in `slides.toml`:
-   - Read current `slides.toml`
-   - Insert the new entry `slides/{target_file}.{TargetClass}Slide` at the correct position (sorted by NN prefix)
-   - Write updated `slides.toml`
+2. Register the new slide in `slides.toml` in sorted numeric order.
 
 **If mode = `update`:**
-1. Dispatch the `slide-updater` agent with:
-   ```
+1. Dispatch `slide-updater` with:
+   ```text
    TASK: update
    TARGET_FILE: <target_file>
    TARGET_CLASS: <target_class>
    CHANGE_DESCRIPTION: <derived from CONTENT_SUMMARY changes>
-   CHANGE_TYPE: <metadata.update_type or infer from content>
-   CONTENT_SUMMARY: <JSON from Step 1 Agent A>
-   STYLE_GUIDE: <JSON from Step 1 Agent B>
-   ADDITIONAL_INSTRUCTIONS: <metadata.additional_instructions + relevant context7 API refs>
+   CHANGE_TYPE: <metadata.update_type or inferred type>
+   CONTENT_SUMMARY: <JSON from draft-reader>
+   STYLE_GUIDE: <JSON from style-inspector>
+   ADDITIONAL_INSTRUCTIONS: <metadata.additional_instructions + relevant Context7 notes>
    ```
 
 ### Step 5: Validate math
 
-Skip if `--no-validate` was passed or if CONTENT_SUMMARY has no equations.
+Skip this step if `--no-validate` was passed or if `CONTENT_SUMMARY` has no equations.
 
-1. Dispatch the `math-validator` agent with:
-   ```
+1. Dispatch `math-validator` with:
+   ```text
    TASK: validate
-   SCENE_FILE_CONTENT: <the .py file produced in Step 4>
-   CONTENT_SUMMARY: <JSON from Step 1 Agent A>
+   SCENE_FILE_CONTENT: <the scene file content>
+   CONTENT_SUMMARY: <JSON from draft-reader>
    ```
 2. If `validation_status` is `FAIL`:
-   - Report the specific errors
-   - Dispatch back to `slide-builder` or `slide-updater` to fix only the flagged equations
-   - Re-validate (max 1 retry)
-3. If `PASS` or `WARN`: proceed (report warnings to user).
+   - report the errors
+   - send only those fixes back to `slide-builder` or `slide-updater`
+   - re-validate once
+3. If `PASS` or `WARN`, continue and capture the result for the publish report.
 
 ### Step 6: Render
 
@@ -121,34 +148,72 @@ Skip if `--no-render` was passed.
 
 1. Render the scene:
    ```bash
-   uv run manim-slides render slides/<target_file>
+   uv run manim-slides render slides/<target_file> <TargetClass>
    ```
-2. If render fails, report the error with stderr output. Do not proceed to HTML conversion.
+2. If render fails, report the error and stop before HTML conversion or publishing.
 
 ### Step 7: Convert to HTML
 
-Skip if `--no-render` was passed or Step 6 failed.
+Skip if `--no-render` was passed or render failed.
 
-1. Convert to HTML:
+1. Convert the scene:
    ```bash
-   uv run manim-slides convert <TargetClass>Slide presentation/<nn>_<name>.html -ccontrols=true
+   uv run manim-slides convert <TargetClass> presentation/<nn>_<name>.html -ccontrols=true
    ```
 
 ### Step 8: Validate layout
 
-Skip if `--no-render` was passed, `--no-validate` was passed, or Step 7 failed.
+Skip if `--no-render` was passed, `--no-validate` was passed, or HTML conversion failed.
 
-1. Dispatch the `slide-layout-validator` agent with the generated HTML file path.
-2. If high-severity issues are found, report them to the user with specific element names and issue types.
+1. Dispatch `slide-layout-validator` with the generated HTML file path.
+2. If high-severity issues are found, report them before publication.
 
-### Step 9: Report
+### Step 9: Publish to a PR targeting `dev`
 
-Summarize what was done:
-- Draft file: `<path>`
-- Cited LaTeX files: `<list or none>`
-- Mode: `create` / `update`
-- Scene file: `slides/<target_file>`
-- Math validation: `PASS` / `WARN` / `FAIL` / `skipped`
-- Render: `success` / `failed` / `skipped`
-- Layout validation: `<results>` / `skipped`
-- Suggest next steps: `/commit_push` to save changes
+Skip this step if `--no-publish` was passed.
+
+1. Determine the publication file scope:
+   - always `slides/<target_file>`
+   - include `slides.toml` if it changed
+   - include the draft file only if the user expects the draft to ship with the slide
+   - include directly related source files only
+   - never include `media/` or `presentation/` output unless the user explicitly asked for generated artifacts in git
+2. Build commit/PR metadata:
+   - commit message: `feat(slides): add <topic>` for new slides
+   - commit message: `feat(slides): update <topic>` for existing slides
+   - PR title should mirror the change in concise imperative form
+   - PR body must include draft path, cited LaTeX files, validation result, render result, and layout result
+3. Dispatch `slide-publisher` with:
+   ```text
+   TASK: publish
+   BASE_BRANCH: dev
+   FEATURE_BRANCH: <current branch>
+   SCENE_FILE: slides/<target_file>
+   DRAFT_FILE: <resolved draft path or none>
+   OPTIONAL_FILES: <comma-separated files or none>
+   COMMIT_MESSAGE: <derived commit message>
+   PR_TITLE: <derived PR title>
+   PR_BODY_SUMMARY: <markdown summary>
+   DRAFT_PR: <true if --draft-pr else false>
+   UPDATE_EXISTING_PR: <true if --update-existing-pr else false>
+   VALIDATION_STATUS: <PASS|WARN|skipped>
+   RENDER_STATUS: <success|skipped>
+   LAYOUT_STATUS: <pass|warn|skipped>
+   ```
+4. PR tool preference:
+   - prefer the configured GitHub MCP/app in the Codex environment
+   - if MCP PR tooling is unavailable, allow the publisher to fall back to `gh`
+   - if neither path is available, report that the branch was pushed and PR creation still needs GitHub connectivity
+
+### Step 10: Report
+
+Summarize:
+- draft file
+- cited LaTeX files
+- mode: `create` or `update`
+- scene file
+- math validation result
+- render result
+- layout validation result
+- publication result: `skipped`, `pushed`, `pr created`, `pr updated`, or `manual follow-up required`
+- next step only when blocked, for example `gh auth login` or GitHub MCP setup

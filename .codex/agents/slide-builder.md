@@ -1,6 +1,6 @@
 ---
 name: slide-builder
-description: "Invoked by: Orchestrator, after receiving output from both latex-reader and style-inspector."
+description: "nvoked by: Orchestrator, after receiving output from both latex-reader and style-inspector."
 model: inherit
 color: green
 memory: project
@@ -103,7 +103,7 @@ What to save:
 What NOT to save:
 - Session-specific context (current task details, in-progress work, temporary state)
 - Information that might be incomplete — verify against project docs before writing
-- Anything that duplicates or contradicts existing AGENTS.md or CLAUDE.md instructions
+- Anything that duplicates or contradicts existing AGENTS.md instructions
 - Speculative or unverified conclusions from reading a single file
 
 Explicit user requests:
