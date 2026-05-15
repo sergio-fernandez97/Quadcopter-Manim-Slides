@@ -35,7 +35,7 @@ class QuadcopterMotionSlide(Slide):
         
         local_linear = MathTex(
             r"\dot u &= rv - qw - g \sin\theta \\",
-            r"\dot v &= pw - ru - g\cos\theta \cdot \sin\phi \\",
+            r"\dot v &= pw - ru - g\cos\theta \cdot \sin\varphi \\",
             r"\dot w &= qu - pv + g\cos\varphi \cdot \cos\theta - \frac{k}{m}\sum_{i=1}^{4}\omega_i^2",
             font_size=24
         )
@@ -96,6 +96,30 @@ class QuadcopterMotionSlide(Slide):
         )
         self.wait(2)
         self.next_slide()
+
+        # Recapitulación: etiquetar los dos grupos de ecuaciones
+        recap_local = MathTex(
+            r"\text{Dinámica local:}\quad \dot{u},\, \dot{v},\, \dot{w},\, \dot{p},\, \dot{q},\, \dot{r}",
+            font_size=22
+        )
+        recap_inertial = MathTex(
+            r"\text{Cinemática inercial:}\quad \dot{\varphi},\, \dot{\theta},\, \dot{\psi},\, \dot{x},\, \dot{y},\, \dot{z}",
+            font_size=22
+        )
+        recap_note = Text(
+            "Juntas forman 12 ecuaciones diferenciales de primer orden",
+            font_size=22,
+            color=WHITE
+        )
+        recap_group = VGroup(recap_local, recap_inertial, recap_note)
+        recap_group.arrange(DOWN, buff=0.2)
+        recap_group.move_to(UP * -2.8)
+
+        self.play(FadeIn(recap_group))
+        self.wait(1.5)
+        self.next_slide()
+
+        self.play(FadeOut(recap_group))
 
         # Fade out the titles
         self.play(
@@ -247,6 +271,16 @@ class QuadcopterMotionSlide(Slide):
             run_time=1.5
         )
         self.wait(1)
+
+        # Nota: agrupa las ecuaciones de las dos slides anteriores
+        state_label_note = Text(
+            "Agrupa las ecuaciones presentadas en las dos slides anteriores",
+            font_size=20,
+            color=WHITE
+        )
+        state_label_note.next_to(x_label, DOWN, buff=0.2)
+        self.play(FadeIn(state_label_note))
+        self.wait(0.5)
         self.next_slide()
 
         # Transform state_vector into \boldsymbol{x}
@@ -255,9 +289,10 @@ class QuadcopterMotionSlide(Slide):
             font_size=40
         )
         bold_x.move_to(state_vector.get_center())
-        
+
         self.play(
             Transform(state_vector, bold_x),
+            FadeOut(state_label_note),
             run_time=1.5
         )
         self.wait(1)
@@ -273,7 +308,7 @@ class QuadcopterMotionSlide(Slide):
         self.wait(1)
         
         # Add label "variable de control"
-        u_label = Text("aceleración de rotores como variable de control", font_size=20, color=control_color)
+        u_label = Text("velocidades angulares de los rotores: entrada de control", font_size=20, color=control_color)
         u_label.next_to(control_vector, DOWN, buff=0.3)
         
         u_arrow = Arrow(
@@ -322,7 +357,7 @@ class QuadcopterMotionSlide(Slide):
             font_size=40
         )
         state_space_eq.move_to(ORIGIN)
-        
+
         # Move all elements to center before merging
         self.play(
             merged_lhs_vector.animate.move_to(ORIGIN),
@@ -363,7 +398,19 @@ class QuadcopterMotionSlide(Slide):
             run_time=2
         )
         self.wait(1)
-        
+
+        # Frase puente: forma compacta del modelo completo
+        bridge_phrase = Text(
+            "Forma compacta del modelo completo de movimiento del cuadricóptero",
+            font_size=22,
+            color=WHITE
+        )
+        bridge_phrase.next_to(state_space_eq, DOWN, buff=0.4)
+        self.play(FadeIn(bridge_phrase))
+        self.wait(1)
+        self.play(FadeOut(bridge_phrase))
+        self.wait(0.5)
+
         # Continue with control systems content
         # Mention it's a continuous time, time-invariant system
         description = Text(
