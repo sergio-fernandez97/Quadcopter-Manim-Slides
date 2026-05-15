@@ -19,6 +19,7 @@ slides = [
     "slides.11_policy_value.PolicyValueSlide",
     "slides.12_continuous_policy.ContinuousPolicySlide",
     "slides.13_ilqr.ILQRSlide",
+    "slides.17_conclusion.ConclusionSlide",
 ]
 
 [presentation]
