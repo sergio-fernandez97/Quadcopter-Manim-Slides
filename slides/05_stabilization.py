@@ -1,277 +1,216 @@
 """
-Stabilization strategies for linear control systems.
+Stability concepts and feedback stabilization for linear control systems.
 
-Explores feedback design for asymptotic stability, presenting the stabilization
-problem setup and key conditions for the quadcopter model.
+Covers intuitive and formal notions of stability (Lyapunov, asymptotic,
+exponential), the feedback stabilization problem, and the pole assignment theorem.
 
 Example:
     manim -pql slides/05_stabilization.py StabilizationSlide
-
-Author: Sergio Fernández
-Date: 2025-01-30
 """
 
 from manim import *
 from manim_slides import Slide
 
+
 class StabilizationSlide(Slide):
+    """Stability and feedback stabilization for linear control systems."""
+
     def construct(self):
-        # Title
-        title = Text("Estabilización de sistemas lineales de control", font_size=40, color=WHITE)
-        title.to_edge(UP)
-        self.add(title)
+        title = Text("Estabilidad", font_size=42, color=YELLOW)
+        title.to_edge(UP, buff=0.5)
+        self.play(FadeIn(title))
+        self.wait(0.5)
         self.next_slide()
 
-        # Opening statement - simplified
-        opening_text = Text(
-            "Estrategias de control para sistemas lineales",
-            font_size=28,
-            color=WHITE
-        )
-        opening_text.shift(UP * 2)
-        
-        self.play(Write(opening_text))
-        self.wait(1.5)
-        self.next_slide()
-        self.play(FadeOut(opening_text))
-        self.wait(0.5)
+        # ── Block 1: Intuición ────────────────────────────────────────────────
+        intuition_label = Text("Propiedad fundamental", font_size=28, color=BLUE)
+        intuition_label.next_to(title, DOWN, buff=0.4)
 
-        # Add stability definitions from LaTeX Section 2.3
-        stability_title = Text("Definiciones de estabilidad:", font_size=30, color=YELLOW)
-        stability_title.shift(UP * 2.8)
+        bullets = VGroup(
+            MathTex(r"\bullet\ \text{Propiedad fundamental de los sistemas de control}", font_size=24),
+            MathTex(r"\bullet\ \text{Evolución de estados }\textbf{acotada}\text{ y }\textbf{predecible}", font_size=24),
+            MathTex(r"\bullet\ \text{Permite diseñar estrategias de control efectivas}", font_size=24),
+        ).arrange(DOWN, buff=0.3, aligned_edge=LEFT)
+        bullets.next_to(intuition_label, DOWN, buff=0.4)
 
-        self.play(Write(stability_title))
-        self.wait(0.5)
-
-        # Create box for stability definitions
-        stability_box = RoundedRectangle(
+        intuition_box = RoundedRectangle(
             corner_radius=0.2,
-            width=13,
-            height=3.8,
+            width=bullets.width + 0.8,
+            height=bullets.height + 0.5,
             color=GRAY,
             fill_opacity=0.15,
-            stroke_width=1
+            stroke_width=1,
         )
-        stability_box.shift(DOWN * 0.3)
-        self.play(FadeIn(stability_box))
+        intuition_box.move_to(bullets)
 
-        # Lyapunov stable definition
-        lyapunov_def = MathTex(
-            r"\text{Lyapunov estable: } \|x(t;x_0) - x^*\| \leq \epsilon \text{ para todo } t \geq 0",
-            r"\text{ cuando } \|x_0 - x^*\| \leq \delta",
-            font_size=22
-        )
-        lyapunov_def.shift(UP * 1.5)
-
-        # Asymptotic stable definition
-        asymptotic_def = MathTex(
-            r"\text{Asintóticamente estable: } \lim_{t \to \infty} \|x(t;x_0) - x^*\| = 0",
-            font_size=22
-        )
-        asymptotic_def.shift(UP * 0.5)
-
-        # Exponential stable definition
-        exponential_def = MathTex(
-            r"\text{Exponencialmente estable: } \|x(t;x_0) - x^*\| \leq c e^{-\rho t} \|x_0 - x^*\|",
-            font_size=22
-        )
-        exponential_def.shift(DOWN * 0.5)
-
-        self.play(Write(lyapunov_def), run_time=2)
-        self.wait(1)
-        self.play(Write(asymptotic_def), run_time=2)
-        self.wait(1)
-        self.play(Write(exponential_def), run_time=2)
-        self.wait(1.5)
-        self.next_slide()
-
-        # Fade out stability definitions
-        self.play(
-            FadeOut(stability_title),
-            FadeOut(stability_box),
-            FadeOut(lyapunov_def),
-            FadeOut(asymptotic_def),
-            FadeOut(exponential_def),
-            run_time=1
-        )
+        self.play(FadeIn(intuition_label), FadeIn(intuition_box), FadeIn(bullets))
         self.wait(0.5)
-
-        # Definition label
-        definition_label = Text("Definición:", font_size=32, color=YELLOW)
-        definition_label.shift(UP * 2.5)
-        
-        self.play(Write(definition_label))
-        self.wait(0.5)
-
-        # Create box for definition
-        definition_box = RoundedRectangle(
-            corner_radius=0.2,
-            width=12,
-            height=4.5,
-            color=GRAY,
-            fill_opacity=0.15,
-            stroke_width=1
-        )
-        definition_box.shift(DOWN * 0.2)
-
-        self.play(FadeIn(definition_box))
-
-        # Definition text - Problem of stabilization - simplified
-        def_part1 = MathTex(
-            r"\textbf{Problema de estabilización:}",
-            r"\text{ encontrar }",
-            r"\mathbf{K}\in \mathbb{R}^{n_u\times n_x}",
-            r"\text{ tal que }",
-            r"\mathbf{x}^{*}=\mathbf{0}",
-            r"\text{ sea asintóticamente estable}",
-            font_size=24
-        )
-        def_part1.shift(UP * 1.8)
-        def_part1[0].set_color(YELLOW)
-
-        self.play(Write(def_part1), run_time=2.5)
-        self.wait(1.5)
         self.next_slide()
 
-        # Closed-loop equation
-        closed_loop_eq = MathTex(
-            r"\dot{\mathbf{x}} = (\mathbf{A} + \mathbf{BK})\mathbf{x}(t),",
-            font_size=32
-        )
-        closed_loop_eq.shift(DOWN * 0.2)
+        self.play(FadeOut(intuition_label), FadeOut(intuition_box), FadeOut(bullets))
+        self.wait(0.3)
 
-        self.play(Write(closed_loop_eq), run_time=1.5)
-        self.wait(1)
-        self.next_slide()
+        # ── Block 2: Definiciones matemáticas ────────────────────────────────
+        defs_label = Text("Definiciones de estabilidad", font_size=28, color=BLUE)
+        defs_label.next_to(title, DOWN, buff=0.4)
 
-        # State feedback equation
-        state_feedback_eq = MathTex(
-            r"\mu(\mathbf{x}) = \mathbf{K}\mathbf{x}.",
-            font_size=32
-        )
-        state_feedback_eq.shift(DOWN * 0.9)
-
-        self.play(Write(state_feedback_eq), run_time=1.5)
-        self.wait(1)
-        self.next_slide()
-
-        def_part4 = MathTex(
-            r"\mu(\mathbf{x}) = \mathbf{K}\mathbf{x}",
-            r"\text{ es la }",
-            r"\textbf{ley de retroalimentación de estados}",
-            font_size=24
-        )
-        def_part4.shift(DOWN * 1.7)
-        def_part4[2].set_color(YELLOW)
-
-        self.play(Write(def_part4), run_time=2)
-        self.wait(1.5)
-        self.next_slide()
-
-        # Fade out definition
-        self.play(
-            FadeOut(definition_label),
-            FadeOut(definition_box),
-            FadeOut(def_part1),
-            FadeOut(def_part4),
-            run_time=1
-        )
-        self.wait(0.5)
-        
-        # Move equations up
-        self.play(
-            closed_loop_eq.animate.shift(UP * 1.5),
-            state_feedback_eq.animate.shift(UP * 1.5),
-            run_time=1
-        )
-        self.wait(0.5)
-        
-        # Discussion about the closed-loop matrix - simplified
-        matrix_abk = MathTex(
-            r"(\mathbf{A}+\mathbf{B K})",
-            r"\text{ determina la dinámica y estabilidad}",
-            font_size=28
-        )
-        matrix_abk.shift(UP * 0.5)
-        
-        self.play(Write(matrix_abk), run_time=2)
-        self.wait(1)
-        
-        # About eigenvalues and poles - simplified
-        poles_text = Text(
-            "Los valores propios de esta matriz se denominan polos del sistema",
+        lyapunov = MathTex(
+            r"\textbf{Liapunov:}\;"
+            r"\|\mathbf{x}_0-\mathbf{x}^{*}\|\leq\delta"
+            r"\;\Rightarrow\;"
+            r"\|\mathbf{x}(t;\mathbf{x}_0)-\mathbf{x}^{*}\|\leq\epsilon"
+            r"\;\forall t\geq 0",
             font_size=22,
-            color=WHITE
         )
-        poles_text.shift(DOWN * 0.8)
-        
-        self.play(Write(poles_text), run_time=2)
-        self.wait(1.5)
-        
-        # Stability condition - simplified
-        stability_condition = MathTex(
-            r"\text{Estabilidad asintótica } \Leftrightarrow \text{ Re}(\lambda_i) < 0 \ \forall i",
-            font_size=28
+        asymptotic = MathTex(
+            r"\textbf{Asintótica:}\;"
+            r"\lim_{t\to\infty}\|\mathbf{x}(t;\mathbf{x}_0)-\mathbf{x}^{*}\|=0",
+            font_size=22,
         )
-        stability_condition.shift(DOWN * 1.8)
-        
-        self.play(Write(stability_condition), run_time=2)
-        self.wait(1.5)
-        self.next_slide()
+        exponential = MathTex(
+            r"\textbf{Exponencial:}\;"
+            r"\|\mathbf{x}(t;\mathbf{x}_0)-\mathbf{x}^{*}\|\leq c\,e^{-\rho t}\|\mathbf{x}_0-\mathbf{x}^{*}\|",
+            font_size=22,
+        )
 
-        # Fade out and show theorem
-        self.play(
-            FadeOut(matrix_abk),
-            FadeOut(poles_text),
-            FadeOut(stability_condition),
-            FadeOut(closed_loop_eq),
-            FadeOut(state_feedback_eq),
-            FadeOut(def_part1),
-            FadeOut(def_part4),
-            run_time=1
+        defs_group = VGroup(lyapunov, asymptotic, exponential).arrange(
+            DOWN, buff=0.35, aligned_edge=LEFT
         )
-        self.wait(0.5)
-        
-        # Pole assignment theorem - simplified
-        theorem_label = Text("Teorema de asignación de polos:", font_size=32, color=YELLOW)
-        theorem_label.shift(UP * 2.5)
+        defs_group.next_to(defs_label, DOWN, buff=0.4)
 
-        # Create box for theorem
-        theorem_box = RoundedRectangle(
+        for mob in defs_group:
+            if mob.width > config.frame_width - 1.6:
+                mob.scale_to_fit_width(config.frame_width - 1.6)
+
+        defs_box = RoundedRectangle(
             corner_radius=0.2,
-            width=11,
-            height=3,
+            width=defs_group.width + 0.8,
+            height=defs_group.height + 0.5,
             color=GRAY,
             fill_opacity=0.15,
-            stroke_width=1
+            stroke_width=1,
         )
-        theorem_box.shift(UP * 0.8)
+        defs_box.move_to(defs_group)
 
-        self.play(Write(theorem_label), FadeIn(theorem_box))
+        self.play(FadeIn(defs_label), FadeIn(defs_box), FadeIn(defs_group))
         self.wait(0.5)
-
-        theorem_text = MathTex(
-            r"\text{Los polos pueden asignarse arbitrariamente }",
-            r"\Leftrightarrow",
-            r"(\mathbf{A}, \mathbf{B}) \text{ es controlable}",
-            font_size=28
-        )
-        theorem_text.shift(UP * 1.5)
-
-        self.play(Write(theorem_text), run_time=2.5)
-        self.wait(1.5)
         self.next_slide()
 
-        # Implications - simplified
-        implications_text = Text(
-            "Relaciona controlabilidad y estabilidad",
+        self.play(FadeOut(defs_label), FadeOut(defs_box), FadeOut(defs_group))
+        self.wait(0.3)
+
+        # ── Block 3: Problema de estabilización ──────────────────────────────
+        stab_label = Text("Estabilización por retroalimentación", font_size=28, color=BLUE)
+        stab_label.next_to(title, DOWN, buff=0.4)
+
+        open_loop_eq = MathTex(
+            r"\dot{\mathbf{x}}(t)=\mathbf{A}\mathbf{x}(t)+\mathbf{B}\mathbf{u}(t)",
+            font_size=28,
+        )
+        feedback_eq = MathTex(
+            r"\mathbf{u}(t)=\mathbf{K}\mathbf{x}(t),\quad\mathbf{K}\in\mathbb{R}^{n_u\times n_x}",
+            font_size=28,
+        )
+        gain_note = MathTex(
+            r"\mathbf{K}:\ \textbf{ganancia de retroalimentación}",
+            font_size=22,
+            color=GRAY_A,
+        )
+        closed_loop_eq = MathTex(
+            r"\dot{\mathbf{x}}(t)=(\mathbf{A}+\mathbf{B}\mathbf{K})\mathbf{x}(t)",
+            font_size=28,
+        )
+        goal_text = MathTex(
+            r"\text{Objetivo: elegir }\mathbf{K}"
+            r"\text{ para que }\mathbf{x}^{*}=\mathbf{0}"
+            r"\text{ sea }\textbf{asintóticamente estable}",
             font_size=24,
-            color=WHITE
         )
-        implications_text.shift(DOWN * 0.5)
 
-        self.play(Write(implications_text), run_time=1.5)
-        self.wait(3)
+        stab_group = VGroup(
+            open_loop_eq, feedback_eq, gain_note, closed_loop_eq, goal_text
+        ).arrange(DOWN, buff=0.28, aligned_edge=LEFT)
+        stab_group.next_to(stab_label, DOWN, buff=0.35)
+
+        for mob in stab_group:
+            if mob.width > config.frame_width - 1.6:
+                mob.scale_to_fit_width(config.frame_width - 1.6)
+
+        stab_box = RoundedRectangle(
+            corner_radius=0.2,
+            width=stab_group.width + 0.8,
+            height=stab_group.height + 0.5,
+            color=GRAY,
+            fill_opacity=0.15,
+            stroke_width=1,
+        )
+        stab_box.move_to(stab_group)
+
+        self.play(FadeIn(stab_label), FadeIn(stab_box))
+        self.play(FadeIn(open_loop_eq))
+        self.play(FadeIn(feedback_eq), FadeIn(gain_note))
+        self.play(FadeIn(closed_loop_eq))
+        self.play(FadeIn(goal_text))
+        self.wait(0.5)
         self.next_slide()
 
-        self.wait(3)
+        self.play(
+            FadeOut(stab_label), FadeOut(stab_box),
+            FadeOut(open_loop_eq), FadeOut(feedback_eq),
+            FadeOut(gain_note), FadeOut(closed_loop_eq), FadeOut(goal_text),
+        )
+        self.wait(0.3)
+
+        # ── Block 4: Polos y teorema de asignación ───────────────────────────
+        poles_label = Text("Polos y teorema de asignación", font_size=28, color=BLUE)
+        poles_label.next_to(title, DOWN, buff=0.4)
+
+        poles_lines = VGroup(
+            MathTex(
+                r"\bullet\ \mathbf{A}+\mathbf{B}\mathbf{K}"
+                r"\text{ determina la dinámica de circuito cerrado}",
+                font_size=24,
+            ),
+            MathTex(
+                r"\bullet\ \text{Sus valores propios son los }\textbf{polos}\text{ del sistema}",
+                font_size=24,
+            ),
+            MathTex(
+                r"\bullet\ \mathrm{Re}(\lambda_i)<0\ \forall i"
+                r"\;\Leftrightarrow\;\text{estabilidad asintótica}",
+                font_size=24,
+            ),
+        ).arrange(DOWN, buff=0.3, aligned_edge=LEFT)
+
+        theorem_eq = MathTex(
+            r"\text{Polos asignables arbitrariamente}"
+            r"\;\Leftrightarrow\;"
+            r"(\mathbf{A},\mathbf{B})\ \textbf{controlable}",
+            font_size=26,
+            color=YELLOW,
+        )
+        if theorem_eq.width > config.frame_width - 1.6:
+            theorem_eq.scale_to_fit_width(config.frame_width - 1.6)
+
+        poles_content = VGroup(poles_lines, theorem_eq).arrange(
+            DOWN, buff=0.5, aligned_edge=LEFT
+        )
+        poles_content.next_to(poles_label, DOWN, buff=0.4)
+
+        poles_box = RoundedRectangle(
+            corner_radius=0.2,
+            width=poles_content.width + 0.8,
+            height=poles_content.height + 0.5,
+            color=GRAY,
+            fill_opacity=0.15,
+            stroke_width=1,
+        )
+        poles_box.move_to(poles_content)
+
+        self.play(FadeIn(poles_label), FadeIn(poles_box), FadeIn(poles_lines))
+        self.wait(0.5)
+        self.next_slide()
+
+        self.play(FadeIn(theorem_eq))
+        self.wait(0.5)
+        self.next_slide()
