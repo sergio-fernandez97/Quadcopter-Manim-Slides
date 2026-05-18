@@ -255,4 +255,6 @@ LaTex/main.synctex.gzmain
 presentation/
 
 .playwright-mcp/ 
-
+tests/assets/
+tests/guided_policy_searcg_git_test_assets/
+tests/guided_policy_search_image_test_assets
