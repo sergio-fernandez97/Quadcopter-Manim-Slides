@@ -5,7 +5,11 @@ metadata:
   type: project
 ---
 
+<<<<<<< HEAD
+## Core Style Patterns (verified across all 15 files including 14_ddpg.py, 2026-05-17)
+=======
 ## Core Style Patterns (verified across all 16 scene files, 2026-05-13)
+>>>>>>> a3354e4e3fad2afa557a291f803ba50409acc9cd
 
 **Canonical title**: `Text("Title", font_size=42, color=YELLOW).to_edge(UP, buff=0.5)` animated with `FadeIn`.
 **Section labels**: `Text("Label", font_size=28-32, color=BLUE)`.
@@ -22,6 +26,48 @@ metadata:
 
 **Why:** These patterns are consistent across the most mature slides (09-13) and represent the canonical style.
 **How to apply:** All new slides and updates must follow these patterns. The do_not_break list in the full JSON guide is the hard constraint set.
+
+## Labels below boxed content — canonical patterns
+
+Three distinct patterns are used. All are placed with `.next_to(box, DOWN, buff=0.4)`.
+
+### Pattern A: Informational note (most common)
+```python
+note = Text("Descriptive text", font_size=20-24, color=GRAY_B)   # or GREEN or YELLOW
+note.next_to(some_box, DOWN, buff=0.4)
+self.play(FadeIn(note))
+```
+- `font_size=20` is smallest used for auxiliary notes
+- `font_size=22` for secondary descriptors
+- `font_size=24` for notes meant to stand out
+- Color GRAY_B = neutral information, GREEN = positive clarification, YELLOW = key insight
+
+### Pattern B: Sub-label inside VGroup (equation + label stacked)
+```python
+eq_label = Text("Evaluación de política", font_size=20, color=GRAY_B)
+eq_group = VGroup(equation, eq_label).arrange(DOWN, buff=0.15)
+```
+Used in 13_ilqr.py (vi_eval_label, vi_policy_label, hyp_dynamics_desc, hyp_cost_desc).
+`buff=0.15` between equation and its sub-label; `font_size=20, color=GRAY_B` consistently.
+
+### Pattern C: MathTex label below a box
+```python
+rho_note = Text("...", font_size=20, color=GRAY_B)
+rho_note.next_to(rho_pair, DOWN, buff=0.25)  # or next_to(box, DOWN, buff=0.4)
+```
+
+### "Normal multivariada" label recommendation
+For a label naming a distribution below a boxed equation in slide 12:
+```python
+dist_label = Text("Normal multivariada", font_size=20, color=GRAY_B)
+dist_label.next_to(policy_box, DOWN, buff=0.4)
+```
+Or if paired inside the VGroup with the equation:
+```python
+dist_label = Text("Normal multivariada", font_size=20, color=GRAY_B)
+policy_group = VGroup(policy_label, policy_eq, dist_label).arrange(DOWN, buff=0.25)
+```
+Use `GRAY_B` for a neutral descriptor. Use `BLUE_C` only for sub-component labels within continuous-math context (see continuous_spaces in slide 12, `color=BLUE_C`, `font_size=26`).
 
 ## Key inconsistencies (earlier vs later slides)
 - Title color: WHITE in 01,03-06; YELLOW in 02,07-14; BLUE_B in 00_portrait.py (canonical: BLUE_B — portrait is the reference)
@@ -41,7 +87,21 @@ Minimal package marker with docstring only. No shared utilities or scene registr
 ## Multiple scenes per file
 11_policy_value.py contains both EpisodeReturnSlide and PolicyValueSlide. Both are listed separately in slides.toml.
 
+<<<<<<< HEAD
+## make_box helper (14_ddpg.py pattern — consider reusing)
+14_ddpg.py defines a local `make_box(mobject, color=GRAY, fill_opacity=0.15, stroke_width=1)` inner function and a `shrink_to_fit_width(mobject, max_width)` helper. Both are defined inside `construct()`. These are not shared utilities but a useful local pattern for width-aware equation boxes.
+
+## ImageMobject usage
+14_ddpg.py uses `ImageMobject(str(path))` with a Path constant at module level pointing into LaTex/figures/. Scale with `scale_to_fit_width`. Wrap in `SurroundingRectangle(diagram, color=GRAY, buff=0.12, stroke_width=1)` for a frame.
+
+## VGroup box sizing
+Standard: `width=group.width + 0.8`, `height=group.height + 0.5` (tight content).
+Wider content (bullets, multi-equation): `width + 1.0`, `height + 0.6`.
+After `.arrange()`, always call `box.move_to(group.get_center())` to re-align.
+Three-zone horizontal layout (slide 12 ANN section): use `.arrange(RIGHT, buff=0.5)` then re-align each box individually.
+=======
 ## Helper function patterns (14_ddpg.py, canonical)
 - `make_box(mobject, color=GRAY, fill_opacity=0.15, stroke_width=1)`: creates a RoundedRectangle around content. Use for new slides to avoid repetition.
 - `shrink_to_fit_width(mobject, max_width)`: scales equation to fit within frame if too wide; use `config.frame_width - 1.5` as max_width for full-width equations.
 - Both are defined as local functions inside `construct()` — do not hoist to module level.
+>>>>>>> a3354e4e3fad2afa557a291f803ba50409acc9cd

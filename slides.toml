@@ -11,16 +11,19 @@ slides = [
     "slides.04_controllability.ControllabilitySlide",
     "slides.05_stabilization.StabilizationSlide",
     "slides.06_quadcopter_linearization.QuadcopterLinearizationSlide",
-    "slides.07_agent_environment.AgentEnvironmentSlide",
+    "slides.13_ilqr.ILQRSlide",
     "slides.08_mdp.MdpSlide",
-    "slides.09_q_learning.QLearningSlide",
-    "slides.10_model_free_vs_based.ModelFreeVsModelBasedSlide",
     "slides.11_policy_value.EpisodeReturnSlide",
     "slides.11_policy_value.PolicyValueSlide",
+    "slides.10_model_free_vs_based.ModelFreeVsModelBasedSlide",
     "slides.12_continuous_policy.ContinuousPolicySlide",
+<<<<<<< HEAD
+    "slides.09_q_learning.QLearningSlide",
+=======
     "slides.13_ilqr.ILQRSlide",
     "slides.14_ddpg.DDPGSlide",
     "slides.15_gps.GPSSlide",
+>>>>>>> a3354e4e3fad2afa557a291f803ba50409acc9cd
 ]
 
 [presentation]
