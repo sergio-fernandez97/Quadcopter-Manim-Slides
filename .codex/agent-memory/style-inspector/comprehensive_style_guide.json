@@ -1,0 +1,235 @@
+{
+  "manim_slides_version": ">=5.5.3",
+  "imports": {
+    "standard": [
+      "from manim import *",
+      "from manim_slides import Slide"
+    ],
+    "optional": [
+      "from pathlib import Path"
+    ],
+    "notes": "Always import `from manim_slides import Slide` (not ThreeDSlide unless 3D content is needed). `from pathlib import Path` is used when referencing external image files via Path(__file__).resolve().parent.parent / '...'."
+  },
+  "class_structure": {
+    "base_class": "Slide",
+    "naming_pattern": "TopicNameSlide (CamelCase, ends with 'Slide')",
+    "construct_method": "def construct(self): - contains all slide content with sections separated by self.next_slide(). Local helper functions (make_box, shrink_to_fit_width) are defined at the top of construct() for reuse within the slide.",
+    "example": "class DDPGSlide(Slide):\n    def construct(self):\n        def make_box(mobject, color=BLUE_D, fill_opacity=0.12, stroke_width=1.5):\n            box = RoundedRectangle(\n                corner_radius=0.2,\n                width=mobject.width + 0.8,\n                height=mobject.height + 0.6,\n                color=color,\n                fill_opacity=fill_opacity,\n                stroke_width=stroke_width,\n            )\n            box.move_to(mobject)\n            return box\n\n        title = Text(\"DDPG: ...\", font_size=38, color=BLUE_B)\n        title.to_edge(UP, buff=0.5)\n        self.play(FadeIn(title))\n        self.wait(0.5)\n        self.next_slide()"
+  },
+  "colors": {
+    "background": "#000000 (BLACK)",
+    "primary_text": "WHITE",
+    "title_color": "BLUE_B (canonical — established in 00_portrait.py)",
+    "secondary_text_color": "GRAY_A (subdued/secondary text)",
+    "box_color": "BLUE_D (borders, separators, box strokes)",
+    "accent_colors": [
+      "GREEN (update rules, definitions, positive concepts)",
+      "ORANGE (alternatives, exploration, covariance)",
+      "RED_C (warnings, problems)",
+      "GOLD (reward signals)",
+      "PURPLE (neural network hidden layers)"
+    ],
+    "equation_color": "WHITE (default), GREEN for update rules, ORANGE for alternatives",
+    "highlight_color": "BLUE_B",
+    "warning_color": "RED_C",
+    "color_semantics": {
+      "BLUE_B": "titles, section headings",
+      "BLUE_D": "box borders, separators, strokes (fill_opacity=0.12, stroke_width=1.5)",
+      "WHITE": "body prose, main content text — default for unlabeled content",
+      "GRAY_A": "subdued/secondary text, advisor/author lines, descriptive annotations",
+      "GREEN": "definitions, positive properties, algorithm outputs, update rules — usable on labels AND equation sub-expressions",
+      "ORANGE": "alternatives, exploration, covariance, local controllers, dual/secondary concepts — usable on labels AND equation sub-expressions",
+      "RED_C": "warnings, instabilities, problems, non-uniqueness",
+      "YELLOW": "inline highlights for specific variables or key terms being introduced within a slide (e.g., Lagrange multipliers λ, ν)",
+      "GOLD": "reward signals",
+      "PURPLE": "neural network hidden layers",
+      "BLUE_C": "continuous space variables (e.g., R^n, R^m)",
+      "highlight_scope_rule": "Accent colors apply to the specific term or label carrying semantic weight. Body prose and full sentences stay WHITE. Never color an entire paragraph with an accent color."
+    }
+  },
+  "typography": {
+    "title_font_size": "38-42 (canonical: 42; use 38 for long titles)",
+    "section_label_font_size": "28-32",
+    "body_font_size": "20-26",
+    "equation_font_size": "22-36 (matrices/long eqs: 19-24; use shrink_to_fit_width for very long)",
+    "font_family": "default (Manim default)",
+    "text_class_used": "Text (for labels/titles/body), MathTex (for equations)"
+  },
+  "layout": {
+    "title_position": "to_edge(UP, buff=0.5)",
+    "content_area": "below title, centered horizontally; section labels at UP*2.5 or UP*2",
+    "section_label_position": "move_to(UP * 2.5) or move_to(UP * 2) for most sections; next_to(title, DOWN, buff=0.5) less common",
+    "margin_notes": "content uses buff=0.3-0.5 between elements; boxes add 0.8 to width, 0.5-0.6 to height of content",
+    "slide_dimensions": "1920x1080 @ 60fps (1080p60 in slides.toml)",
+    "width_guard": "Use shrink_to_fit_width(eq, config.frame_width - 1.5) for equations that may overflow"
+  },
+  "animations": {
+    "entry_animations": [
+      "FadeIn (canonical for all content)",
+      "Write (only for progressive text reveal in early slides 01-06)",
+      "Create (for diagrams, connections, neural network wires)",
+      "Transform/TransformMatchingShapes (for morphing between related mobjects)"
+    ],
+    "equation_reveal": "FadeIn complete equation, or reveal sub-VGroups sequentially with separate self.play() calls",
+    "transitions": "self.wait(0.5) then self.next_slide() after each content reveal",
+    "cleanup_pattern": "FadeOut all section mobjects before next section: self.play(FadeOut(...), FadeOut(...)); self.wait(0.3)",
+    "within_section_swap": "FadeOut current box+content, self.wait(0.2), FadeIn next box+content (no next_slide between swaps)",
+    "3d_usage": "ThreeDSlide only for 3D visualizations; most slides use standard Slide"
+  },
+  "equations": {
+    "class_used": "MathTex",
+    "alignment_pattern": "Use & for alignment in multiline equations. Use VGroup(...).arrange(DOWN, buff=0.18-0.25, aligned_edge=LEFT) for bullet-point equation lists.",
+    "labeling": "No numbered equation labels. Use descriptive Text labels positioned above or below.",
+    "color_highlighting": "Set color on the full MathTex call OR index into sub-expressions: eq[0].set_color(GREEN). Semantic accent colors (GREEN, ORANGE, YELLOW, etc.) may be used on any label, Text mobject, or equation sub-expression that carries a specific semantic role — not limited to equations. Structural highlight boxes use BLUE_B (fill_opacity=0.12, stroke_width=2). Body prose Text always stays WHITE."
+  },
+  "boxed_content": {
+    "primary_box": {
+      "class": "RoundedRectangle",
+      "corner_radius": 0.2,
+      "width": "content.width + 0.8 (or + 1.0 for wider content)",
+      "height": "content.height + 0.5 (or + 0.6)",
+      "color": "BLUE_D",
+      "fill_opacity": 0.12,
+      "stroke_width": 1.5,
+      "position": "box.move_to(content)"
+    },
+    "highlight_box": {
+      "color": "BLUE_B",
+      "fill_opacity": 0.12,
+      "stroke_width": 2,
+      "use_case": "Key equations, control laws, final results"
+    },
+    "accent_box": {
+      "color": "BLUE",
+      "fill_opacity": 0.15,
+      "stroke_width": 1,
+      "use_case": "Continuous/transition concepts (12_continuous_policy.py)"
+    }
+  },
+  "language": "Spanish (all visible text on screen)",
+  "reusable_components": [
+    {
+      "name": "make_box local helper",
+      "description": "Creates a RoundedRectangle centered on the given mobject. Arguments: mobject, color=GRAY, fill_opacity=0.15, stroke_width=1. Returns the box.",
+      "defined_in": "slides/14_ddpg.py (local function inside construct())",
+      "pattern": "def make_box(mobject, color=GRAY, fill_opacity=0.15, stroke_width=1):\n    box = RoundedRectangle(corner_radius=0.2, width=mobject.width+0.8, height=mobject.height+0.6, color=color, fill_opacity=fill_opacity, stroke_width=stroke_width)\n    box.move_to(mobject)\n    return box"
+    },
+    {
+      "name": "shrink_to_fit_width local helper",
+      "description": "Scales a mobject down if it exceeds max_width. Returns the mobject. Use with config.frame_width - 1.5 for full-width equations.",
+      "defined_in": "slides/14_ddpg.py (local function inside construct())",
+      "pattern": "def shrink_to_fit_width(mobject, max_width):\n    if mobject.width > max_width:\n        mobject.scale_to_fit_width(max_width)\n    return mobject"
+    },
+    {
+      "name": "Neural network diagram",
+      "description": "Fully connected NN diagram built from Circle neurons and Line connections, with layer VGroups. Layer colors: BLUE (input), PURPLE (hidden), GREEN (output).",
+      "defined_in": "slides/12_continuous_policy.py"
+    },
+    {
+      "name": "Equation-label VGroup pattern",
+      "description": "Pair an equation with a descriptive Text label: VGroup(label, eq).arrange(DOWN, buff=0.15). Used for labeled equations throughout 13_ilqr.py and others.",
+      "defined_in": "slides/13_ilqr.py"
+    }
+  ],
+  "json_slide_files": {
+    "purpose": "Auto-generated by manim-slides during rendering. Maps each self.next_slide() call to an MP4 segment. Never edit manually.",
+    "structure_notes": "Top-level keys: 'slides' (array of segment objects), 'resolution': [1920, 1080], 'background_color': 'black'. Each segment: loop, auto_next, playback_rate, reversed_playback_rate, notes, dedent_notes, skip_animations, src (null), type ('video'), direction ('horizontal'), file (path to .mp4), rev_file (path to reversed .mp4).",
+    "filename_pattern": "Same base name as the scene class, e.g. DDPGSlide.json for class DDPGSlide in 14_ddpg.py. File path: slides/files/<ClassName>/<hash>.mp4"
+  },
+  "naming_conventions": {
+    "scene_class": "CamelCase ending in 'Slide', e.g. QLearningSlide, ILQRSlide, DDPGSlide",
+    "file_naming": "NN_topic_name.py (two-digit prefix for ordering), e.g. 14_ddpg.py",
+    "variable_naming": "snake_case for variables, PascalCase for Mobjects (e.g. trayectoria_box, motivation_group)",
+    "multiple_scenes_per_file": "Allowed — list each scene class separately in slides.toml",
+    "docstring": "Module-level docstring required: describes purpose, includes Example: block with render command"
+  },
+  "style_evolution": {
+    "early_slides_01_06": {
+      "title_animation": "self.add() or Write",
+      "title_color": "WHITE",
+      "title_buff": "no explicit buff",
+      "content_animation": "Write",
+      "wait_before_next_slide": "1-3 seconds"
+    },
+    "canonical_style": {
+      "title_animation": "FadeIn",
+      "title_color": "BLUE_B",
+      "title_buff": "buff=0.5",
+      "box_color": "BLUE_D",
+      "box_fill_opacity": 0.12,
+      "box_stroke_width": 1.5,
+      "secondary_text_color": "GRAY_A",
+      "content_animation": "FadeIn",
+      "wait_before_next_slide": "0.5 seconds",
+      "section_cleanup": "FadeOut all mobjects before next section",
+      "reference_file": "00_portrait.py"
+    }
+  },
+  "do_not_break": [
+    "Use `from manim import *` and `from manim_slides import Slide` as the only required imports",
+    "Class name must end with 'Slide' and subclass Slide",
+    "Title must use Text() with color=BLUE_B, font_size=38-42, positioned to_edge(UP, buff=0.5), animated with FadeIn",
+    "Every logical content reveal must end with self.wait(0.5) followed by self.next_slide()",
+    "Use FadeIn for all content entry in canonical style (07+); never Write for new slides",
+    "All visible text must be in Spanish",
+    "Wrap definitions, theorems, key equations, and bullet point lists in RoundedRectangle boxes with color=BLUE_D, fill_opacity=0.12, stroke_width=1.5",
+    "Every mathematical expression — equations, variables, Greek letters, subscripts, superscripts, operators, inline symbols — must be rendered with MathTex or Tex. Never embed math inside a plain Text() object, even for single symbols like θ, λ, x_t. Mix prose and math using VGroup(Text(...), MathTex(...)) arranged horizontally, or Tex with \\text{} for the prose portion.",
+    "Background must be BLACK (#000000); never set background_color explicitly in code (configured in slides.toml)",
+    "Resolution is 1080p@60fps as configured in slides.toml — never set camera frame size in code",
+    "Section cleanup: FadeOut ALL mobjects from a section before starting the next section",
+    "Never add new scenes to an existing file without also updating slides.toml",
+    "Never manually edit .json slide files — they are auto-generated",
+    "Use VGroup for related mobjects with .arrange() for layout",
+    "Use config.frame_width - 1.5 as the max_width guard for wide equations",
+    "Module-level docstring is required in every new file"
+  ],
+  "style_inconsistencies": [
+    {
+      "pattern": "Title color WHITE or YELLOW",
+      "files": "01_newton_euler.py through 14_ddpg.py (various)",
+      "canonical": "BLUE_B",
+      "recommendation": "Use BLUE_B for titles in all new slides and updates (reference: 00_portrait.py)"
+    },
+    {
+      "pattern": "Title animation self.add()",
+      "files": "01_newton_euler.py through 06_quadcopter_linearization.py",
+      "canonical": "FadeIn",
+      "recommendation": "Use FadeIn for smoother transitions"
+    },
+    {
+      "pattern": "Title without buff",
+      "files": "01-06",
+      "canonical": "buff=0.5",
+      "recommendation": "Always use to_edge(UP, buff=0.5)"
+    },
+    {
+      "pattern": "Write animation for content",
+      "files": "01-06",
+      "canonical": "FadeIn",
+      "recommendation": "Use FadeIn for cleaner slide transitions"
+    },
+    {
+      "pattern": "Long waits before next_slide",
+      "files": "01_newton_euler.py, 09_q_learning.py (some sections)",
+      "canonical": "0.5 seconds wait",
+      "recommendation": "Use 0.5s wait after FadeIn for pacing"
+    },
+    {
+      "pattern": "Missing docstring",
+      "files": "08_mdp.py",
+      "canonical": "Include module-level docstring with description and Example: render command",
+      "recommendation": "Always include docstrings in new slide files"
+    },
+    {
+      "pattern": "AgentEnvironmentSlide uses self.add(title) and Rectangle (not RoundedRectangle)",
+      "files": "07_agent_environment.py",
+      "canonical": "FadeIn, RoundedRectangle",
+      "recommendation": "07 is a transitional file with heavier custom layout; follow 11-14 patterns for new slides"
+    }
+  ],
+  "slides_toml_reference": {
+    "slides_array": "List of scene paths in presentation order, e.g. 'slides.14_ddpg.DDPGSlide'",
+    "resolution": "1080p60 (1920x1080 @ 60fps)",
+    "background_color": "#000000"
+  }
+}

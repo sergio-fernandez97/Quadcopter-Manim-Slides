@@ -53,7 +53,7 @@ class InertialFrameSlide(ThreeDSlide):
         title = Text(
             "Cuadricóptero como modelo matemático",
             font_size=36,
-            color=YELLOW,
+            color=BLUE_B,
         ).to_corner(UL)
         self.add_fixed_in_frame_mobjects(title)
         self.play(FadeIn(title), run_time=1)
@@ -73,9 +73,9 @@ class InertialFrameSlide(ThreeDSlide):
             corner_radius=0.2,
             width=def_content.width + 0.6,
             height=def_content.height + 0.4,
-            color=GRAY,
-            fill_opacity=0.15,
-            stroke_width=1,
+            color=BLUE_D,
+            fill_opacity=0.12,
+            stroke_width=1.5,
         )
         def_group = VGroup(def_box, def_content).arrange(ORIGIN)
         def_group.to_edge(LEFT, buff=0.5).shift(DOWN * 0.3)
@@ -104,14 +104,14 @@ class InertialFrameSlide(ThreeDSlide):
         # ==============================================================
         # SECTION 2 – Angular velocities
         # ==============================================================
-        vel_label = Text("Velocidades angulares de rotores", font_size=22, color=YELLOW)
+        vel_label = Text("Velocidades angulares de rotores", font_size=22, color=BLUE_B)
         vel_box = RoundedRectangle(
             corner_radius=0.2,
             width=vel_label.width + 0.6,
             height=vel_label.height + 0.4,
-            color=GRAY,
-            fill_opacity=0.15,
-            stroke_width=1,
+            color=BLUE_D,
+            fill_opacity=0.12,
+            stroke_width=1.5,
         )
         vel_group = VGroup(vel_box, vel_label).arrange(ORIGIN)
         vel_group.move_to(def_group)
@@ -145,13 +145,7 @@ class InertialFrameSlide(ThreeDSlide):
         # ==============================================================
         # SECTION 3 – Three-column rotation display (Roll / Pitch / Yaw)
         # ==============================================================
-        # Add Euler angle title first
-        euler_title = Text("Ángulo de Euler", font_size=32, color=YELLOW).to_edge(UP, buff=0.5)
-        self.add_fixed_in_frame_mobjects(euler_title)
-        self.play(FadeIn(euler_title), run_time=1)
-        self.next_slide()
-
-        # Fade out sections 1-2
+        # CHANGE 2: Fade out sections 1-2 FIRST, then show euler_title
         self.play(
             FadeOut(title), FadeOut(def_group),
             FadeOut(axes), FadeOut(x_label), FadeOut(y_label), FadeOut(z_label),
@@ -161,6 +155,12 @@ class InertialFrameSlide(ThreeDSlide):
             FadeOut(omega3_label), FadeOut(omega4_label),
             run_time=1,
         )
+
+        # CHANGE 1: Corrected typo "Ángulos de Euler" + BLUE_B color
+        euler_title = Text("Ángulos de Euler", font_size=32, color=BLUE_B).to_edge(UP, buff=0.5)
+        self.add_fixed_in_frame_mobjects(euler_title)
+        self.play(FadeIn(euler_title), run_time=1)
+        self.next_slide()
 
         # 3D column positions – with camera at phi=60°, theta=45° the
         # screen-horizontal direction is (-sin45, cos45, 0).
@@ -174,6 +174,22 @@ class InertialFrameSlide(ThreeDSlide):
         mini_scale = 0.6  # Increased from 0.35
         arm_mini = 1.8  # Increased from 1.2
 
+        # 3D curved arcs indicating rotation axis for each Euler angle.
+        # Each arc is oriented in the plane of the corresponding rotation.
+        # Roll: rotation around x-axis → arc in the yz-plane
+        roll_arc = Arc(radius=0.7, start_angle=-PI / 4, angle=3 * PI / 2, color=RED, stroke_width=4)
+        roll_arc.rotate(-PI / 2, axis=UP, about_point=ORIGIN)
+        roll_arc.add_tip(tip_length=0.18)
+
+        # Pitch: rotation around y-axis → arc in the xz-plane
+        pitch_arc = Arc(radius=0.7, start_angle=-PI / 4, angle=3 * PI / 2, color=GREEN, stroke_width=4)
+        pitch_arc.rotate(PI / 2, axis=RIGHT, about_point=ORIGIN)
+        pitch_arc.add_tip(tip_length=0.18)
+
+        # Yaw: rotation around z-axis → arc stays in the xy-plane
+        yaw_arc = Arc(radius=0.7, start_angle=-PI / 4, angle=3 * PI / 2, color=BLUE, stroke_width=4)
+        yaw_arc.add_tip(tip_length=0.18)
+
         # --- Roll column (left) ----------------------------------
         roll_axes = ThreeDAxes(
             x_range=[-1.5, 1.5], y_range=[-1.5, 1.5], z_range=[-1.5, 1.5],
@@ -182,7 +198,7 @@ class InertialFrameSlide(ThreeDSlide):
         roll_xa = Arrow3D(start=ORIGIN, end=RIGHT * 1.2, color=RED, thickness=0.04)
         roll_ya = Arrow3D(start=ORIGIN, end=UP * 1.2, color=GREEN, thickness=0.02)
         roll_za = Arrow3D(start=ORIGIN, end=OUT * 1.2, color=BLUE, thickness=0.02)
-        roll_3d = VGroup(roll_axes, roll_quad, roll_xa, roll_ya, roll_za)
+        roll_3d = VGroup(roll_axes, roll_quad, roll_xa, roll_ya, roll_za, roll_arc)
         roll_3d.scale(mini_scale).shift(left_3d)
 
         # --- Pitch column (center) -------------------------------
@@ -193,7 +209,7 @@ class InertialFrameSlide(ThreeDSlide):
         pitch_xa = Arrow3D(start=ORIGIN, end=RIGHT * 1.2, color=RED, thickness=0.02)
         pitch_ya = Arrow3D(start=ORIGIN, end=UP * 1.2, color=GREEN, thickness=0.04)
         pitch_za = Arrow3D(start=ORIGIN, end=OUT * 1.2, color=BLUE, thickness=0.02)
-        pitch_3d = VGroup(pitch_axes, pitch_quad, pitch_xa, pitch_ya, pitch_za)
+        pitch_3d = VGroup(pitch_axes, pitch_quad, pitch_xa, pitch_ya, pitch_za, pitch_arc)
         pitch_3d.scale(mini_scale).shift(center_3d)
 
         # --- Yaw column (right) ----------------------------------
@@ -204,104 +220,87 @@ class InertialFrameSlide(ThreeDSlide):
         yaw_xa = Arrow3D(start=ORIGIN, end=RIGHT * 1.2, color=RED, thickness=0.02)
         yaw_ya = Arrow3D(start=ORIGIN, end=UP * 1.2, color=GREEN, thickness=0.02)
         yaw_za = Arrow3D(start=ORIGIN, end=OUT * 1.2, color=BLUE, thickness=0.04)
-        yaw_3d = VGroup(yaw_axes, yaw_quad, yaw_xa, yaw_ya, yaw_za)
+        yaw_3d = VGroup(yaw_axes, yaw_quad, yaw_xa, yaw_ya, yaw_za, yaw_arc)
         yaw_3d.scale(mini_scale).shift(right_3d)
 
         # Fixed-in-frame labels for each column (screen coords)
         # Titles
         roll_col_title = Text("Roll (eje x)", font_size=22, color=RED).move_to(
-            np.array([-4.5, 3.2, 0])
+            np.array([-4.5, 2.7, 0])
         )
         pitch_col_title = Text("Pitch (eje y)", font_size=22, color=GREEN).move_to(
-            np.array([0, 3.2, 0])
+            np.array([0, 2.7, 0])
         )
         yaw_col_title = Text("Yaw (eje z)", font_size=22, color=BLUE).move_to(
-            np.array([4.5, 3.2, 0])
+            np.array([4.5, 2.7, 0])
         )
 
         # Torques with labels
         roll_torque = MathTex(
             r"\boldsymbol{\tau}_{\varphi} = \ell k (\omega_{4}^2 - \omega_2^{2})",
             font_size=24,
-        ).set_color(RED).move_to(np.array([-4.5, -1.6, 0]))
+        ).set_color(RED).move_to(np.array([-4.5, -1.9, 0]))
         pitch_torque = MathTex(
             r"\boldsymbol{\tau}_{\theta} = \ell k (\omega_{3}^2 - \omega_1^{2})",
             font_size=24,
-        ).set_color(GREEN).move_to(np.array([0, -1.6, 0]))
+        ).set_color(GREEN).move_to(np.array([0, -1.9, 0]))
         yaw_torque = MathTex(
             r"\boldsymbol{\tau}_{\psi} = b \sum_{i=1}^{4} (-1)^{i+1} \omega_{i}^2",
             font_size=24,
-        ).set_color(BLUE).move_to(np.array([4.5, -1.6, 0]))
+        ).set_color(BLUE).move_to(np.array([4.5, -1.9, 0]))
 
         # Torque labels
         torque_label_roll = Text("torque", font_size=16, color=RED).next_to(roll_torque, DOWN, buff=0.1)
         torque_label_pitch = Text("torque", font_size=16, color=GREEN).next_to(pitch_torque, DOWN, buff=0.1)
         torque_label_yaw = Text("torque", font_size=16, color=BLUE).next_to(yaw_torque, DOWN, buff=0.1)
 
-        # Rotation matrices with labels
+        # CHANGE 3: Rotation matrices — replaced C_/S_ with cos/sin
         roll_matrix = MathTex(
             r"\mathbf{R}(\varphi) = \begin{bmatrix}"
             r" 1 & 0 & 0 \\"
-            r" 0 & C_{\varphi} & S_{\varphi} \\"
-            r" 0 & -S_{\varphi} & C_{\varphi}"
+            r" 0 & \cos\varphi & \sin\varphi \\"
+            r" 0 & -\sin\varphi & \cos\varphi"
             r" \end{bmatrix}",
             font_size=20,
-        ).set_color(RED).move_to(np.array([-4.5, -2.8, 0]))
+        ).set_color(RED).move_to(np.array([-4.5, -3.0, 0]))
         pitch_matrix = MathTex(
             r"\mathbf{R}(\theta) = \begin{bmatrix}"
-            r" C_{\theta} & 0 & -S_{\theta} \\"
+            r" \cos\theta & 0 & -\sin\theta \\"
             r" 0 & 1 & 0 \\"
-            r" S_{\theta} & 0 & C_{\theta}"
+            r" \sin\theta & 0 & \cos\theta"
             r" \end{bmatrix}",
             font_size=20,
-        ).set_color(GREEN).move_to(np.array([0, -2.8, 0]))
+        ).set_color(GREEN).move_to(np.array([0, -3.0, 0]))
         yaw_matrix = MathTex(
             r"\mathbf{R}(\psi) = \begin{bmatrix}"
-            r" C_{\psi} & S_{\psi} & 0 \\"
-            r" -S_{\psi} & C_{\psi} & 0 \\"
+            r" \cos\psi & \sin\psi & 0 \\"
+            r" -\sin\psi & \cos\psi & 0 \\"
             r" 0 & 0 & 1"
             r" \end{bmatrix}",
             font_size=20,
-        ).set_color(BLUE).move_to(np.array([4.5, -2.8, 0]))
+        ).set_color(BLUE).move_to(np.array([4.5, -3.0, 0]))
 
         # Rotation matrix labels
         matrix_label_roll = Text("matriz de rotación", font_size=16, color=RED).next_to(roll_matrix, DOWN, buff=0.1)
         matrix_label_pitch = Text("matriz de rotación", font_size=16, color=GREEN).next_to(pitch_matrix, DOWN, buff=0.1)
         matrix_label_yaw = Text("matriz de rotación", font_size=16, color=BLUE).next_to(yaw_matrix, DOWN, buff=0.1)
 
-        # Curved arrows indicating rotation direction for each axis
-        # Roll (rotation around x-axis) - curved arrow on the side
-        roll_curved_arrow = CurvedArrow(
-            start_point=np.array([-4.5 + 0.3, 2.3, 0]),
-            end_point=np.array([-4.5 - 0.3, 2.3, 0]),
-            color=RED,
-            angle=0.5
-        )
+        # CHANGE 4: Constant-definition labels near torques
+        label_ell = Text("ℓ: longitud del brazo", font_size=14, color=GRAY_A)
+        label_k = Text("k: coeficiente de empuje", font_size=14, color=GRAY_A)
+        VGroup(label_ell, label_k).arrange(DOWN, buff=0.05).next_to(roll_torque, DOWN, buff=0.12)
 
-        # Pitch (rotation around y-axis) - curved arrow
-        pitch_curved_arrow = CurvedArrow(
-            start_point=np.array([0 + 0.3, 2.3, 0]),
-            end_point=np.array([0 - 0.3, 2.3, 0]),
-            color=GREEN,
-            angle=0.5
-        )
-
-        # Yaw (rotation around z-axis) - curved arrow
-        yaw_curved_arrow = CurvedArrow(
-            start_point=np.array([4.5 + 0.3, 2.3, 0]),
-            end_point=np.array([4.5 - 0.3, 2.3, 0]),
-            color=BLUE,
-            angle=0.5
-        )
+        label_b = Text("b: coeficiente de arrastre", font_size=14, color=GRAY_A)
+        label_b.next_to(yaw_torque, DOWN, buff=0.12)
 
         # --- Fade in each column one at a time ---
 
         # Roll
-        self.add_fixed_in_frame_mobjects(roll_col_title, roll_torque, roll_matrix, roll_curved_arrow)
+        self.add_fixed_in_frame_mobjects(roll_col_title, roll_torque, roll_matrix, label_ell, label_k)
         self.play(
             FadeIn(roll_3d), FadeIn(roll_col_title),
             FadeIn(roll_torque), FadeIn(roll_matrix),
-            FadeIn(roll_curved_arrow),
+            FadeIn(label_ell), FadeIn(label_k),
             run_time=1.5,
         )
         self.play(
@@ -332,10 +331,11 @@ class InertialFrameSlide(ThreeDSlide):
         self.next_slide()
 
         # Yaw
-        self.add_fixed_in_frame_mobjects(yaw_col_title, yaw_torque, yaw_matrix)
+        self.add_fixed_in_frame_mobjects(yaw_col_title, yaw_torque, yaw_matrix, label_b)
         self.play(
             FadeIn(yaw_3d), FadeIn(yaw_col_title),
             FadeIn(yaw_torque), FadeIn(yaw_matrix),
+            FadeIn(label_b),
             run_time=1.5,
         )
         self.play(
@@ -352,10 +352,12 @@ class InertialFrameSlide(ThreeDSlide):
         # SECTION 4 – Merge axes + Euler rotation matrix + simulation
         # ==============================================================
 
-        # Fade out torques and titles
+        # Fade out torques and titles (CHANGE 4: also fade out constant labels)
         self.play(
+            FadeOut(euler_title),
             FadeOut(roll_torque), FadeOut(pitch_torque), FadeOut(yaw_torque),
             FadeOut(roll_col_title), FadeOut(pitch_col_title), FadeOut(yaw_col_title),
+            FadeOut(label_ell), FadeOut(label_k), FadeOut(label_b),
             run_time=1,
         )
 
@@ -380,42 +382,32 @@ class InertialFrameSlide(ThreeDSlide):
             run_time=1,
         )
 
-        # Merge the three matrices into a multiplication expression
+        # CHANGE 5: Fade out the three individual matrices directly (no flying)
+        self.play(
+            FadeOut(roll_matrix), FadeOut(pitch_matrix), FadeOut(yaw_matrix),
+            run_time=1,
+        )
+
+        # Show mult_expr centered at fixed screen coords below z-axis
         mult_expr = MathTex(
             r"\mathbf{R}(\psi) \cdot \mathbf{R}(\theta) \cdot \mathbf{R}(\varphi)",
             font_size=28,
-        ).to_edge(DOWN, buff=1)
-
-        self.play(
-            roll_matrix.animate.move_to(mult_expr),
-            pitch_matrix.animate.move_to(mult_expr),
-            yaw_matrix.animate.move_to(mult_expr),
-            run_time=1.5,
-        )
-        self.play(
-            FadeOut(roll_matrix), FadeOut(pitch_matrix),
-            FadeIn(mult_expr),
-            run_time=0.5,
-        )
-        # yaw_matrix is still there visually; swap it out
-        self.play(
-            Transform(yaw_matrix, mult_expr),
-            run_time=0.3,
-        )
-        self.remove(yaw_matrix)
+        ).move_to(np.array([0, -2.8, 0]))
+        self.add_fixed_in_frame_mobjects(mult_expr)
+        self.play(FadeIn(mult_expr), run_time=1)
         self.next_slide()
 
-        # Transform to combined Euler rotation matrix
+        # CHANGE 3: Transform to combined Euler rotation matrix (full cos/sin, font_size=18)
         combined_matrix = MathTex(
             r"\mathbf{R}(\psi,\theta,\varphi) = \begin{bmatrix}"
-            r" C_{\psi}C_{\theta} & C_{\psi}S_{\theta}S_{\varphi} - S_{\psi}C_{\varphi}"
-            r" & C_{\psi}S_{\theta}C_{\varphi} + S_{\psi}S_{\varphi} \\"
-            r" S_{\psi}C_{\theta} & S_{\psi}S_{\theta}S_{\varphi}+C_{\psi}C_{\varphi}"
-            r" & S_{\psi}S_{\theta}C_{\varphi}-C_{\psi}S_{\varphi} \\"
-            r" -S_{\theta} & C_{\theta}S_{\varphi} & C_{\theta}C_{\varphi}"
+            r" \cos\psi\cos\theta & \cos\psi\sin\theta\sin\varphi - \sin\psi\cos\varphi"
+            r" & \cos\psi\sin\theta\cos\varphi + \sin\psi\sin\varphi \\"
+            r" \sin\psi\cos\theta & \sin\psi\sin\theta\sin\varphi + \cos\psi\cos\varphi"
+            r" & \sin\psi\sin\theta\cos\varphi - \cos\psi\sin\varphi \\"
+            r" -\sin\theta & \cos\theta\sin\varphi & \cos\theta\cos\varphi"
             r" \end{bmatrix}",
-            font_size=22,
-        ).to_edge(DOWN, buff=0.5)
+            font_size=18,
+        ).move_to(np.array([0, -3.0, 0]))
 
         self.play(Transform(mult_expr, combined_matrix), run_time=2)
         self.next_slide()
@@ -464,15 +456,15 @@ class InertialFrameSlide(ThreeDSlide):
             r"T_z = k \sum_{i=1}^{4} \omega_{i}^2", font_size=28,
         ).to_edge(LEFT, buff=1).shift(UP * 1)
 
-        thrust_label = Text("Empuje en la dirección z", font_size=16, color=WHITE).next_to(thrust_eq, DOWN, buff=0.1)
+        # CHANGE 6a: thrust_label removed (was duplicate of empuje_label)
 
         vector_T = MathTex(
             r"\mathbf{T}_{B} = \begin{bmatrix} 0 \\ 0 \\ T_z \end{bmatrix}",
             font_size=28,
         ).next_to(thrust_eq, DOWN, buff=0.5, aligned_edge=LEFT)
 
-        self.add_fixed_in_frame_mobjects(thrust_eq, thrust_label, vector_T)
-        self.play(FadeIn(empuje_label), FadeIn(thrust_eq), FadeIn(thrust_label), FadeIn(vector_T), run_time=1.5)
+        self.add_fixed_in_frame_mobjects(thrust_eq, vector_T)
+        self.play(FadeIn(empuje_label), FadeIn(thrust_eq), FadeIn(vector_T), run_time=1.5)
         self.next_slide()
 
         # Move quadcopter upwards (along z / OUT)
@@ -491,18 +483,28 @@ class InertialFrameSlide(ThreeDSlide):
         # SECTION 6 – Sistema de referencia inercial (kept)
         # ==============================================================
         title_sistema = Text(
-            "Sistema de referencia inercial", font_size=36, color=YELLOW,
+            "Sistema de referencia inercial", font_size=36, color=BLUE_B,
         ).to_edge(UP, buff=0.5)
 
-        # Brief description based on LaTeX source
+        # CHANGE 7: Replace sistema_inercial_desc with boxed inertial_desc_group
         sistema_inercial_desc = Text(
-            "Marco fijo global. Describe posición y orientación respecto a un origen absoluto.",
+            "Marco Inercial {I}: Marco fijo global. Posición y orientación absolutas.",
             font_size=18,
             color=WHITE,
-        ).to_edge(LEFT, buff=1).shift(DOWN * 0.3)
+        )
+        inertial_box = RoundedRectangle(
+            corner_radius=0.15,
+            width=sistema_inercial_desc.width + 0.6,
+            height=sistema_inercial_desc.height + 0.4,
+            color=BLUE_D,
+            fill_opacity=0.12,
+            stroke_width=1.5,
+        )
+        inertial_desc_group = VGroup(inertial_box, sistema_inercial_desc).arrange(ORIGIN)
+        inertial_desc_group.to_edge(DOWN, buff=0.25)
 
-        self.add_fixed_in_frame_mobjects(title_sistema, sistema_inercial_desc)
-        self.play(FadeIn(title_sistema), FadeIn(sistema_inercial_desc), run_time=1)
+        self.add_fixed_in_frame_mobjects(title_sistema, inertial_desc_group)
+        self.play(FadeIn(title_sistema), FadeIn(inertial_desc_group), run_time=1)
         self.next_slide()
 
         # Position vector ξ (left)
@@ -527,13 +529,13 @@ class InertialFrameSlide(ThreeDSlide):
         )
         self.next_slide()
 
-        # Angle vector η (right)
+        # CHANGE 8: Angle vector η — repositioned to center-right (x≈1.5)
         pos_angular_label = Text(
             "posición angular", font_size=24, color=WHITE,
-        ).to_edge(RIGHT, buff=1).shift(UP * 0.5)
+        ).move_to(np.array([1.5, 0.5, 0]))
         vector_eta_label = MathTex(
             r"\boldsymbol{\eta} = ", font_size=32,
-        ).next_to(pos_angular_label, RIGHT, buff=0.5)
+        ).next_to(pos_angular_label, RIGHT, buff=0.3)
         vector_eta_matrix = MathTex(
             r"\begin{bmatrix} \varphi \\ \theta \\ \psi \end{bmatrix}", font_size=32,
         ).next_to(vector_eta_label, RIGHT, buff=0.1)
@@ -549,15 +551,27 @@ class InertialFrameSlide(ThreeDSlide):
         )
         self.next_slide()
 
-        # Fade out inertial system
+        # Combined inertial position vector q
+        q_combined = MathTex(
+            r"\mathbf{q} = \begin{bmatrix} \boldsymbol{\xi} \\ \boldsymbol{\eta} \end{bmatrix}",
+            font_size=32,
+        ).to_edge(DOWN, buff=1.2)
+        self.add_fixed_in_frame_mobjects(q_combined)
+        self.play(FadeIn(q_combined), run_time=1)
+        self.wait(0.5)
+        self.next_slide()
+
+        # Fade out inertial system (CHANGE 7: use inertial_desc_group)
         self.play(
             FadeOut(title_sistema),
+            FadeOut(inertial_desc_group),
             FadeOut(pos_lineal_label),
             FadeOut(vector_xi_label),
             FadeOut(vector_xi_matrix),
             FadeOut(pos_angular_label),
             FadeOut(vector_eta_label),
             FadeOut(vector_eta_matrix),
+            FadeOut(q_combined),
             run_time=1,
         )
 
@@ -565,18 +579,34 @@ class InertialFrameSlide(ThreeDSlide):
         # SECTION 7 – Sistema de referencia local (kept)
         # ==============================================================
         title_local = Text(
-            "Sistema de referencia local", font_size=36, color=YELLOW,
+            "Sistema de referencia local", font_size=36, color=BLUE_B,
         ).to_edge(UP, buff=0.5)
 
-        # Brief description for local reference frame
+        # CHANGE 9: Replace sistema_local_desc with boxed local_desc_group
         sistema_local_desc = Text(
-            "Marco fijo al vehículo. Define velocidades lineales y angulares relativas.",
+            "Marco Local {B}: Marco fijo al vehículo. Velocidades lineales y angulares relativas.",
             font_size=18,
             color=WHITE,
-        ).to_edge(LEFT, buff=1).shift(DOWN * 0.3)
+        )
+        local_box = RoundedRectangle(
+            corner_radius=0.15,
+            width=sistema_local_desc.width + 0.6,
+            height=sistema_local_desc.height + 0.4,
+            color=BLUE_D,
+            fill_opacity=0.12,
+            stroke_width=1.5,
+        )
+        local_desc_group = VGroup(local_box, sistema_local_desc).arrange(ORIGIN)
+        local_desc_group.to_edge(DOWN, buff=0.25)
 
-        self.add_fixed_in_frame_mobjects(title_local, sistema_local_desc)
-        self.play(FadeIn(title_local), FadeIn(sistema_local_desc), run_time=1)
+        self.add_fixed_in_frame_mobjects(title_local, local_desc_group)
+        # CHANGE 6b: FadeOut empuje_label when section 7 starts
+        self.play(
+            FadeIn(title_local),
+            FadeOut(empuje_label),
+            FadeIn(local_desc_group),
+            run_time=1,
+        )
         self.next_slide()
 
         # Translate and rotate the quadcopter
@@ -664,3 +694,17 @@ class InertialFrameSlide(ThreeDSlide):
             run_time=1.5,
         )
         self.next_slide()
+
+        # Combined local velocity vector v
+        v_combined = MathTex(
+            r"\mathbf{v} = \begin{bmatrix} \boldsymbol{\upsilon} \\ \boldsymbol{\omega} \end{bmatrix}",
+            font_size=32,
+        ).to_edge(DOWN, buff=1.2)
+        self.add_fixed_in_frame_mobjects(v_combined)
+        self.play(FadeIn(v_combined), run_time=1)
+        self.wait(0.5)
+        self.next_slide()
+
+        # CHANGE 9: Fade out local_desc_group at end; canonical end-of-slide wait(1)
+        self.play(FadeOut(local_desc_group), run_time=1)
+        self.wait(1)

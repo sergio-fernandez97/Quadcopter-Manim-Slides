@@ -1,15 +1,20 @@
 ---
 name: Slide Style Guide Patterns
-description: Comprehensive style patterns extracted from all 14 slide files (00-13) including colors, typography, layout, animations, and naming conventions
-type: project
+description: Comprehensive style patterns extracted from all 15 slide files (00-14) including colors, typography, layout, animations, and naming conventions
+metadata:
+  type: project
 ---
 
+<<<<<<< HEAD
 ## Core Style Patterns (verified across all 15 files including 14_ddpg.py, 2026-05-17)
+=======
+## Core Style Patterns (verified across all 16 scene files, 2026-05-13)
+>>>>>>> a3354e4e3fad2afa557a291f803ba50409acc9cd
 
 **Canonical title**: `Text("Title", font_size=42, color=YELLOW).to_edge(UP, buff=0.5)` animated with `FadeIn`.
 **Section labels**: `Text("Label", font_size=28-32, color=BLUE)`.
 **Descriptive text**: `font_size=20-22, color=GRAY_B`.
-**Equations**: `MathTex`, font_size 24-36 for primary, 18-22 for matrices.
+**Equations**: `MathTex`, font_size 24-36 for primary, 18-22 for matrices. **All math must be LaTeX** — variables, Greek letters, subscripts, operators, inline symbols (θ, λ, x_t, etc.) must never appear inside a plain `Text` object. Mix prose+math with `VGroup(Text(...), MathTex(...))` or use `Tex` with `\text{}`.
 **Boxes**: `RoundedRectangle(corner_radius=0.2, color=GRAY, fill_opacity=0.15, stroke_width=1)`. Highlight boxes use accent color + `fill_opacity=0.1, stroke_width=2`.
 **Transitions**: `self.wait(0.5)` then `self.next_slide()` after each content reveal.
 **Section cleanup**: FadeOut all section mobjects before starting next section, then `self.wait(0.3)`.
@@ -17,7 +22,7 @@ type: project
 **Background**: BLACK (#000000), resolution 1920x1080@60fps.
 **Imports**: Always `from manim import *` and `from manim_slides import Slide`.
 **Content animation**: FadeIn (canonical), Write only for progressive text reveal.
-**Color semantics**: YELLOW=titles/highlights, BLUE=section labels, GREEN=definitions/positive, ORANGE=alternatives/exploration, RED_C=warnings, GRAY_B=descriptive text.
+**Color semantics** (canonical palette, set in 00_portrait.py): BLUE_B=titles/section headings, BLUE_D=box borders+separators (fill_opacity=0.12, stroke_width=1.5), WHITE=body prose/main text, GRAY_A=subdued/secondary text. Semantic accents are allowed on any element (label, equation sub-expression, key term) that benefits from visual distinction — not limited to diagrams: GREEN=definitions/update rules/outputs, ORANGE=alternatives/exploration/local controllers, RED_C=warnings/instabilities, GOLD=rewards, PURPLE=hidden layers, YELLOW=inline highlights for specific variables being introduced. Rule: accent colors apply to the specific term carrying semantic weight; entire paragraphs stay WHITE.
 
 **Why:** These patterns are consistent across the most mature slides (09-13) and represent the canonical style.
 **How to apply:** All new slides and updates must follow these patterns. The do_not_break list in the full JSON guide is the hard constraint set.
@@ -65,7 +70,7 @@ policy_group = VGroup(policy_label, policy_eq, dist_label).arrange(DOWN, buff=0.
 Use `GRAY_B` for a neutral descriptor. Use `BLUE_C` only for sub-component labels within continuous-math context (see continuous_spaces in slide 12, `color=BLUE_C`, `font_size=26`).
 
 ## Key inconsistencies (earlier vs later slides)
-- Title color: WHITE in 01,03-06; YELLOW in 00,02,07+ (canonical: YELLOW)
+- Title color: WHITE in 01,03-06; YELLOW in 02,07-14; BLUE_B in 00_portrait.py (canonical: BLUE_B — portrait is the reference)
 - Title animation: self.add() in 01-06; FadeIn in 00,07+ (canonical: FadeIn)
 - Title buff: no explicit buff in 01-06; buff=0.5 in 07+ (canonical: buff=0.5)
 - Title font_size: 40-48 in early; 42 in 07+ (canonical: 42)
@@ -82,6 +87,7 @@ Minimal package marker with docstring only. No shared utilities or scene registr
 ## Multiple scenes per file
 11_policy_value.py contains both EpisodeReturnSlide and PolicyValueSlide. Both are listed separately in slides.toml.
 
+<<<<<<< HEAD
 ## make_box helper (14_ddpg.py pattern — consider reusing)
 14_ddpg.py defines a local `make_box(mobject, color=GRAY, fill_opacity=0.15, stroke_width=1)` inner function and a `shrink_to_fit_width(mobject, max_width)` helper. Both are defined inside `construct()`. These are not shared utilities but a useful local pattern for width-aware equation boxes.
 
@@ -93,3 +99,9 @@ Standard: `width=group.width + 0.8`, `height=group.height + 0.5` (tight content)
 Wider content (bullets, multi-equation): `width + 1.0`, `height + 0.6`.
 After `.arrange()`, always call `box.move_to(group.get_center())` to re-align.
 Three-zone horizontal layout (slide 12 ANN section): use `.arrange(RIGHT, buff=0.5)` then re-align each box individually.
+=======
+## Helper function patterns (14_ddpg.py, canonical)
+- `make_box(mobject, color=GRAY, fill_opacity=0.15, stroke_width=1)`: creates a RoundedRectangle around content. Use for new slides to avoid repetition.
+- `shrink_to_fit_width(mobject, max_width)`: scales equation to fit within frame if too wide; use `config.frame_width - 1.5` as max_width for full-width equations.
+- Both are defined as local functions inside `construct()` — do not hoist to module level.
+>>>>>>> a3354e4e3fad2afa557a291f803ba50409acc9cd

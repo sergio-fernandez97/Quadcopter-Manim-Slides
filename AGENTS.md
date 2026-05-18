@@ -1,130 +1,188 @@
-# Repository Guidelines
+# AGENTS.md
+
+This file provides guidance to Codex when working with code in this repository.
 
 ## Project Overview
-- This repository contains an animated dissertation presentation for quadcopter control with Deep Reinforcement Learning.
-- The stack is `manim` + `manim-slides`, with `main.py` as the main CLI entry point and `generate_html.py` for Reveal.js-style HTML output.
-- The presentation should feel academically rigorous and visually close to a Beamer defense deck: static-first, clear, and paced for explanation.
 
-## Project Structure & Module Organization
-- `slides/`: Manim scene files, named with a two-digit order prefix such as `00_inertial_frame.py`. Each file typically defines one `*Slide` class.
-- `slides.toml`: Presentation configuration and slide ordering.
-- `main.py`: Main CLI entry point for render, present, and HTML workflows.
-- `generate_html.py`: Converts rendered slides to HTML output.
-- `presentation/`: Generated HTML slide outputs.
-- `draft/`: Markdown draft inputs for slide creation/update workflows.
-- `LaTex/`: Dissertation source material, especially `LaTex/chapters/` for mathematical and narrative grounding.
-- `slides_assets/`, `media/`, `manimations/`: Assets and generated media.
-- `tests/`: Minimal test area; currently lightweight.
-- Top-level docs: `README.md`, `INSTALL.md`, `SETUP_GIT.md`, `CLAUDE.md`.
+Animated presentation for a dissertation on Quadcopter Control using Deep Reinforcement Learning. Uses Manim + manim-slides to create mathematical visualizations covering quadcopter dynamics, control theory, and reinforcement learning concepts.
 
-## Build, Test, and Development Commands
-- `uv sync`: Install dependencies. FFmpeg is required.
-- `uv run python main.py render`: Render the full slide deck.
-- `uv run python main.py present`: Launch the interactive presentation.
-- `uv run python main.py html`: Generate HTML output.
-- `uv run manim-slides render slides/00_inertial_frame.py InertialFrameSlide`: Render a single scene.
-- `uv run manim-slides present InertialFrameSlide`: Present a single rendered scene.
-- `uv run manim-slides convert SCENE scene.html -ccontrols=true`: Convert a rendered scene to HTML.
-- `uv run manim-slides --version`: Verify installation.
-- `pytest`: Run tests if a real test suite is added under `tests/`.
+## Commands
 
-## Presentation Controls
-- `Space` or `Right Arrow`: Next slide.
-- `Left Arrow`: Previous slide.
-- `Q`: Quit presentation.
-- `R`: Restart presentation.
+```bash
+# Install dependencies (requires FFmpeg: brew install ffmpeg)
+uv sync
 
-## Coding Style & Naming Conventions
-- Language: Python with `manim` and `manim-slides`.
-- Indentation: 4 spaces.
-- Slide files use `NN_topic_name.py`.
-- Scene classes use `CamelCase` and must end with `Slide`.
-- Group related mobjects with `VGroup`.
-- Use short comments only for non-obvious animation or layout blocks.
-- Keep slides concise and presentation-oriented rather than document-like.
+# Render all slides
+uv run python main.py render
 
-## Manim Slide Conventions
-- Use `Slide` or `ThreeDSlide` as appropriate.
-- Every scene must use `self.next_slide()` to create speaker-controlled transition points between logical sections.
-- Place `self.next_slide()` after revealing content that requires explanation.
-- Prefer clarity over motion. Animations should emphasize, not distract.
-- Use `BulletedList` for key concepts when bullet structure helps.
-- Wrap definitions, theorems, and bulleted content inside a rounded gray rectangle with high transparency when appropriate.
-- Minimize text. Rephrase for brevity while preserving meaning.
-- Keep scene composition close to a Beamer-style research presentation.
+# Launch interactive presentation
+uv run python main.py present
 
-## Required Reference Rule
-- When generating, editing, or debugging `manim` or `manim-slides` code, use Context7 as the primary reference source before writing code.
-- Retrieve relevant API usage or examples first, then ground code changes in that context.
-- If local knowledge conflicts with retrieved documentation, prefer the documentation.
+# Generate HTML output (Reveal.js)
+uv run python main.py html
 
-## Architecture
-```text
-slides/                  # Numbered Manim scene files
-slides.toml              # Slide ordering/config
-main.py                  # Render/present/html entry point
-generate_html.py         # HTML generation
-draft/                   # Markdown drafts for slide workflows
-LaTex/chapters/          # Dissertation chapters used as source material
-presentation/            # Generated HTML slide outputs
+# Render/preview a single slide
+uv run manim-slides render slides/00_inertial_frame.py InertialFrameSlide
+uv run manim-slides present InertialFrameSlide
+
+# Convert a scene to HTML
+uv run manim-slides convert SCENE scene.html -ccontrols=true
+
+# Bootstrap the dev integration branch for Codex slide work
+.codex/scripts/bootstrap_dev_branch.sh
+
+# Prepare a dedicated slide worktree from dev
+.codex/scripts/prepare_slide_branch.sh --id 14 --slug td_learning
 ```
 
-Rendering pipeline:
-`Python scene -> Manim render -> FFmpeg MP4 -> manim-slides presentation/convert`
+## Presentation Controls
 
-## Draft-to-Slide Workflow
-- Drafts live in `draft/` and may include YAML frontmatter plus optional citations into `LaTex/chapters/*.tex`.
-- Use drafts to drive new slide creation or targeted updates.
+- **Space/Right Arrow**: Next slide
+- **Left Arrow**: Previous slide
+- **Q**: Quit presentation
+- **R**: Restart presentation
+
+## Architecture
+
+```
+slides/                  # Manim scene files (numbered for ordering)
+├── 00_inertial_frame.py # Each file defines one *Slide class
+├── 01_newton_euler.py
+├── ...
+slides.toml              # Presentation config and slide ordering
+main.py                  # CLI entry point (render, present, html)
+generate_html.py         # Converts slides to Reveal.js HTML
+```
+
+**Rendering pipeline**: Python scene → Manim renders animations → FFmpeg encodes MP4 → manim-slides manages presentation
+
+## Slide Pattern
+
+```python
+from manim import *
+from manim_slides import Slide  # or ThreeDSlide for 3D
+
+class TopicSlide(Slide):
+    def construct(self):
+        # Use self.play() for animations
+        # Use self.next_slide() for slide breaks
+        # Use self.wait(seconds) for pauses
+```
+
+## Conventions
+
+- **Manim Slides Development Rule**: Whenever the agent generates, edits, or debugs code related to **Manim** or **manim-slides**, it MUST use the `context7` MCP server as the primary reference source.
+the agent MUST:
+
+1. Query the `context7` MCP server before writing code.
+2. Retrieve relevant API usage, examples, or documentation.
+3. Ground generated code in the retrieved context.
+4. Prefer Context7 references over internal memory when conflicts exist.
+
+- **File naming**: `NN_topic_name.py` (two-digit prefix controls order)
+- **Class naming**: `CamelCaseSlide` (must end with "Slide")
+- **Indentation**: 4 spaces
+- **Composition**: Use `VGroup` for related mobjects
+- **Key concepts**: Use `BulletedList` from Manim to present key concepts or bullet points on slides
+- **Slide style**: Aim for slides that resemble Beamer presentations—more static, with animations used sparingly for emphasis rather than constant motion. Prioritize clarity and readability over complex animations.
+- **Text reveal**: Do not write phrases progressively during animations. Fade in the complete phrase instead.
+- **Text alignment**: Most text should be left-aligned. Use centered or other alignment only in clear special cases.
+- **Immediate compliance fixes**: If the agent finds an existing slide that does not comply with the text reveal or text alignment rules, it must modify that slide immediately.
+- **Color palette** (canonical, established in `slides/00_portrait.py`):
+  - Titles / section headings: `BLUE_B`
+  - Box borders, separators, and strokes: `BLUE_D`
+  - Box fill background: `BLUE_D` with `fill_opacity=0.12, stroke_width=1.5`
+  - Body / main text: `WHITE`
+  - Subdued / secondary text: `GRAY_A`
+  - Background: `BLACK` (configured in `slides.toml`, never set in code)
+  - Semantic accents (titles, labels, equations, or any element that benefits from visual distinction):
+    - `GREEN` — definitions, positive properties, update rules, algorithm outputs
+    - `ORANGE` — alternatives, exploration, secondary concepts, local controllers
+    - `RED_C` — warnings, problems, instabilities
+    - `GOLD` — reward signals
+    - `PURPLE` — neural network hidden layers
+    - `YELLOW` — inline highlights within a slide (Lagrange multipliers, key variables being introduced)
+  - Rule: body prose stays `WHITE`; use accent colors on the specific term or label that carries the semantic weight, not on entire paragraphs
+- **Transitions**: Every scene must use `self.next_slide()` to create transition points between logical sections. These pauses allow the speaker to explain each element before proceeding. Place `next_slide()` after revealing new content (equations, diagrams, bullet points) that requires explanation.
+- **Boxed content**: Wrap definitions, theorems, and bulleted lists (not simple labels) inside a rounded gray rectangle with high transparency. Example:
+  ```python
+  box = RoundedRectangle(corner_radius=0.2, width=10, height=2, color=BLUE_D, fill_opacity=0.12, stroke_width=1.5)
+  content = BulletedList("Item 1", "Item 2", font_size=24)
+  VGroup(box, content).arrange(ORIGIN)
+  ```
+- **Math rendering**: Every mathematical expression — variables, operators, equations, Greek letters, superscripts, subscripts — must be rendered with `MathTex` (for pure LaTeX math) or `Tex` (for mixed text+math). Never render math inside a plain `Text` object, not even inline symbols like θ, λ, or x_t. When mixing prose and math in a single line, use `VGroup` of `Text` + `MathTex` arranged horizontally, or use `Tex` with `\text{}` for the prose portion.
+- **Concise text**: Minimize words in theorems and definitions. You may rephrase user-provided content for brevity while preserving meaning.
+- When adding slides: create file in `slides/`, add scene path to `slides.toml`
+- Keep generated media (`media/`) out of commits; only commit source files under `slides/`
+
+## Git Workflow
+
+- The integration branch for slide work is `dev`.
+- New slide work should be done from a dedicated `slide/*` feature branch created from `dev`.
+- Preferred branch format: `slide/<nn>-<topic-slug>`.
 - Preferred workflow:
-  1. Parse the markdown draft and frontmatter.
-  2. Read cited LaTeX chapters or sections for authoritative equations and notation.
-  3. Inspect existing slide style before building or updating scenes.
-  4. Build or update the target slide surgically.
-  5. Validate math against the source material.
-  6. Render the slide.
-  7. Convert it to HTML for layout review.
+  1. Run `.codex/scripts/bootstrap_dev_branch.sh` once to create or track `dev`.
+  2. Run `.codex/scripts/prepare_slide_branch.sh --id <nn> --slug <topic_slug>` to create or reuse a worktree under `.worktrees/`.
+  3. Launch a dedicated `codex` session from that worktree path.
+  4. Run `/slide <draft-or-topic>` inside that worktree session.
+- Never publish slide work from `main`.
+- Never publish slide work directly from `dev`.
+- PRs for slide work must target `dev`.
+- Only stage source files that belong to the slide task. Do not include `media/` or `presentation/` outputs unless the user explicitly asks for generated artifacts in git.
 
-## Repo-Specific Agent Workflow
-- Treat `LaTex/chapters/` as ground truth for mathematical content.
-- Do not invent equations, notation, or dissertation claims.
-- For existing slides, make surgical updates and preserve everything outside scope.
-- For multi-slide narrative work, check continuity across the presentation sequence, not only the edited slide.
-- When working from drafts, preserve traceability from slide content back to markdown and LaTeX sources.
+## GitHub Integration
 
-Specialized responsibilities reflected by `.claude/agents/`:
-- Draft extraction: parse markdown drafts and cited LaTeX into structured content.
-- Style inspection: infer canonical visual/layout patterns from existing slides.
-- Slide building/updating: create new slides or make scoped edits without unrelated refactors.
-- Math validation: verify every scene equation against source material.
-- Layout validation: inspect rendered HTML slides for overlap and out-of-viewport issues.
-- Continuity review: assess narrative flow, pacing, prerequisites, and coverage gaps across the deck.
+- Context7 is required before writing Manim or manim-slides code.
+- PR automation expects a GitHub integration in Codex:
+  - preferred: a configured GitHub MCP/app so Codex can create or update PRs directly
+  - fallback: authenticated `gh` CLI
+- If neither GitHub MCP nor authenticated `gh` is available, the workflow may still push the feature branch but must report that PR creation remains manual.
 
-## Automation and Guardrails
-- Never read or expose `.env`.
-- When a `slides/*.py` file is modified, the preferred repo workflow is to:
-  1. Render that slide with `uv run manim-slides render <file> <ClassName>`.
-  2. Convert it to HTML at `presentation/<slide_name>.html` using `uv run manim-slides convert <ClassName> presentation/<slide_name>.html -ccontrols=true`.
-- If rendering fails, treat that as part of the task and report the failure clearly.
+## `/slide` Skill — Draft-to-Slide Pipeline
 
-## Testing and Validation Guidelines
-- No formal suite is established yet; `tests/hello.py` is a placeholder.
-- When adding tests, prefer `pytest` with files named `tests/test_*.py`.
-- For slide work, validation is not just unit tests:
-  - verify rendering succeeds
-  - verify HTML conversion succeeds when layout review is needed
-  - verify equations and notation match the LaTeX source
-  - verify edited slides still fit the overall presentation flow
+Create or update slides from markdown drafts in `./draft/`:
 
-## Commit & Pull Request Guidelines
-- Use short, descriptive, imperative commit messages.
-- A conventional-commit style is acceptable when it fits the change.
-- Review with `git status` and `git diff` before committing.
-- Stage only relevant files.
-- If a change adds or renames slides, update `slides.toml` and `README.md` accordingly.
-- PRs should briefly describe the visual or narrative change and include screenshots or a short clip when that materially helps review.
+```bash
+/slide draft/14_td_learning.md                # full pipeline: parse → build → validate → render → publish to dev PR
+/slide td_learning                       # matches draft by topic name
+/slide draft/14_td_learning.md --no-render    # skip rendering (fast iteration)
+/slide draft/14_td_learning.md --no-validate  # skip math + layout validation
+/slide draft/14_td_learning.md --no-publish   # build/update only, no commit/push/PR
+/slide draft/14_td_learning.md --draft-pr     # open the PR as draft
+```
 
-## Notes for Contributors
-- Prefer editing source files under `slides/`, `draft/`, `LaTex/`, and docs rather than generated outputs.
-- Keep generated media out of source edits unless necessary.
-- For new slides, follow the numeric sequence and document them in `README.md`.
-- Check both local slide quality and dissertation-level coherence when making substantive presentation changes.
+### Draft format
+
+Markdown files in `./draft/` with YAML frontmatter. See `draft/TEMPLATE.md` for the full reference. Drafts can cite LaTeX chapters for equation sourcing:
+
+```markdown
+---
+title: "Temporal Difference Learning"
+slide_number: 14
+---
+
+<!-- cite: LaTex/chapters/05_aprendizaje_por_diferencias_temporales.tex, sections: 5.1 -->
+
+# Temporal Difference Learning
+
+## Key Ideas
+- Bullet points for key concepts
+
+$$V(s_t) \leftarrow V(s_t) + \alpha [r_{t+1} + \gamma V(s_{t+1}) - V(s_t)]$$
+
+> **Definition**: TD error definition here.
+```
+
+### Pipeline
+
+The skill orchestrates these agents: `draft-reader` + `style-inspector` (parallel) → `slide-builder`/`slide-updater` → `math-validator` → render → `slide-layout-validator` → `slide-publisher`.
+
+### Worktree guardrails
+
+- If `/slide` is run on `main` or `dev` with publishing enabled, it must stop before any Git publication step and direct the user to `/worktree_slide`.
+- If `/slide` is run from a feature branch that does not match `slide/*`, it must not auto-publish unless that branch is explicitly confirmed as intentional.
+- `/worktree_slide` is the preparation command for creating or reusing a slide-specific worktree before opening a dedicated Codex worktree session.
+
+### Auto-render hook
+
+A PostToolUse hook auto-renders slides when any `slides/*.py` file is created or modified via Write/Edit tools.

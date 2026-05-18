@@ -1,7 +1,11 @@
-name: Perform a code review when a pull request is created.
+name: Perform a code review on demand.
 on:
-  pull_request:
-    types: [opened]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'Pull request number to review'
+        required: true
+        type: number
 
 jobs:
   codex:
@@ -11,16 +15,32 @@ jobs:
     outputs:
       final_message: ${{ steps.run_codex.outputs.final-message }}
     steps:
+      - name: Fetch PR metadata
+        id: pr_meta
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ github.token }}
+          script: |
+            const pr = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: ${{ inputs.pr_number }},
+            });
+            core.setOutput('base_ref', pr.data.base.ref);
+            core.setOutput('base_sha', pr.data.base.sha);
+            core.setOutput('head_sha', pr.data.head.sha);
+            core.setOutput('title', pr.data.title);
+            core.setOutput('body', pr.data.body || '');
+
       - uses: actions/checkout@v5
         with:
-          # Explicitly check out the PR's merge commit.
-          ref: refs/pull/${{ github.event.pull_request.number }}/merge
+          ref: refs/pull/${{ inputs.pr_number }}/merge
 
       - name: Pre-fetch base and head refs for the PR
         run: |
           git fetch --no-tags origin \
-            ${{ github.event.pull_request.base.ref }} \
-            +refs/pull/${{ github.event.pull_request.number }}/head
+            ${{ steps.pr_meta.outputs.base_ref }} \
+            +refs/pull/${{ inputs.pr_number }}/head
 
       # If you want Codex to build and run code, install any dependencies that
       # need to be downloaded before the "Run Codex" step because Codex's
@@ -32,18 +52,18 @@ jobs:
         with:
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
           prompt: |
-            This is PR #${{ github.event.pull_request.number }} for ${{ github.repository }}.
+            This is PR #${{ inputs.pr_number }} for ${{ github.repository }}.
 
             Review ONLY the changes introduced by the PR, so consider:
-               git log --oneline ${{ github.event.pull_request.base.sha }}...${{ github.event.pull_request.head.sha }}
+               git log --oneline ${{ steps.pr_meta.outputs.base_sha }}...${{ steps.pr_meta.outputs.head_sha }}
 
             Suggest any improvements, potential bugs, or issues.
             Be concise and specific in your feedback.
 
             Pull request title and body:
             ----
-            ${{ github.event.pull_request.title }}
-            ${{ github.event.pull_request.body }}
+            ${{ steps.pr_meta.outputs.title }}
+            ${{ steps.pr_meta.outputs.body }}
 
   post_feedback:
     runs-on: ubuntu-latest
@@ -63,6 +83,6 @@ jobs:
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: context.payload.pull_request.number,
+              issue_number: ${{ inputs.pr_number }},
               body: process.env.CODEX_FINAL_MESSAGE,
             });
