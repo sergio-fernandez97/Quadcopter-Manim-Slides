@@ -59,6 +59,17 @@ $$
 - Mantener la parte de linealización
 - No sobrecargar esta slide con nuevas derivaciones; solo reforzar el puente entre el modelo físico y la formulación de control
 
+## Anotación A y B (FIX — layout overlap)
+- En el slide donde se muestran las matrices A y B con llaves (Brace), mover las llaves **por encima** de la expresión en lugar de por debajo
+- Cambiar `Brace(..., DOWN)` por `Brace(..., UP)` para a_brace y b_brace
+- Ajustar las etiquetas a_label y b_label para que queden encima de las llaves (`next_to(..., UP, buff=0.1)`)
+- Esto corrige el solapamiento visual entre las etiquetas y la ecuación de abajo
+
+## Definición de sistema dinámico (NEW — añadir descripción)
+- En la sección "Sistemas de control", añadir una definición breve de sistema dinámico antes o junto al `control_definition`
+- Un **sistema dinámico** es un sistema cuyo estado evoluciona en el tiempo según una regla determinista
+- Mostrarla de forma boxeada o como MathTex/MarkupText según el estilo del resto de la slide
+
 ## Criterio de actualización
 - Cambios mínimos y quirúrgicos
 - No rehacer la animación completa

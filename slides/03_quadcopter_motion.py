@@ -377,6 +377,35 @@ class QuadcopterMotionSlide(Slide):
         )
         self.wait(0.5)
 
+        # --- Definición: sistema dinámico ---
+        dynamic_sys_label = Text("Sistema dinámico", font_size=24, color=BLUE)
+        dynamic_sys_body = Text(
+            "Un sistema cuyo estado evoluciona en el tiempo según una regla determinista.",
+            font_size=22,
+            color=WHITE
+        )
+        dynamic_sys_content = VGroup(dynamic_sys_label, dynamic_sys_body)
+        dynamic_sys_content.arrange(DOWN, buff=0.2)
+        dynamic_sys_content.next_to(new_new_title, DOWN, buff=0.6)
+
+        dynamic_sys_box = RoundedRectangle(
+            corner_radius=0.2,
+            width=dynamic_sys_content.width + 0.8,
+            height=dynamic_sys_content.height + 0.5,
+            color=GRAY,
+            fill_opacity=0.15,
+            stroke_width=1
+        )
+        dynamic_sys_box.move_to(dynamic_sys_content.get_center())
+
+        self.play(FadeIn(dynamic_sys_box), FadeIn(dynamic_sys_content), run_time=1)
+        self.wait(0.5)
+        self.next_slide()
+
+        self.play(FadeOut(dynamic_sys_box), FadeOut(dynamic_sys_content), run_time=1)
+        self.wait(0.5)
+        # --- Fin definición sistema dinámico ---
+
         control_definition = MarkupText(
             "Es el objeto de estudio de la <b>teoría de control</b>. "
             "Son sistemas dinámicos que dependen de un\nparamétro de control que actua de forma externa.",
@@ -641,8 +670,8 @@ class QuadcopterMotionSlide(Slide):
         self.play(Transform(state_space_eq, linearization_ab), run_time=1.5)
         self.wait(0.5)
         
-        a_brace = Brace(linearization_ab[1], DOWN, buff=0.1)
-        b_brace = Brace(linearization_ab[3], DOWN, buff=0.1)
+        a_brace = Brace(linearization_ab[1], UP, buff=0.1)
+        b_brace = Brace(linearization_ab[3], UP, buff=0.1)
         a_label = MathTex(
             r"\nabla_{\mathbf{x}} \mathbf{f}(\mathbf{x}^{*}, \mathbf{u}^{*})",
             font_size=22
@@ -651,8 +680,10 @@ class QuadcopterMotionSlide(Slide):
             r"\nabla_{\mathbf{u}} \mathbf{f}(\mathbf{x}^{*}, \mathbf{u}^{*})",
             font_size=22
         )
-        a_label.next_to(a_brace, DOWN, buff=0.1)
-        b_label.next_to(b_brace, DOWN, buff=0.1)
+        a_label.next_to(a_brace, UP, buff=0.1)
+        a_label.shift(LEFT * 1.8)
+        b_label.next_to(b_brace, UP, buff=0.1)
+        b_label.shift(RIGHT * 1.8)
         
         self.play(
             GrowFromCenter(a_brace),
