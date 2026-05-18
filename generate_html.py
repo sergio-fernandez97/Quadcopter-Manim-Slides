@@ -1,233 +1,159 @@
 #!/usr/bin/env python3
-"""
-Script to generate slides.html from JSON slide files in slides/ directory.
-This script reads all JSON files and generates an HTML file with Reveal.js
-that uses videos from slides/files/ directory.
-"""
+"""Export the dissertation deck as a single offline HTML presentation."""
 
-import json
+from __future__ import annotations
+
+import argparse
 import re
+import subprocess
+import sys
 from pathlib import Path
-from typing import List, Dict, Optional
 
 try:
     import tomllib
-except ImportError:  # pragma: no cover - fallback for Python < 3.11
+except ImportError:  # pragma: no cover - Python 3.11+ is required by the project
     tomllib = None
 
-def get_slide_order() -> List[str]:
-    """Get the order of slides from slides.toml or default order."""
-    slide_names = load_slide_order_from_toml(Path("slides.toml"))
-    json_files = sorted(Path("slides").glob("*.json"))
-    json_names = [json_path.stem for json_path in json_files]
 
-    if slide_names:
-        ordered = []
-        seen = set()
-        for name in slide_names + json_names:
-            if name in seen:
-                continue
-            ordered.append(name)
-            seen.add(name)
-        return ordered
+DEFAULT_OUTPUT = Path("presentation/dissertation_defense.html")
+DEFAULT_SLIDES_TOML = Path("slides.toml")
+DEFAULT_SLIDES_FOLDER = Path("slides")
 
-    return json_names
 
-def load_slide_order_from_toml(toml_path: Path) -> Optional[List[str]]:
-    """Parse slides.toml for ordered slide class names."""
-    if not toml_path.exists():
-        return None
+def load_scene_order(slides_toml: Path = DEFAULT_SLIDES_TOML) -> list[str]:
+    """Return the ordered scene class names from ``slides.toml``."""
+    if not slides_toml.exists():
+        raise FileNotFoundError(f"Missing slides configuration: {slides_toml}")
 
     if tomllib is not None:
-        with open(toml_path, "rb") as f:
-            data = tomllib.load(f)
+        with slides_toml.open("rb") as file:
+            data = tomllib.load(file)
+        slide_entries = data.get("slides", {}).get("slides", [])
+        return [
+            entry.rsplit(".", 1)[-1]
+            for entry in slide_entries
+            if isinstance(entry, str)
+        ]
 
-        slides = data.get("slides", {}).get("slides", [])
-        if slides:
-            slide_names = [
-                slide_entry.split(".")[-1]
-                for slide_entry in slides
-                if isinstance(slide_entry, str)
-            ]
-            return slide_names or None
-
-    text = toml_path.read_text(encoding="utf-8")
+    text = slides_toml.read_text(encoding="utf-8")
     match = re.search(r"(?s)\[slides\].*?slides\s*=\s*\[(.*?)\]", text)
     if not match:
-        return None
+        raise ValueError(f"Could not parse ordered slides from {slides_toml}")
 
     entries = re.findall(r"\"([^\"]+)\"", match.group(1))
-    slide_names = [entry.split(".")[-1] for entry in entries]
-    return slide_names or None
+    return [entry.rsplit(".", 1)[-1] for entry in entries]
 
-def load_slide_json(slide_name: str) -> Dict:
-    """Load JSON file for a slide."""
-    json_path = Path(f"slides/{slide_name}.json")
-    if json_path.exists():
-        with open(json_path, 'r') as f:
-            return json.load(f)
-    return None
 
-def generate_html_section(slide_data: Dict, slide_index: int) -> str:
-    """Generate HTML section for a slide."""
-    sections = []
-    background_color = slide_data.get("background_color", "black")
+def get_missing_scene_exports(
+    scene_order: list[str],
+    slides_folder: Path = DEFAULT_SLIDES_FOLDER,
+) -> list[str]:
+    """Return scene names missing rendered ``.json`` metadata."""
+    return [
+        scene_name
+        for scene_name in scene_order
+        if not (slides_folder / f"{scene_name}.json").exists()
+    ]
 
-    for slide in slide_data.get("slides", []):
-        video_file = slide.get("file", "")
-        # Use relative path from slides/files/
-        if video_file.startswith("slides/files/"):
-            video_path = video_file
-        else:
-            video_path = video_file
 
-        loop_attr = "data-background-video-loop" if slide.get("loop", False) else ""
-        section = f"""        <section
-          data-background-size='contain'
-          data-background-color="{background_color}"
-          data-background-video="{video_path}"
-          data-background-video-muted
-          {loop_attr}
-          >
-        </section>"""
-        sections.append(section)
-    
-    return "\n".join(sections)
+def build_convert_command(
+    scene_order: list[str],
+    output_path: Path,
+    slides_folder: Path = DEFAULT_SLIDES_FOLDER,
+) -> list[str]:
+    """Build the ``manim-slides convert`` command for a single-file deck."""
+    return [
+        "manim-slides",
+        "convert",
+        "--to",
+        "html",
+        "--folder",
+        str(slides_folder),
+        "--one-file",
+        "--offline",
+        "--config",
+        "controls=true",
+        *scene_order,
+        str(output_path),
+    ]
 
-def generate_html():
-    """Generate the complete HTML file."""
-    slide_order = get_slide_order()
-    
-    sections_html = []
-    for slide_name in slide_order:
-        slide_data = load_slide_json(slide_name)
-        if slide_data:
-            sections_html.append(generate_html_section(slide_data, len(sections_html)))
-    
-    html_template = f"""<!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-    <title>Manim Slides</title>
+def render_presentation(slides_toml: Path = DEFAULT_SLIDES_TOML) -> int:
+    """Render the ordered deck defined in ``slides.toml``."""
+    command = ["manim-slides", "render", str(slides_toml)]
+    return subprocess.run(command).returncode
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.2.0/reveal.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.2.0/theme/black.min.css">
 
-    <!-- Theme used for syntax highlighting of code -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/zenburn.min.css">
-  </head>
+def export_html(
+    output_path: Path = DEFAULT_OUTPUT,
+    slides_toml: Path = DEFAULT_SLIDES_TOML,
+    slides_folder: Path = DEFAULT_SLIDES_FOLDER,
+    render_first: bool = False,
+) -> int:
+    """Export the canonical dissertation deck to one offline HTML file."""
+    output_path = Path(output_path)
+    scene_order = load_scene_order(slides_toml)
 
-  <body>
-    <div class="reveal">
-      <div class="slides">
-{chr(10).join(sections_html)}
-      </div>
-    </div>
+    if not scene_order:
+        print(f"No scenes found in {slides_toml}", file=sys.stderr)
+        return 1
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.2.0/reveal.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.2.0/plugin/notes/notes.min.js"></script>
+    if render_first:
+        print(f"Rendering slides from {slides_toml}...")
+        render_return_code = render_presentation(slides_toml)
+        if render_return_code != 0:
+            return render_return_code
 
-    <script>
-      Reveal.initialize({{
-        width: '100%',
-        height: '100%',
-        margin: 0.04,
-        minScale: 0.2,
-        maxScale: 2.0,
-        controls: false,
-        controlsTutorial: true,
-        controlsLayout: 'bottom-right',
-        controlsBackArrows: 'faded',
-        progress: false,
-        slideNumber: false,
-        showSlideNumber: 'all',
-        hashOneBasedIndex: false,
-        hash: false,
-        respondToHashChanges: false,
-        jumpToSlide: true,
-        history: false,
-        keyboard: true,
-        keyboardCondition: null,
-        disableLayout: false,
-        overview: true,
-        center: true,
-        touch: true,
-        loop: false,
-        rtl: false,
-        navigationMode: 'default',
-        shuffle: false,
-        fragments: true,
-        fragmentInURL: true,
-        embedded: false,
-        help: true,
-        pause: true,
-        showNotes: false,
-        autoPlayMedia: null,
-        preloadIframes: null,
-        autoAnimate: true,
-        autoAnimateMatcher: null,
-        autoAnimateEasing: 'ease',
-        autoAnimateDuration: 1.0,
-        autoAnimateUnmatched: true,
-        autoAnimateStyles: ['opacity', 'color', 'background-color', 'padding', 'font-size', 'line-height', 'letter-spacing', 'border-width', 'border-color', 'border-radius', 'outline', 'outline-offset'],
-        autoSlide: 0,
-        autoSlideStoppable: true,
-        autoSlideMethod: null,
-        defaultTiming: null,
-        mouseWheel: false,
-        previewLinks: false,
-        postMessage: true,
-        postMessageEvents: false,
-        focusBodyOnPageVisibilityChange: true,
-        transition: 'none',
-        transitionSpeed: 'default',
-        backgroundTransition: 'none',
-        pdfMaxPagesPerSlide: Number.POSITIVE_INFINITY,
-        pdfSeparateFragments: true,
-        pdfPageHeightOffset: -1,
-        viewDistance: 3,
-        mobileViewDistance: 2,
-        display: 'block',
-        hideInactiveCursor: true,
-        hideCursorTime: 5000
-      }});
-      // Override SPACE to play / pause the video
-      Reveal.addKeyBinding(
-        {{
-          keyCode: 32,
-          key: 'SPACE',
-          description: 'Play / pause video'
-        }},
-        () => {{
-          var currentVideos = Reveal.getCurrentSlide().slideBackgroundContentElement.getElementsByTagName("video");
-          if (currentVideos.length > 0) {{
-            if (currentVideos[0].paused == true) currentVideos[0].play();
-            else currentVideos[0].pause();
-          }} else {{
-            Reveal.next();
-          }}
-        }}
-      );
-    </script>
-  </body>
-</html>"""
-    
-    return html_template
+    missing_scenes = get_missing_scene_exports(scene_order, slides_folder)
+    if missing_scenes:
+        print(
+            "Missing rendered slide metadata for: "
+            + ", ".join(missing_scenes),
+            file=sys.stderr,
+        )
+        print(
+            "Run `uv run python main.py render` first, or re-run this command "
+            "with `--render-first`.",
+            file=sys.stderr,
+        )
+        return 1
 
-def main():
-    """Main function to generate HTML."""
-    output_file = Path("slides.html")
-    
-    print("Generating slides.html from JSON files...")
-    html_content = generate_html()
-    
-    with open(output_file, 'w', encoding='utf-8') as f:
-        f.write(html_content)
-    
-    print(f"✓ Generated {output_file}")
-    print(f"  Using videos from slides/files/ directory")
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    command = build_convert_command(scene_order, output_path, slides_folder)
+    print(
+        "Exporting dissertation deck from slides.toml order to "
+        f"{output_path}..."
+    )
+    return subprocess.run(command).returncode
+
+
+def parse_args() -> argparse.Namespace:
+    """Parse CLI arguments for HTML export."""
+    parser = argparse.ArgumentParser(
+        description="Export the dissertation deck as one offline HTML file."
+    )
+    parser.add_argument(
+        "--output",
+        "-o",
+        default=str(DEFAULT_OUTPUT),
+        help="Destination HTML file. Defaults to presentation/dissertation_defense.html.",
+    )
+    parser.add_argument(
+        "--render-first",
+        action="store_true",
+        help="Render slides.toml before converting to HTML.",
+    )
+    return parser.parse_args()
+
+
+def main() -> int:
+    """CLI entry point."""
+    args = parse_args()
+    return export_html(
+        output_path=Path(args.output),
+        render_first=args.render_first,
+    )
+
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

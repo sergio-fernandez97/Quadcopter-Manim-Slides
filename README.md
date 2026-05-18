@@ -128,8 +128,17 @@ uv run manim-slides preview slides/00_inertial_frame.py InertialFrameSlide
 
 ### Convert to HTML
 ```bash
-uv run manim-slides convert SCENE scene.html -ccontrols=true
+uv run python main.py html
 ```
+
+### Render and export one dissertation HTML file
+```bash
+uv run python main.py html --render-first
+```
+
+The HTML export workflow uses the ordered scene list in `slides.toml` as the
+canonical deck definition and writes a single offline file to
+`presentation/dissertation_defense.html` by default.
 
 ## Slide Organization
 
@@ -163,4 +172,3 @@ The slides are organized in a logical flow:
 - **Left Arrow**: Previous slide
 - **Q**: Quit presentation
 - **R**: Restart presentation
-
