@@ -126,7 +126,8 @@ class ContinuousPolicySlide(Slide):
             r"\pi_{\boldsymbol{\theta}}(\mathbf{u}|\mathbf{x}) := \mathcal{N}\left(\boldsymbol{\mu}(\mathbf{x}; \boldsymbol{\theta}), \boldsymbol{\Sigma}(\mathbf{x})\right)",
             font_size=30,
         )
-        policy_group = VGroup(policy_label, policy_eq).arrange(DOWN, buff=0.3)
+        dist_label = Text("Normal multivariada", font_size=20, color=GRAY_B)
+        policy_group = VGroup(policy_label, policy_eq, dist_label).arrange(DOWN, buff=0.25)
         policy_group.move_to(UP * 1.5)
 
         policy_box = RoundedRectangle(
